@@ -1,10 +1,16 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode", // 告诉 VSCode 使用 Prettier 作为默认文件格式化程序
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit",
-    "source.fixAll.format": "explicit"
+    "source.fixAll.eslint": "always",
+    "source.fixAll.format": "always"
   },
+  //保存时自动格式化，根据prettier配置项
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
+  //保存时自动修复
+  "eslint.format.enable": true,
+  //关闭js/ts默认format，统一用eslint
+  "javascript.format.enable": false,
+  "typescript.format.enable": false
 }
