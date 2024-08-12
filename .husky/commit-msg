@@ -1,3 +1,2 @@
-echo "🎈 检查commit信息是否合规"
-
+# npx --no-install commitlint --edit "$1"
 npm run commitlint
