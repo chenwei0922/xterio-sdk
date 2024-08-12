@@ -6,5 +6,5 @@ const a = (p: string) => {
   const c = '111'
   console.log('ccc')
 }
-const e = 'ffff'
+const e = 'fhfhfhf'
 const h = 'ddd'
