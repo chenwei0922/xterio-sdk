@@ -1,1 +1,3 @@
+echo "🎈 检查commit信息是否合规"
+
 npm run commitlint ${1}
