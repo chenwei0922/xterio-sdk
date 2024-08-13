@@ -9,8 +9,8 @@
   "editor.formatOnPaste": true,
   "editor.tabSize": 2,
   //保存时自动修复
-  "eslint.format.enable": true,
-  //关闭js/ts默认format，统一用eslint
-  "javascript.format.enable": false,
-  "typescript.format.enable": false
+  // "eslint.format.enable": true,
+  // //关闭js/ts默认format，统一用eslint
+  // "javascript.format.enable": false,
+  // "typescript.format.enable": false
 }
