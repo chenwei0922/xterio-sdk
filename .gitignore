@@ -6,3 +6,5 @@ yarn-error.log
 # OSX
 .DS_Store
 
+# 测试报告
+coverage
