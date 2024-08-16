@@ -8,3 +8,5 @@ yarn-error.log
 
 # 测试报告
 coverage
+
+dist
