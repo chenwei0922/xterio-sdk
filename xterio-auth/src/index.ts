@@ -1,7 +1,9 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios'
-import { getPackageVersion, log, randomNonceStr } from './utils'
-import { Env, IUserInfo } from './interfaces/loginInfo'
+import { Env, ISSoTokensParams } from 'interfaces/loginInfo'
+import { XterioAuthInfo } from 'modules/XterAuthInfo'
+import { XterioAuthService } from 'modules/AuthService'
+
 import qs from 'query-string'
+import { log } from 'utils'
 
 const EnvBaseURLConst: Record<Env, string> = {
   [Env.Dev]: 'https://api.playvrs.net',
@@ -9,82 +11,45 @@ const EnvBaseURLConst: Record<Env, string> = {
   [Env.Production]: 'https://api.xterio.net'
 }
 
-class XterioAuth {
-  private _userinfo: IUserInfo | undefined
-  private _client_id: string | undefined
-  private _redirect_uri: string | undefined
-  private isDebug: boolean = true
-  private _env: Env = Env.Dev
-  private _baseURL: string = EnvBaseURLConst[Env.Dev]
-
-  constructor() {}
-
-  get userInfo(): IUserInfo {
-    return this._userinfo || ({} as IUserInfo)
+export const init = (config: Partial<ISSoTokensParams>, env?: Env) => {
+  const { client_id, client_secret, redirect_uri = '' } = config
+  const _env = env ?? Env.Dev
+  const _baseURL = EnvBaseURLConst[_env]
+  const _config: ISSoTokensParams = {
+    client_id: client_id || '',
+    client_secret: client_secret || '',
+    redirect_uri,
+    response_type: 'code',
+    scope: 'all',
+    mode: 'email',
+    grant_type: 'authorization_code'
   }
-  get request(): AxiosInstance {
-    const instance = axios.create({
-      maxRedirects: 0,
-      baseURL: this._baseURL,
-      timeout: 60000,
-      headers: {
-        sdkVersion: getPackageVersion(),
-        platform: 'pc',
-        clientId: this._client_id,
-        timestamp: Date.now(),
-        language: 'en',
-        nonce: randomNonceStr()
-        //app端
-        // appVersion: '',
-        // appPackage: '',
-      }
-    })
+  XterioAuthInfo.client_id = client_id || ''
+  XterioAuthInfo.env = _env
+  XterioAuthInfo.baseURL = _baseURL
+  XterioAuthInfo.authorizeUrl = _baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(_config)
+  XterioAuthInfo.config = _config
+}
 
-    return instance
-  }
-  openDebug(_flag?: boolean) {
-    this.isDebug = !!_flag
-  }
-  init(config: { client_id: string }, env?: Env) {
-    const { client_id } = config
-    this._client_id = client_id
-    this._env = env ?? Env.Dev
-    this._baseURL = EnvBaseURLConst[this._env]
-  }
-  async login() {
-    const authConfig = {
-      redirect_uri: 'XterioAuth://login',
-      client_id: this._client_id,
-      response_type: 'code',
-      scope: 'all',
-      mode: 'default',
-      logout: 1
-    }
-    const param = qs.stringify(authConfig)
-    const authUrl = `/account/v1/oauth2/authorize?` + param
-    // const authUrl = `/account/v1/oauth2/authorize?client_id=${this._client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=all&mode=default&logout=1`
-    log('authUrl=', authUrl)
+export const login = () => {
+  log('initial')
+  const redirect_uri = 'http://localhost:3000/'
+  const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
+  //4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
+  const client_secret = 'ABC23'
+  init({ client_id, client_secret, redirect_uri })
 
-    const result = await this.request
-      .get(authUrl, { maxRedirects: 0 })
-      .then((resp) => {
-        log('request success:', resp)
-        return resp.data
-      })
-      .catch((err) => {
-        if (err?.response?.status === 302) {
-          return { redirectUri: err?.response?.headers?.location || '' }
-        }
-        log('request error:', err)
-        return Promise.reject(err)
-      })
-    log('result=', result)
-    const redirectUri = result?.redirectUri || ''
-    // 'https://d39wr9n5mj2b6n.cloudfront.net/sso?s=5e99397a-9f01-4d8c-8eb5-93afe869e6c8&mode=default&logout=1'
-    const reg = /[?&]s=([^&]*)/
-    const code = redirectUri.match(reg)?.[1]
-    log('code=', code)
+  const queryParams = qs.parseUrl(location.href, { types: { code: 'string' } })
+  const code = queryParams.query?.code
+  log('code=', code)
+  if (code) {
+    log('logining ...')
+    XterioAuthService.getToken(code as string)
+  } else {
+    log('begin authorizing ...')
+    location.href = XterioAuthInfo.authorizeUrl
   }
 }
 
-export default XterioAuth
+export * from './modules/XterAuthInfo'
+export * from './modules/AuthService'

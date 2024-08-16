@@ -2,32 +2,40 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "es2018",
-    "jsx": "preserve",
+    // "useDefineForClassFields": true,
     "lib": [
       "ES2018",
       "DOM",
       "DOM.Iterable"
     ],
     "module": "ESNext",
+    "skipLibCheck": true,
+    /* Bundler mode */
     "moduleResolution": "Node",
+    // "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    // "moduleDetection": "force",
+    // "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "preserve",
     "resolveJsonModule": true,
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
+    /* Linting */
     "strict": true,
-    "skipLibCheck": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "paths": {
       "*": [
         "src/*"
-      ],
-      // "@utils": [
-      //   "src/utils"
-      // ],
+      ]
     }
   },
   "include": [
-    "src/**/*.ts"
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
+    "./package.json",
   ],
   "exclude": [
     "node_modules",

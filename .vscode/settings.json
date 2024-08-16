@@ -9,7 +9,10 @@
   "editor.formatOnPaste": true,
   "editor.tabSize": 2,
   //保存时自动修复
-  // "eslint.format.enable": true,
+  "eslint.format.enable": true,
+  "eslint.codeActionsOnSave.rules": null,
+  "eslint.codeActionsOnSave.mode": "all",
+  "vs-code-prettier-eslint.prettierLast": true
   // //关闭js/ts默认format，统一用eslint
   // "javascript.format.enable": false,
   // "typescript.format.enable": false
