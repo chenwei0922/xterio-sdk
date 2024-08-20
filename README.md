@@ -1,7 +1,6 @@
 # Xterio SDK
 
 
-## eslint9.0
+## [xterio-auth](./xterio-auth/README.md)
 
-`npx eslint --init`自动生成 eslint.config.mjs
 
