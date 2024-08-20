@@ -1,21 +1,23 @@
 import type { Env, ISSoTokensParams, ITokenRes, IUserInfo } from 'interfaces/loginInfo'
-import { XterioAuthService } from './AuthService'
+import { LoginType } from 'interfaces/loginInfo'
 
 export class XterioAuthInfo {
-  /** 申请的应用id */
+  /** app id */
   static client_id: string = ''
-  /** 平台环境 */
+  /** app env */
   static env: Env
-  /** 平台服务baseurl */
+  /** service base url */
   static baseURL: string = ''
-  /** 授权地址 */
+  /** authrorize url */
   static authorizeUrl: string = ''
-  /** 配置信息 */
+  /** sdk initial config info */
   static config?: ISSoTokensParams
-  /** whether is login */
-  static isLogin: boolean = false
-  /** 平台token */
+  /** user logined tokens */
   static tokens?: ITokenRes
-  /** 平台userinfo */
+  /** user account */
   static userInfo?: IUserInfo
+  /** account callback function */
+  static onAccount?(p: IUserInfo): void
+  /** login way */
+  static loginType?: LoginType
 }

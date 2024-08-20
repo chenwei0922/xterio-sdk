@@ -1,9 +1,20 @@
-import { Env, ISSoTokensParams } from 'interfaces/loginInfo'
+import type { ISSoTokensParams, IUserInfo } from 'interfaces/loginInfo'
+import { Env, LoginType } from 'interfaces/loginInfo'
+
 import { XterioAuthInfo } from 'modules/XterAuthInfo'
 import { XterioAuthService } from 'modules/AuthService'
 
 import qs from 'query-string'
-import { log } from 'utils'
+import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
+import { XterEventEmiter } from 'modules/XterEventEmitter'
+
+export * from './modules/XterAuthInfo'
+export * from './modules/AuthService'
+export * from './modules/XterEventEmitter'
+export * from './utils'
+
+export { LoginType, Env }
+export type { IUserInfo, ISSoTokensParams } from './interfaces/loginInfo'
 
 const EnvBaseURLConst: Record<Env, string> = {
   [Env.Dev]: 'https://api.playvrs.net',
@@ -11,6 +22,7 @@ const EnvBaseURLConst: Record<Env, string> = {
   [Env.Production]: 'https://api.xterio.net'
 }
 
+/** xter-auth initial */
 export const init = (config: Partial<ISSoTokensParams>, env?: Env) => {
   const { client_id, client_secret, redirect_uri = '' } = config
   const _env = env ?? Env.Dev
@@ -29,27 +41,80 @@ export const init = (config: Partial<ISSoTokensParams>, env?: Env) => {
   XterioAuthInfo.baseURL = _baseURL
   XterioAuthInfo.authorizeUrl = _baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(_config)
   XterioAuthInfo.config = _config
+
+  XterEventEmiter.listeners = {}
+  log('initial')
+
+  window.addEventListener('load', (event: Event) => {
+    reload()
+  })
 }
 
-export const login = () => {
-  log('initial')
-  const redirect_uri = 'http://localhost:3000/'
-  const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
-  //4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
-  const client_secret = 'ABC23'
-  init({ client_id, client_secret, redirect_uri })
+/** check authorize status after the page load */
+export const reload = async () => {
+  const cacheType = localStorage.getItem(XTERIO_CONST.LOGIN_TYPE) || XterioAuthInfo.loginType
+  const _type = cacheType
+  log('check the authorize status', _type)
+
+  if (_type !== LoginType.Authorize) return
 
   const queryParams = qs.parseUrl(location.href, { types: { code: 'string' } })
   const code = queryParams.query?.code
-  log('code=', code)
-  if (code) {
-    log('logining ...')
-    XterioAuthService.getToken(code as string)
-  } else {
-    log('begin authorizing ...')
-    location.href = XterioAuthInfo.authorizeUrl
+  if (!code) {
+    throw new Error('no authorize')
+  }
+  const uri = XterioAuthInfo.config?.redirect_uri
+  if (uri) {
+    history.pushState(null, '', uri)
+  }
+  log('going to login ...')
+  const res = await XterioAuthService.login(code as string)
+  if (res?.uuid) {
+    localStorage.removeItem(XTERIO_CONST.LOGIN_TYPE)
+    XterioAuthInfo.onAccount?.(res)
   }
 }
 
-export * from './modules/XterAuthInfo'
-export * from './modules/AuthService'
+/** logout */
+export const logout = () => {
+  XterioAuthInfo.userInfo = undefined
+  XterioAuthInfo.tokens = undefined
+  localStorage.removeItem(XTERIO_CONST.LOGIN_TYPE)
+}
+
+/** login */
+export const login = async (type?: LoginType, onCallBack?: (info: IUserInfo) => void) => {
+  if (XterioAuthInfo.userInfo?.uuid) {
+    //logined, callback the account info
+    XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, XterioAuthInfo.userInfo)
+    onCallBack?.(XterioAuthInfo.userInfo)
+    return
+  }
+
+  XterioAuthInfo.onAccount = onCallBack
+
+  const _type = type || XterioAuthInfo.loginType || LoginType.Authorize
+  XterioAuthInfo.loginType = _type
+  localStorage.setItem(XTERIO_CONST.LOGIN_TYPE, _type)
+
+  if (_type === LoginType.Union) {
+    const queryParams = qs.parseUrl(location.href, { types: { code: 'string' } })
+    const code = queryParams.query?.code
+    if (code) {
+      log('going to login ...')
+      const uri = XterioAuthInfo.config?.redirect_uri
+      if (uri) {
+        history.pushState(null, '', uri)
+      }
+      const res = await XterioAuthService.login(code as string)
+      if (res?.uuid) {
+        localStorage.removeItem(XTERIO_CONST.LOGIN_TYPE)
+        onCallBack?.(res)
+      }
+      return
+    }
+  }
+  //go to authorize
+  log('going to authorize ...')
+  location.href = XterioAuthInfo.authorizeUrl
+}

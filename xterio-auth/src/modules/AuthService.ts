@@ -2,6 +2,8 @@ import axios, { AxiosInstance } from 'axios'
 import type { IUserInfo, ITokenRes, IRes, IUserInfoRes, IWalletItem } from 'interfaces/loginInfo'
 import { getPackageVersion, log, randomNonceStr } from 'utils'
 import { XterioAuthInfo } from './XterAuthInfo'
+import { XterEventEmiter } from './XterEventEmitter'
+import { XTERIO_EVENTS } from 'utils/const'
 
 export class XterioAuthService {
   static request(needLogin?: boolean): AxiosInstance {
@@ -38,13 +40,11 @@ export class XterioAuthService {
   /**
    * 平台登录
    * @param code 授权code
-   * @returns Promise<ITokenRes|null>
+   * @returns Promise < IUserInfo | null >
    */
-  static async getToken(code: string) {
-    const param = {
-      ...XterioAuthInfo.config,
-      code
-    }
+  static async login(code: string) {
+    const { client_id, client_secret, redirect_uri, grant_type } = XterioAuthInfo.config || {}
+    const param = { client_id, client_secret, redirect_uri, grant_type, code }
     const data = param
     log('go login')
 
@@ -62,11 +62,16 @@ export class XterioAuthService {
         log('login failed.')
         return { data: null }
       })
+
     if (res.data?.id_token) {
       log('get userinfo')
-      this.getUserInfo()
+      const info = await this.getUserInfo()
+      if (info.uuid) {
+        XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, info)
+        return info
+      }
     }
-    return res?.data || null
+    return null
   }
 
   /**

@@ -1,19 +1,33 @@
 {
   "name": "xterio-auth",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "xterio-auth",
-  "scripts": {
-    "test": "jest",
-    "dev": "vite --port 3000",
-    "build": "npm run build:build && npm run build:types",
-    "build:build": "NODE_ENV=production tsx sh/build.ts",
-    "build:types": "tsc -P tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist/types"
-  },
+  "author": "Clover",
+  "license": "ISC",
   "keywords": [
     "xterio-auth"
   ],
-  "author": "Clover",
-  "license": "ISC",
+  "main": "./dist/lib/index.js",
+  "module": "./dist/es/index.js",
+  "typings": "./dist/lib/index.d.ts",
+  "types": "./dist/es/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/es/index.d.ts",
+      "import": "./dist/es/index.js",
+      "require": "./dist/lib/index.js"
+    },
+    "./es": "./dist/es/index.js",
+    "./es/*.js": "./dist/es/*.js",
+    "./es/*": "./dist/es/*.js",
+    "./lib": "./dist/lib/index.js",
+    "./lib/*.js": "./dist/lib/*.js",
+    "./lib/*": "./dist/lib/*.js",
+    "./*": "./*"
+  },
+  "files": [
+    "dist"
+  ],
   "homepage": "https://github.com/chenwei0922/xterio-sdk.git#README",
   "repository": {
     "type": "git",
@@ -23,36 +37,22 @@
   "bugs": {
     "url": "https://github.com/chenwei0922/xterio-sdk/issues"
   },
-  "files": [
-    "dist"
-  ],
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/types/index.d.ts",
-      "require": "./dist/index.cjs",
-      "import": "./dist/index.js"
-    },
-    "./*": "./*"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./*",
-        "./dist/types/*"
-      ]
-    }
-  },
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "test": "jest",
+    "dev": "vite --port 3000",
+    "build": "npm run build:build && npm run build:types",
+    "build:build": "NODE_ENV=production tsx sh/build.ts",
+    "build:types": "tsc -P tsconfig.build.json --declaration --emitDeclarationOnly --outDir dist/types"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-typescript": "^7.24.7",
+    "@rollup/plugin-replace": "^5.0.7",
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.3.0",
@@ -68,6 +68,7 @@
     "tsx": "^4.17.0",
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
+    "vite-plugin-dts": "^4.0.3",
     "vite-tsconfig-paths": "^5.0.1"
   },
   "dependencies": {

@@ -38,7 +38,7 @@ export default [
   pluginPrettierRecommendedConfigs,
   // pluginPrettier,
   {
-    ignores: ['node_modules', '**/*/node_modules'],
+    ignores: ['node_modules', '**/*/node_modules', 'dist'],
     // parser: "@typescript-eslint/parser",
     // plugins: ["@typescript-eslint", "prettier"],
     rules: {
