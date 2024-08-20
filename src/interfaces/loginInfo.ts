@@ -35,7 +35,7 @@ export interface IWalletItem {
 }
 
 export interface IUserInfo extends IUserInfoRes {
-  wallet: IWalletItem[]
+  wallet?: IWalletItem[]
 }
 
 export enum Env {
@@ -50,4 +50,9 @@ export enum Language {
   ZH_HANT = 'zh_hant',
   JA = 'ja',
   KO = 'ko'
+}
+
+export enum LoginType {
+  Authorize = 'Authorize',
+  Union = 'Union'
 }

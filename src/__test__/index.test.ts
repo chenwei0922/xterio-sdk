@@ -17,7 +17,7 @@ describe('xterioauth', () => {
     console.log('authorizeUrl=', authorizeUrl)
   })
   test('userinfo', async () => {
-    XterioAuth.XterioAuthService.getToken('ZWRLMWVIMWYTZTM5NY0ZYTI4LTHMYJKTZJY4MDFLYJE3ODZL')
+    await XterioAuth.XterioAuthService.login('ZWRLMWVIMWYTZTM5NY0ZYTI4LTHMYJKTZJY4MDFLYJE3ODZL')
     const userinfo = XterioAuth.XterioAuthInfo.userInfo
     console.log('userinfo=', userinfo)
   })

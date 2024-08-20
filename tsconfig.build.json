@@ -3,16 +3,32 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist/types",
+    "paths": {
+      "package.json": [
+        "../../../package.json"
+      ],
+      "*": [
+        "./src/*"
+      ],
+      "interfaces/*": [
+        "./src/interfaces/*"
+      ],
+      "modules/*": [
+        "./src/modules/*"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ],
+    }
   },
   "include": [
-    "package.json",
-    "src/**/*.ts",
-    "src/**/*.tsx",
+    "./src/**/*.ts",
+    "./src/**/*.tsx",
   ],
   "exclude": [
-    "src/__test__/*.test.ts",
-    "build/**/*.ts",
-    "tsconfig.build.json"
+    "node_modules",
+    "example",
+    "./package.json",
   ]
 }

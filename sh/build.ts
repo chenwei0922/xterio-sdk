@@ -5,16 +5,22 @@ import { BuildOptions, Format, build } from 'esbuild'
 import path from 'path'
 import { version } from '../package.json'
 import { pathOutput, pathSrc } from './paths'
+import { run } from './run'
 
 async function init() {
   consola.info(chalk.blue('cleaning dist...'))
   await ensureDir(pathOutput)
   await emptyDir(pathOutput)
   consola.info(chalk.blue('building...'))
-  await Promise.all([buildBundle(false), buildBundle(true)])
+  run('vite build')
+  // await Promise.all([buildBundle(false), buildBundle(true)])
   consola.info(chalk.blue('build successful'))
 }
 
+/**
+ * esbuild 打包 lib
+ * @param minify 压缩
+ */
 async function buildBundle(minify: boolean) {
   const getBuildOptions = (format: Format) => {
     const options: BuildOptions = {
