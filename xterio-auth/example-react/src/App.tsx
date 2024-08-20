@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import * as XterioAuth from 'xterio-auth'
+import { XterioAuth } from 'xterio-auth'
 import { useMount } from 'ahooks'
 
 function App() {
@@ -12,9 +12,10 @@ function App() {
   useMount(() => {})
 
   const onLogin = useCallback(() => {
-    XterioAuth.login(XterioAuth.LoginType.Authorize, (info) => {
-      console.log('info=', info)
-    })
+    XterioAuth.login()
+  }, [])
+  const onGetProfile = useCallback(() => {
+    console.log('info2=', XterioAuth.userinfo)
   }, [])
 
   return (
@@ -31,6 +32,7 @@ function App() {
       <div className="card">
         <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
         <button onClick={onLogin}>平台登录</button>
+        <button onClick={onGetProfile}>用户信息</button>
 
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR
