@@ -25,7 +25,7 @@ export default defineConfig(({ command, mode }) => {
       {
         name: 'vite-plugin-mypackage',
         transform(code, id, options) {
-          if (id.includes('utils/logger')) {
+          if (command === 'build' && id.includes('utils/logger')) {
             code = code.replace(/package.json/, '../../package.json')
           }
           return { code }

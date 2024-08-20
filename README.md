@@ -1,9 +1,9 @@
 # xterio-auth
 
-## Install
+## 1. Install
 `npm install xterio-auth` | `yarn add xterio-auth` | `pnpm add xterio-auth` 
 
-## Quick Start
+## 2. Quick Start
 
 ```ts
 import * as XterioAuth from 'xterio-auth'
@@ -23,14 +23,14 @@ XterioAuth.XterEventEmiter.on(XterioAuth.XTERIO_EVENTS.ACCOUNT, (info: IUserInfo
 ...
 ```
 
-## Login Authorize
+## 3. Login Authorize
 ```js
 XterioAuth.login(XterioAuth.LoginType.Authorize, (info) => {
   console.log('info2=', info)
 })
 ```
 
-## Login Union
+## 4. Login Union
 ```js
 XterioAuth.login(XterioAuth.LoginType.Union, (info) => {
   console.log('info=', info)
