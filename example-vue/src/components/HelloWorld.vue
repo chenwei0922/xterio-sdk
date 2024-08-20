@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import * as XterioAuth from 'xterio-auth'
+import { XterioAuth } from 'xterio-auth'
 
 defineProps<{ msg: string }>()
 
 const count = ref(0)
 
 const onLogin = () => {
-  XterioAuth.login(XterioAuth.LoginType.Authorize, (info) => {
-    console.log('info=', info)
-  })
+  XterioAuth.login()
+}
+const onGetProfile = () => {
+  console.log('info2=', XterioAuth.userinfo)
 }
 
 </script>
@@ -20,6 +21,7 @@ const onLogin = () => {
   <div class="card">
     <button type="button" @click="count++">count is {{ count }}</button>
     <button @click="onLogin">平台登录</button>
+    <button @click="onGetProfile">用户信息</button>
 
     <p>
       Edit

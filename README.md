@@ -6,7 +6,7 @@
 ## 2. Quick Start
 
 ```ts
-import * as XterioAuth from 'xterio-auth'
+import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from 'xterio-auth'
 
 //1. Initialize only once
 const redirect_uri = ''
@@ -15,24 +15,11 @@ const client_secret = ''
 XterioAuth.init({ client_id, client_secret, redirect_uri })
 
 //2. Register to listen for user information
-XterioAuth.XterEventEmiter.on(XterioAuth.XTERIO_EVENTS.ACCOUNT, (info: IUserInfo) => {
+XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, (info) => {
   console.log('info1=', info)
 })
 
 //3. SignIn (Authorize / Union)
+XterioAuth.login()
 ...
-```
-
-## 3. Login Authorize
-```js
-XterioAuth.login(XterioAuth.LoginType.Authorize, (info) => {
-  console.log('info2=', info)
-})
-```
-
-## 4. Login Union
-```js
-XterioAuth.login(XterioAuth.LoginType.Union, (info) => {
-  console.log('info=', info)
-})
 ```
