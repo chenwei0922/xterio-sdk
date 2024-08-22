@@ -4,5 +4,6 @@ export const XTERIO_EVENTS = {
   REQ_ACCOUNT: 'xter_auth_request_userinfo'
 }
 export const XTERIO_CONST = {
-  LOGIN_TYPE: 'xter_auth_login_type'
+  LOGIN_TYPE: 'xter_auth_login_type',
+  TOKENS: 'xter_auth_login_tokens'
 }

@@ -4,6 +4,7 @@ import { getPackageVersion, log, randomNonceStr } from 'utils'
 import { XterioAuthInfo } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
+import { XterioCache } from './XterCache'
 
 export class XterioAuthService {
   static request(needLogin?: boolean): AxiosInstance {
@@ -56,6 +57,7 @@ export class XterioAuthService {
       .then((res) => {
         log('login success.')
         XterioAuthInfo.tokens = res.data.data
+        XterioCache.tokens = res.data.data
         return res.data
       })
       .catch((err) => {
@@ -67,7 +69,6 @@ export class XterioAuthService {
       log('get userinfo')
       const info = await this.getUserInfo()
       if (info.uuid) {
-        XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, info)
         return info
       }
     }
@@ -80,25 +81,26 @@ export class XterioAuthService {
    */
   static async getUserInfo(): Promise<IUserInfo> {
     const [profileInfo, wallet] = await Promise.all([this.getProfile(), this.getWallet()])
-    XterioAuthInfo.userInfo = {
+    const res = {
       ...profileInfo,
       wallet
     }
-    return {
-      ...profileInfo,
-      wallet
+    XterioAuthInfo.userInfo = res
+    if (res?.uuid) {
+      XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, res)
     }
+    return res
   }
 
   private static async getProfile(): Promise<IUserInfoRes> {
     const res = await this.request(true)
       .get<IRes<IUserInfoRes>>(`/account/v1/user/profile`)
       .then((res) => {
-        log('get userinfo success.')
+        log('get profile success.')
         return res.data
       })
       .catch((err) => {
-        log('get userinfo failed.')
+        log('get profile failed.')
         return { data: null }
       })
     return res.data?.uuid ? { ...res.data } : {}
