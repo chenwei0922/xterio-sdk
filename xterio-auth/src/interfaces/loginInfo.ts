@@ -17,6 +17,21 @@ export interface ITokenRes {
   refresh_token: string
   access_token: string
 }
+export interface Payload {
+  sub: string
+  email_verified: boolean
+  iss: string
+  'cognito:username': string
+  origin_jti: string
+  aud: string
+  event_id: string
+  token_use: string
+  auth_time: number
+  exp: number // 单位: 秒
+  iat: number
+  jti: string
+  email: string
+}
 export interface IUserInfoRes {
   about?: string
   avatar?: string
@@ -31,7 +46,7 @@ export interface IWalletItem {
   address: string
   type: string
   created_at: string
-  source: 0 | 1 // 0 用户钱包，1: pn钱包
+  source: 0 | 1 | 2 // 0 配对钱包，1: pn钱包 2: aa钱包
 }
 
 export interface IUserInfo extends IUserInfoRes {
