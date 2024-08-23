@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="ui-version" content="<%- GIT_VERSION %>" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover, user-scalable=0"
+    />
+    <meta name="theme-color" content="#000000" />
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script src="https://unpkg.com/@esotericsoftware/spine-player@4.1.*/dist/iife/spine-player.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@esotericsoftware/spine-player@4.1.*/dist/spine-player.min.css"
+    />
+
+    <!-- <script src="https://telegram.org/js/telegram-web-app.js"></script> -->
+
+    <title>X Telegram Mini App Demo</title>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

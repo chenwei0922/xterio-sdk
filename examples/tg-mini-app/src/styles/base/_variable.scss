@@ -1,0 +1,9 @@
+// media query break points
+$breakpoints: (
+  xs: 576px,
+  sm: 960px,
+  md: 1280px,
+  lg: 1440px,
+  xlg: 1920px,
+  xxlg: 2560px
+) !default;

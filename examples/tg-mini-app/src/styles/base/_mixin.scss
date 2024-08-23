@@ -1,0 +1,57 @@
+@import './variable';
+@mixin respond-to($breakpoint-name) {
+  @if $breakpoint-name ==xs {
+    @media (max-width: map-get($breakpoints, 'xs')) {
+      @content;
+    }
+  } @else if $breakpoint-name ==sm {
+    @media (min-width: map-get($breakpoints, 'sm')) {
+      @content;
+    }
+  } @else if $breakpoint-name ==md {
+    @media (min-width: map-get($breakpoints, 'md')) {
+      @content;
+    }
+  } @else if $breakpoint-name ==lg {
+    @media (min-width: map-get($breakpoints, 'lg')) {
+      @content;
+    }
+  } @else if $breakpoint-name ==xlg {
+    @media (min-width: map-get($breakpoints, 'xlg')) {
+      @content;
+    }
+  }
+}
+
+/*** 渐变颜色文字 ***/
+@mixin gradient-text($startColor, $endColor) {
+  background: linear-gradient(180deg, $startColor, $endColor 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/*** 占满容器的背景图设置, 默认宽高均为100%，可以自定义设置 ***/
+@mixin full-bg($imageUrl, $widtSize: 100%, $heightSize: 100%) {
+  background: $imageUrl no-repeat;
+  background-size: $widtSize $heightSize;
+}
+
+.border-gradient-green-yellow {
+  border: 2px solid transparent;
+  border-radius: 8px; // 添加圆角，根据需要调整这个值
+  background-clip: padding-box, border-box;
+  background-origin: padding-box, border-box;
+  background-image:
+    linear-gradient(to bottom, #1e1e1e, #1e1e1e),
+    // 内部背景色，根据需要调整
+    linear-gradient(to bottom, #22c55e, #eab308);
+}
+
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* WebKit */
+}

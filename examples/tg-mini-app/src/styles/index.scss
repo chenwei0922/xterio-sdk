@@ -1,0 +1,49 @@
+@import './tailwindcss-entry.css';
+
+html {
+  height: 100%;
+}
+body {
+  height: 100%;
+  background-color: #292731;
+  background-size: cover;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
+  color: #fff;
+}
+
+/*
+* 元素默认设置为 border-box
+* Handle box-sizing while better addressing child elements:
+* http://css-tricks.com/inheriting-box-sizing-probably-slightly-better-best-practice/
+*/
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+/*
+* 统一不使用背景图repeat
+*/
+* {
+  background-repeat: no-repeat;
+}
+
+#root {
+  height: 100%;
+}
