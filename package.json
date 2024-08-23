@@ -21,9 +21,7 @@
     "@typescript-eslint/parser": "^8.0.1",
     "eslint": "^9.9.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-config-standard": "^17.1.0",
     "eslint-define-config": "^2.1.0",
-    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-oxlint": "^0.7.1",
     "eslint-plugin-prettier": "^5.2.1",
@@ -38,5 +36,9 @@
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": "eslint --fix"
-  }
+  },
+  "workspaces": [
+    "exampls/*",
+    "xterio-auth/*"
+  ]
 }

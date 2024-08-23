@@ -46,3 +46,12 @@ yarn-error.log
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
+
+/build
+/dist
+dist.*
+dist*
+
+# Optional eslint cache
+.eslintcache
+
