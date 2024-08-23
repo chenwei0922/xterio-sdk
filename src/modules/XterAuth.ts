@@ -4,6 +4,7 @@ import { XterioAuthInfo } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XterioAuthService } from './AuthService'
 import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
+import { XterAuthModal } from './XterAuthModal'
 import qs from 'query-string'
 
 const EnvBaseURLConst: Record<Env, string> = {
@@ -67,6 +68,9 @@ export class XterioAuth {
     window.addEventListener('load', (event: Event) => {
       this.checkCode()
     })
+
+    // init XterAuthLoginModal
+    XterAuthModal.init(_baseURL)
   }
   static logout() {
     XterioAuthInfo.userInfo = undefined

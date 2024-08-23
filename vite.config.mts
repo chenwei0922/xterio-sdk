@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import dts from 'vite-plugin-dts'
+import svgr from 'vite-plugin-svgr'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -30,7 +31,8 @@ export default defineConfig(({ command, mode }) => {
           }
           return { code }
         }
-      }
+      },
+      svgr()
     ],
     //定义全局变量
     define: {
