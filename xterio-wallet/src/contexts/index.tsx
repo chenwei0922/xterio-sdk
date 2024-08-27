@@ -7,8 +7,6 @@ import { log } from 'src/common/utils'
 import { XterioWalletService } from 'src/modules/WalletService'
 import { IPnWalletState, IXterioWalletContextProps } from 'src/interfaces/types'
 
-import viteLogo from '/vite.svg'
-
 const initState = {
   aaAddress: '',
   isConnect: false,
