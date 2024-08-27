@@ -4,8 +4,9 @@ export interface ISSoTokensParams {
   redirect_uri: string
   response_type: string
   scope: string
-  mode: string
+  mode: 'default' | 'email'
   grant_type: string
+  logout?: '0' | '1'
 }
 export interface IRes<T> {
   data: T

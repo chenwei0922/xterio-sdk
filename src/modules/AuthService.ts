@@ -7,7 +7,7 @@ import { XTERIO_EVENTS } from 'utils/const'
 import { XterioCache } from './XterCache'
 
 export class XterioAuthService {
-  static request(needLogin?: boolean): AxiosInstance {
+  static request(needLogin?: boolean, _headers?: Record<string, string | number>): AxiosInstance {
     if (!XterioAuthInfo.client_id) {
       throw new Error('You need set xterio-auth info')
     }
@@ -17,7 +17,8 @@ export class XterioAuthService {
       clientId: XterioAuthInfo.client_id,
       timestamp: Date.now(),
       language: 'en',
-      nonce: randomNonceStr()
+      nonce: randomNonceStr(),
+      ..._headers
       //app端
       // appVersion: '',
       // appPackage: '',
