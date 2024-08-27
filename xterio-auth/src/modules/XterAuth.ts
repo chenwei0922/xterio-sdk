@@ -21,7 +21,9 @@ export class XterioAuth {
   static get userinfo() {
     return XterioAuthInfo.userInfo
   }
-
+  static get id_token() {
+    return XterioAuthInfo.tokens?.id_token
+  }
   private static get isVaildIdToken() {
     const id_token = XterioAuthInfo.tokens?.id_token || ''
 
@@ -54,6 +56,9 @@ export class XterioAuth {
     if (!isvalid) {
       XterioAuthInfo.tokens = undefined
       XterioCache.delete(XTERIO_CONST.TOKENS)
+    } else {
+      //get userinfo
+      await XterioAuthService.getUserInfo()
     }
   }
 
@@ -84,8 +89,8 @@ export class XterioAuth {
     }
   }
 
-  static init(config: Partial<ISSoTokensParams>, env?: Env) {
-    const { client_id, client_secret, redirect_uri = '' } = config
+  static async init(config: Partial<ISSoTokensParams>, env?: Env) {
+    const { client_id, client_secret, redirect_uri = '', mode } = config
     const _env = env ?? Env.Dev
     const _baseURL = EnvBaseURLConst[_env]
     const _config: ISSoTokensParams = {
@@ -94,8 +99,9 @@ export class XterioAuth {
       redirect_uri,
       response_type: 'code',
       scope: 'all',
-      mode: 'email',
-      grant_type: 'authorization_code'
+      mode: mode || 'default',
+      grant_type: 'authorization_code',
+      logout: '1'
     }
     XterioAuthInfo.client_id = client_id || ''
     XterioAuthInfo.env = _env
@@ -106,18 +112,29 @@ export class XterioAuth {
     XterEventEmiter.listeners = {}
     log('initial')
 
-    this.checkToken()
-    window.addEventListener('load', (event: Event) => {
-      this.checkCode()
+    await this.checkToken()
+    window.addEventListener('load', async (event: Event) => {
+      await this.checkCode()
     })
   }
   static logout() {
+    log('logout success')
     XterioAuthInfo.userInfo = undefined
     XterioAuthInfo.tokens = undefined
     XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
     XterioCache.delete(XTERIO_CONST.TOKENS)
   }
-  static async login() {
+  static async login(mode?: 'default' | 'email') {
+    if (!XterioAuthInfo.config) {
+      log('xterio auth sdk initial failed')
+      return
+    }
+    if (mode) {
+      XterioAuthInfo.config = { ...XterioAuthInfo.config, mode }
+      XterioAuthInfo.authorizeUrl =
+        XterioAuthInfo.baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(XterioAuthInfo.config)
+    }
+
     if (XterioAuth.isLogin) {
       //logined, callback the account info
       log('already logined.')

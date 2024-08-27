@@ -1,0 +1,222 @@
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
+import { IUserInfo, XterEventEmiter, XterioAuth } from 'xterio-auth'
+import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
+import { PnWalletModal } from 'src/templates/PnWalletModal'
+import { createRoot } from 'react-dom/client'
+import { log } from 'src/common/utils'
+import { XterioWalletService } from 'src/modules/WalletService'
+import { IPnWalletState, IXterioWalletContextProps } from 'src/interfaces/types'
+
+import viteLogo from '/vite.svg'
+
+const initState = {
+  aaAddress: '',
+  isConnect: false,
+  openWallet: () => {},
+  connectWallet: () => {},
+  disconnectWallet: () => {},
+  obtainWallet: () => {},
+  sendUserOperation: () => {}
+}
+interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData'> {
+  userinfo: IUserInfo | undefined
+  isLogin: boolean
+  login(mode?: 'default' | 'email'): Promise<void>
+  logout(): Promise<void>
+  aaAddress: string
+  isConnect: boolean
+  openWallet(): void
+  connectWallet(): void
+  disconnectWallet(): void
+  obtainWallet(): void
+  sendUserOperation(): void
+}
+
+const WalletContext = createContext<IWalletContextState>(initState as IWalletContextState)
+
+const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = ({
+  children,
+  env,
+  client_id,
+  client_secret,
+  redirect_uri
+}) => {
+  const [mounted, setMounted] = useState<boolean>()
+  const [aaAddress, setAaAddress] = useState('')
+  const [userinfo, setUserInfo] = useState<IUserInfo | undefined>(XterioAuth.userinfo)
+  const [isLogin, setIsLogin] = useState<boolean>(XterioAuth.isLogin)
+
+  const {
+    getWalletUrl,
+    connectPnEoAAndAA,
+    connectPnAA,
+    connectPnEoA,
+    disconnectPnEoA,
+    pnUserInfo: _p,
+    isLogin: isPnLogin,
+    signMessage,
+    signTypedData
+  } = usePnWallet('', env)
+
+  const obtainWallet = useCallback(async () => {
+    if (aaAddress) {
+      log('have aa address already, cannot obtain again')
+      return
+    }
+    log('have no aa address, go to obtain')
+    let pnUserInfo = _p
+    if (!isPnLogin) {
+      pnUserInfo = await connectPnEoA()
+    }
+    const { token = '', uuid = '' } = pnUserInfo || {}
+    const _eoaAddress = pnUserInfo?.wallets.find((w) => w.chain_name === 'evm_chain')?.public_address
+    const {
+      aaAddress: pnAaAddress,
+      eoaAddress = '',
+      name = '',
+      version = ''
+    } = await connectPnAA(undefined, _eoaAddress)
+    if (!pnAaAddress) {
+      log('Failed to create the Xterio Wallet.')
+      return
+    }
+    const { error } = await XterioWalletService.bindAAWallet({
+      address: pnAaAddress,
+      pn_uuid: uuid,
+      pn_token: token,
+      owner_address: eoaAddress,
+      wallet_name: name,
+      wallet_version: version
+    })
+    if (!error) {
+      await XterioWalletService.getUserInfo()
+      log('An Xterio Wallet has been created for your account. You can also pair your own wallet.')
+    } else {
+      log('Failed to create the Xterio Wallet.')
+    }
+  }, [_p, aaAddress, connectPnAA, connectPnEoA, isPnLogin])
+
+  const connectWallet = useCallback(async () => {
+    log('connect wallet')
+    await connectPnEoAAndAA(XterioAuth.id_token)
+  }, [connectPnEoAAndAA])
+
+  const disconnectWallet = useCallback(async () => {
+    log('disconnect wallet')
+    await disconnectPnEoA()
+  }, [disconnectPnEoA])
+
+  const openWallet = useCallback(() => {
+    const uri = getWalletUrl()
+    if (!uri) {
+      log('wallet url is empty')
+      return
+    }
+
+    const url = `${uri}&mode=iframe&random=${Math.random()})}`
+    const div = document.createElement('div')
+    document.body.appendChild(div)
+
+    const root = createRoot(div)
+    root.render(
+      <PnWalletModal
+        url={url}
+        onClose={() => {
+          console.log('unmount')
+          root.unmount()
+          div.remove()
+        }}
+      />
+    )
+  }, [getWalletUrl])
+
+  const sendUserOperation = () => {}
+
+  const login = useCallback(async (mode?: 'default' | 'email') => {
+    await XterioAuth.login(mode)
+  }, [])
+
+  const logout = useCallback(async () => {
+    await disconnectWallet()
+    await XterioAuth.logout()
+    setUserInfo(undefined)
+    setIsLogin(false)
+    setAaAddress('')
+  }, [disconnectWallet])
+
+  const initLogic = useCallback(
+    async (info?: IUserInfo) => {
+      const _addr = info?.wallet?.find((i) => i.source === 2)?.address || ''
+      const _islogin = !!info?.uuid
+      setUserInfo(info)
+      setIsLogin(_islogin)
+      setAaAddress(_addr)
+
+      if (_islogin && _addr && !isPnLogin) {
+        log('init logic, reconnect wallet')
+        await connectWallet()
+      }
+    },
+    [connectWallet, isPnLogin]
+  )
+
+  useEffect(() => {
+    if (mounted) return
+    const init = async () => {
+      log('xterio wallet initial')
+      await XterioAuth.init({ client_id, client_secret, redirect_uri }, env)
+      XterEventEmiter.subscribe((info?: IUserInfo) => {
+        log('emiter auth userinfo=', info)
+        initLogic(info)
+      })
+      initLogic(XterioAuth.userinfo)
+    }
+    setMounted(true)
+    init()
+    return () => {
+      log('unmount1')
+      //tip: cannot unmount there
+    }
+  }, [client_id, client_secret, env, initLogic, mounted, redirect_uri])
+
+  useEffect(() => {
+    return () => {
+      log('unmount2')
+      XterEventEmiter.unsubscribe()
+    }
+  }, [])
+  return (
+    <WalletContext.Provider
+      value={{
+        isLogin,
+        userinfo,
+        login,
+        logout,
+        aaAddress,
+        isConnect: !!isPnLogin,
+        obtainWallet,
+        connectWallet,
+        openWallet,
+        disconnectWallet,
+        signMessage,
+        signTypedData,
+        sendUserOperation
+      }}
+    >
+      {children}
+    </WalletContext.Provider>
+  )
+}
+
+export const XterioWalletProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = (props) => {
+  const { env } = props
+  return (
+    <AuthCoreContextProvider options={getAuthCoreModalOptions(env)}>
+      <WalletContextProvider {...props}></WalletContextProvider>
+    </AuthCoreContextProvider>
+  )
+}
+
+export const useXterioWalletContext = () => {
+  return useContext(WalletContext)
+}

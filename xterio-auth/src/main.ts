@@ -12,8 +12,15 @@ XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, (info) => {
 
 window.onload = () => {
   const btn = document.getElementById('login')
-  if (!btn) return
-  btn.onclick = () => {
-    XterioAuth.login()
+  const logoutBtn = document.getElementById('logout')
+  if (btn) {
+    btn.onclick = () => {
+      XterioAuth.login()
+    }
+  }
+  if (logoutBtn) {
+    logoutBtn.onclick = () => {
+      XterioAuth.logout()
+    }
   }
 }

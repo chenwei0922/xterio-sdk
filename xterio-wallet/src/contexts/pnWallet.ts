@@ -1,0 +1,250 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Buffer } from 'buffer'
+import { Env, XterioAuth } from 'xterio-auth'
+import { SmartAccount } from '@particle-network/aa'
+import { type ConnectParam, AuthType } from '@particle-network/auth-core'
+import {
+  getEVMPublicAddress,
+  useAuthCore,
+  useConnect,
+  useCustomize,
+  useEthereum,
+  AuthCoreModalOptions,
+  AuthCoreContextProvider,
+  PromptSettingType,
+  CustomStyle
+} from '@particle-network/auth-core-modal'
+import {
+  ArbitrumOne,
+  Base,
+  BNBChain,
+  BNBChainTestnet,
+  Chain,
+  Ethereum,
+  EthereumSepolia,
+  opBNB,
+  ParticleChains,
+  Polygon,
+  XterioBNB,
+  XterioBNBTestnet,
+  XterioETH
+} from '@particle-network/chains'
+
+import PNCustomStyle from 'src/common/config/PNCustomStyle.json'
+import { EnvBaseURLConst } from 'src/common/utils/const'
+import aaOptions from 'src/common/config/erc4337'
+import { log } from 'src/common/utils'
+import type { IPnWalletState } from 'src/interfaces/types'
+
+if (!window.Buffer) {
+  window.Buffer = Buffer
+}
+
+export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState => {
+  const { chainInfo, address, provider, signMessage, signTypedData } = useEthereum()
+  const { connect, connected, disconnect } = useConnect()
+  const { erc4337, setERC4337, walletOptions } = useCustomize()
+  const { userInfo, buildWalletUrl } = useAuthCore()
+
+  const [pnAAWalletAddress, setPnAAWalletAddress] = useState<string | undefined>(undefined)
+  const [smartAccount, setSmartAccount] = useState<SmartAccount>()
+
+  const env = useMemo(() => EnvBaseURLConst[_env || Env.Dev], [_env])
+
+  const aaNetworkConfig = useMemo(() => {
+    if (!erc4337) {
+      return []
+    } else {
+      const version = erc4337.version || '1.0.0'
+      return (
+        aaOptions.accountContracts[erc4337.name as keyof typeof aaOptions.accountContracts].find(
+          (item) => item.version === version
+        )?.chainIds || []
+      )
+    }
+  }, [erc4337])
+
+  const erc4337On = useCallback(
+    (open: boolean) => {
+      if (open) {
+        setERC4337({
+          name: 'XTERIO',
+          version: '1.0.0'
+        })
+      } else {
+        setERC4337(undefined)
+      }
+    },
+    [setERC4337]
+  )
+
+  const connectPnEoA = useCallback(
+    async (jwt?: string, _chainId?: number) => {
+      const chains = walletOptions?.customStyle?.supportChains
+      const targetChain = chains?.find((c: Chain) => c.id === (_chainId ?? Number(env.PN_CHAIN_ID)))
+      let options: ConnectParam = {
+        chain: ParticleChains[`${targetChain?.name}-${targetChain?.id}`]
+      }
+      options = {
+        ...options,
+        ...{
+          provider: AuthType.jwt,
+          thirdpartyCode: jwt ?? XterioAuth.id_token
+        }
+      }
+      const res = await connect(options)
+        .then((userInfo) => {
+          log('connect pn eoa success')
+          return userInfo
+        })
+        .catch((error: Error) => {
+          log('connect pn eoa error', error)
+          return undefined
+        })
+      return res
+    },
+    [connect, env.PN_CHAIN_ID, walletOptions?.customStyle?.supportChains]
+  )
+
+  const connectPnAA = useCallback(
+    async (_chainId?: number, _eoaAddress?: string) => {
+      if (_eoaAddress) {
+        erc4337On(true)
+        const chainId = _chainId || Number(env.PN_CHAIN_ID) || chainInfo.id
+        let erc4337Config
+        if (erc4337 && aaNetworkConfig.includes(chainId)) {
+          erc4337Config = erc4337
+        }
+        const aaAddress = await getEVMPublicAddress({
+          chainId: chainId,
+          erc4337: erc4337Config
+        })
+          .then((_aaAddress: string) => {
+            setPnAAWalletAddress(_aaAddress)
+            log('connect pn aa success')
+            return _aaAddress
+          })
+          .catch((error: any) => {
+            log('connect pn aa error', error)
+          })
+        return { aaAddress, eoaAddress: _eoaAddress || address || init_address || '', ...erc4337Config }
+      } else {
+        setPnAAWalletAddress(undefined)
+        return {}
+      }
+    },
+    [aaNetworkConfig, address, chainInfo.id, env.PN_CHAIN_ID, erc4337, erc4337On, init_address]
+  )
+
+  const connectPnEoAAndAA = useCallback(
+    async (jwt?: string, _chainId?: number) => {
+      log('connect pn eoa')
+      const _userInfo = await connectPnEoA(jwt, _chainId)
+      log('connect pn aa')
+      const _eoaAddress = _userInfo?.wallets.find((w) => w.chain_name === 'evm_chain')?.public_address
+      await connectPnAA(_chainId, _eoaAddress)
+    },
+    [connectPnAA, connectPnEoA]
+  )
+
+  const getWalletUrl = useCallback(() => {
+    try {
+      if (connected) {
+        return buildWalletUrl({
+          topMenuType: 'close',
+          query: { theme: 'dark' }
+        })
+      }
+    } catch (error) {
+      log('getPnWalletUrl error', error)
+    }
+    return null
+  }, [buildWalletUrl, connected])
+
+  useEffect(() => {
+    if (!erc4337) {
+      setSmartAccount(undefined)
+      return
+    }
+    if (smartAccount) return
+
+    const _smartAccount = new SmartAccount(provider, {
+      projectId: env.PN_PROJECT_ID as string,
+      clientKey: env.PN_CLIENT_KEY as string,
+      appId: env.PN_APP_ID as string,
+      aaOptions
+    })
+    _smartAccount.setSmartAccountContract(erc4337)
+    setSmartAccount(_smartAccount)
+  }, [env.PN_APP_ID, env.PN_CLIENT_KEY, env.PN_PROJECT_ID, erc4337, provider, smartAccount])
+
+  return {
+    disconnectPnEoA: disconnect,
+    connectPnEoA,
+    connectPnAA,
+    connectPnEoAAndAA,
+    getWalletUrl,
+    eoaAddress: address || init_address || '',
+    pnAAWalletAddress,
+    pnUserInfo: userInfo,
+    isLogin: !!connected,
+    signMessage,
+    signTypedData,
+    pnAA: smartAccount
+  }
+}
+
+export const getAuthCoreModalOptions = (env?: Env): AuthCoreModalOptions => {
+  const _env = EnvBaseURLConst[env || Env.Dev]
+  return {
+    projectId: _env.PN_PROJECT_ID,
+    clientKey: _env.PN_CLIENT_KEY,
+    appId: _env.PN_APP_ID,
+    authTypes: [AuthType.jwt],
+    themeType: 'light',
+    fiatCoin: 'USD',
+    language: 'en',
+    erc4337: {
+      name: 'XTERIO',
+      version: '1.0.0'
+    },
+    promptSettingConfig: {
+      promptPaymentPasswordSettingWhenSign: PromptSettingType.first,
+      promptMasterPasswordSettingWhenLogin: PromptSettingType.none
+    },
+    customStyle: {
+      logo: 'https://resources.xter.io/icon/logomark_120.png',
+      projectName: 'Xterio',
+      theme: {
+        light: PNCustomStyle.theme.light as any
+      }
+    } as CustomStyle,
+    wallet: {
+      visible: true,
+      preload: true,
+      themeType: 'dark',
+      customStyle: {
+        light: PNCustomStyle.wallet.light as any,
+        dark: PNCustomStyle.wallet.dark as any,
+        supportUIModeSwitch: false,
+        supportChains: [
+          // mainnet
+          Ethereum,
+          BNBChain,
+          Polygon,
+          ArbitrumOne,
+          opBNB,
+          XterioBNB,
+          XterioETH,
+          Base,
+          // testnet
+          XterioBNBTestnet,
+          EthereumSepolia,
+          BNBChainTestnet
+        ]
+      }
+    }
+  }
+}
+
+export { AuthCoreContextProvider }

@@ -1,0 +1,38 @@
+import { RefObject, useCallback, useEffect } from 'react'
+
+export const PnWalletModal = ({
+  innerRef,
+  url,
+  onClose
+}: {
+  innerRef?: RefObject<HTMLDivElement>
+  url: string
+  onClose(): void
+}) => {
+  const onIframeClose = useCallback(
+    (e: MessageEvent) => {
+      if (e.data === 'PARTICLE_WALLET_CLOSE_IFRAME') {
+        onClose()
+      }
+    },
+    [onClose]
+  )
+  useEffect(() => {
+    window.addEventListener('message', onIframeClose)
+    return () => {
+      window.removeEventListener('message', onIframeClose)
+    }
+  }, [onIframeClose])
+  return (
+    <div ref={innerRef} id="particle-auth-core-wallet">
+      <iframe
+        id="particle-auth-core-iframe-wallet"
+        src={url}
+        width="100%"
+        height="100%"
+        frameBorder="0"
+        allow="camera"
+      ></iframe>
+    </div>
+  )
+}
