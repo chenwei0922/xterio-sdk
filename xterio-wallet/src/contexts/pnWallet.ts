@@ -2,49 +2,62 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Buffer } from 'buffer'
 import { Env, XterioAuth } from 'xterio-auth'
 import { SmartAccount } from '@particle-network/aa'
-import { type ConnectParam, AuthType } from '@particle-network/auth-core'
+import { AuthType } from '@particle-network/auth-core'
 import {
+  AuthCoreContextProvider,
+  PromptSettingType,
+  AuthCoreModalOptions,
   getEVMPublicAddress,
   useAuthCore,
   useConnect,
   useCustomize,
   useEthereum,
-  AuthCoreModalOptions,
-  AuthCoreContextProvider,
-  PromptSettingType,
   CustomStyle
-} from '@particle-network/auth-core-modal'
+} from '@particle-network/authkit'
 import {
-  ArbitrumOne,
-  Base,
-  BNBChain,
-  BNBChainTestnet,
-  Chain,
-  Ethereum,
-  EthereumSepolia,
+  mainnet,
+  bsc,
+  polygon,
+  arbitrum,
   opBNB,
-  ParticleChains,
-  Polygon,
-  XterioBNB,
-  XterioBNBTestnet,
-  XterioETH
-} from '@particle-network/chains'
+  base,
+  bscTestnet,
+  sepolia,
+  Chain
+} from '@particle-network/authkit/chains'
 
 import PNCustomStyle from 'src/common/config/PNCustomStyle.json'
 import { EnvBaseURLConst } from 'src/common/utils/const'
 import aaOptions from 'src/common/config/erc4337'
 import { log } from 'src/common/utils'
 import type { IPnWalletState } from 'src/interfaces/types'
+import { xterioBnb, xterioBnbTestnet, xterioEth } from './xterioBnb'
 
-if (!window.Buffer) {
+if (typeof window !== 'undefined' && !window.Buffer) {
   window.Buffer = Buffer
 }
+
+const supportChains: [Chain, ...Chain[]] = [
+  mainnet,
+  bsc,
+  polygon,
+  arbitrum,
+  opBNB,
+  xterioBnb,
+  xterioEth,
+  base,
+  //testnet
+  xterioBnbTestnet,
+  sepolia,
+  bscTestnet
+]
 
 export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState => {
   const { chainInfo, address, provider, signMessage, signTypedData } = useEthereum()
   const { connect, connected, disconnect } = useConnect()
-  const { erc4337, setERC4337, walletOptions } = useCustomize()
-  const { userInfo, buildWalletUrl } = useAuthCore()
+  const { erc4337, setERC4337 } = useCustomize()
+  const { userInfo, getWalletIFrame: getWalletDom, openWallet: _openWallet } = useAuthCore()
+  // IEthereumProvider & Partial<PasskeyProvider>;
 
   const [pnAAWalletAddress, setPnAAWalletAddress] = useState<string | undefined>(undefined)
   const [smartAccount, setSmartAccount] = useState<SmartAccount>()
@@ -80,19 +93,13 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
 
   const connectPnEoA = useCallback(
     async (jwt?: string, _chainId?: number) => {
-      const chains = walletOptions?.customStyle?.supportChains
+      const chains = supportChains
       const targetChain = chains?.find((c: Chain) => c.id === (_chainId ?? Number(env.PN_CHAIN_ID)))
-      let options: ConnectParam = {
-        chain: ParticleChains[`${targetChain?.name}-${targetChain?.id}`]
-      }
-      options = {
-        ...options,
-        ...{
-          provider: AuthType.jwt,
-          thirdpartyCode: jwt ?? XterioAuth.id_token
-        }
-      }
-      const res = await connect(options)
+      const res = await connect({
+        chain: targetChain,
+        provider: AuthType.jwt,
+        thirdpartyCode: jwt || XterioAuth.id_token || ''
+      })
         .then((userInfo) => {
           log('connect pn eoa success')
           return userInfo
@@ -103,7 +110,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
         })
       return res
     },
-    [connect, env.PN_CHAIN_ID, walletOptions?.customStyle?.supportChains]
+    [connect, env.PN_CHAIN_ID]
   )
 
   const connectPnAA = useCallback(
@@ -147,10 +154,10 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
     [connectPnAA, connectPnEoA]
   )
 
-  const getWalletUrl = useCallback(() => {
+  const getWalletIFrame = useCallback(() => {
     try {
       if (connected) {
-        return buildWalletUrl({
+        return getWalletDom({
           topMenuType: 'close',
           query: { theme: 'dark' }
         })
@@ -159,7 +166,14 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
       log('getPnWalletUrl error', error)
     }
     return null
-  }, [buildWalletUrl, connected])
+  }, [connected, getWalletDom])
+
+  const openPnWallet = useCallback(() => {
+    _openWallet({
+      topMenuType: 'close',
+      query: { theme: 'dark' }
+    })
+  }, [_openWallet])
 
   useEffect(() => {
     if (!erc4337) {
@@ -183,7 +197,8 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
     connectPnEoA,
     connectPnAA,
     connectPnEoAAndAA,
-    getWalletUrl,
+    getWalletIFrame,
+    openPnWallet,
     eoaAddress: address || init_address || '',
     pnAAWalletAddress,
     pnUserInfo: userInfo,
@@ -201,6 +216,7 @@ export const getAuthCoreModalOptions = (env?: Env): AuthCoreModalOptions => {
     clientKey: _env.PN_CLIENT_KEY,
     appId: _env.PN_APP_ID,
     authTypes: [AuthType.jwt],
+    chains: supportChains,
     themeType: 'light',
     fiatCoin: 'USD',
     language: 'en',
@@ -223,25 +239,11 @@ export const getAuthCoreModalOptions = (env?: Env): AuthCoreModalOptions => {
       visible: true,
       preload: true,
       themeType: 'dark',
+      widgetIntegration: 'embedded',
       customStyle: {
         light: PNCustomStyle.wallet.light as any,
         dark: PNCustomStyle.wallet.dark as any,
-        supportUIModeSwitch: false,
-        supportChains: [
-          // mainnet
-          Ethereum,
-          BNBChain,
-          Polygon,
-          ArbitrumOne,
-          opBNB,
-          XterioBNB,
-          XterioETH,
-          Base,
-          // testnet
-          XterioBNBTestnet,
-          EthereumSepolia,
-          BNBChainTestnet
-        ]
+        supportUIModeSwitch: false
       }
     }
   }

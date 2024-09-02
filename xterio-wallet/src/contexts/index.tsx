@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { IUserInfo, XterEventEmiter, XterioAuth } from 'xterio-auth'
 import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
 import { PnWalletModal } from 'src/templates/PnWalletModal'
@@ -13,8 +13,7 @@ const initState = {
   openWallet: () => {},
   connectWallet: () => {},
   disconnectWallet: () => {},
-  obtainWallet: () => {},
-  sendUserOperation: () => {}
+  obtainWallet: () => {}
 }
 interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData'> {
   userinfo: IUserInfo | undefined
@@ -27,7 +26,6 @@ interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'sign
   connectWallet(): void
   disconnectWallet(): void
   obtainWallet(): void
-  sendUserOperation(): void
 }
 
 const WalletContext = createContext<IWalletContextState>(initState as IWalletContextState)
@@ -45,7 +43,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   const [isLogin, setIsLogin] = useState<boolean>(XterioAuth.isLogin)
 
   const {
-    getWalletUrl,
+    getWalletIFrame,
     connectPnEoAAndAA,
     connectPnAA,
     connectPnEoA,
@@ -56,7 +54,13 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     signTypedData
   } = usePnWallet('', env)
 
+  const [walletHtmlRoot, setWalletHtmlRoot] = useState<HTMLDivElement>()
+
   const obtainWallet = useCallback(async () => {
+    if (!isLogin) {
+      log('please login first')
+      return
+    }
     if (aaAddress) {
       log('have aa address already, cannot obtain again')
       return
@@ -92,7 +96,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     } else {
       log('Failed to create the Xterio Wallet.')
     }
-  }, [_p, aaAddress, connectPnAA, connectPnEoA, isPnLogin])
+  }, [_p, aaAddress, connectPnAA, connectPnEoA, isLogin, isPnLogin])
 
   const connectWallet = useCallback(async () => {
     log('connect wallet')
@@ -105,37 +109,42 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   }, [disconnectPnEoA])
 
   const openWallet = useCallback(() => {
-    const uri = getWalletUrl()
-    if (!uri) {
-      log('wallet url is empty')
+    if (walletHtmlRoot) {
+      walletHtmlRoot.remove()
+      setWalletHtmlRoot(undefined)
       return
     }
-
-    const url = `${uri}&mode=iframe&random=${Math.random()})}`
+    const html = getWalletIFrame()
+    if (!html) {
+      log('wallet html is empty')
+      return
+    }
+    // const url = `${uri}&mode=iframe&random=${Math.random()})}`
     const div = document.createElement('div')
     document.body.appendChild(div)
 
     const root = createRoot(div)
     root.render(
       <PnWalletModal
-        url={url}
+        // url={url}
         onClose={() => {
           console.log('unmount')
+          setWalletHtmlRoot(undefined)
           root.unmount()
           div.remove()
         }}
+        iframeHtml={html}
       />
     )
-  }, [getWalletUrl])
-
-  const sendUserOperation = () => {}
+    setWalletHtmlRoot(div)
+  }, [getWalletIFrame, walletHtmlRoot])
 
   const login = useCallback(async (mode?: 'default' | 'email') => {
     await XterioAuth.login(mode)
   }, [])
 
   const logout = useCallback(async () => {
-    await disconnectWallet()
+    // await disconnectWallet()
     await XterioAuth.logout()
     setUserInfo(undefined)
     setIsLogin(false)
@@ -197,11 +206,15 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
         openWallet,
         disconnectWallet,
         signMessage,
-        signTypedData,
-        sendUserOperation
+        signTypedData
       }}
     >
       {children}
+      {!!isPnLogin && (
+        <div id="xterio-wallet-btn" onClick={openWallet}>
+          Wallet
+        </div>
+      )}
     </WalletContext.Provider>
   )
 }
