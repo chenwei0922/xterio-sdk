@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
 import { IUserInfo, XterEventEmiter, XterioAuth } from 'xterio-auth'
 import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
 import { PnWalletModal } from 'src/templates/PnWalletModal'
@@ -182,7 +182,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     init()
     return () => {
       log('unmount1')
-      //tip: cannot unmount there
+      //tip: cannot unmount there,
     }
   }, [client_id, client_secret, env, initLogic, mounted, redirect_uri])
 

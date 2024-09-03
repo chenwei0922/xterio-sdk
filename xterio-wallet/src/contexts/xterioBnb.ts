@@ -65,27 +65,3 @@ export const xterioBnbTestnet = defineChain({
   contracts: {},
   testnet: true
 })
-
-export const bscTestnet1 = defineChain({
-  id: 97,
-  name: 'CC Test',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'BNB',
-    symbol: 'tBNB'
-  },
-  rpcUrls: {
-    // https://bsc-testnet-rpc.publicnode.com
-    // https://data-seed-prebsc-2-s1.bnbchain.org:8545
-    default: { http: ['https://data-seed-prebsc-2-s1.bnbchain.org:8545'] }
-  },
-  blockExplorers: {
-    default: {
-      name: 'BscScan',
-      url: 'https://testnet.bscscan.com',
-      apiUrl: 'https://testnet.bscscan.com/api'
-    }
-  },
-  contracts: {},
-  testnet: true
-})

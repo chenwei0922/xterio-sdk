@@ -1,7 +1,8 @@
+import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import { IXterioWalletContextProps, XterioWalletProvider } from './index.ts'
+import { type IXterioWalletContextProps, XterioWalletProvider } from 'xterio-wallet'
 
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
@@ -14,9 +15,9 @@ const config: IXterioWalletContextProps = {
   redirect_uri
 }
 createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
-  <XterioWalletProvider {...config}>
-    <App />
-  </XterioWalletProvider>
-  // </StrictMode>
+  <StrictMode>
+    <XterioWalletProvider {...config}>
+      <App />
+    </XterioWalletProvider>
+  </StrictMode>
 )

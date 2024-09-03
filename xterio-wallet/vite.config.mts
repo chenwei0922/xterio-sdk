@@ -4,6 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import type { ConfigEnv, Plugin } from 'vite';
 import path from 'path';
 import fs from 'fs';
+import dts from 'vite-plugin-dts'
 
 const particleWasmPlugin: Plugin | undefined = {
   name: 'particle-wasm',
@@ -32,11 +33,67 @@ export default defineConfig(({ command, mode }) => {
   console.log('command=', command)
 
   return {
-    plugins: [tsconfigPaths(), react(), particleWasmPlugin],
-    resolve: {
-      alias: {
-        buffer: 'buffer',
+    plugins: [tsconfigPaths(), react(), particleWasmPlugin,
+    dts({
+      //dts工作根目录, xterio-wallet
+      root: './',
+      entryRoot: './src',
+      outDir: ['./dist/es', './dist/lib'],
+      // outDir: ['./dist/types'],
+      //排除dts操作的目录
+      exclude: [],
+      tsconfigPath: './tsconfig.build.json',
+      // aliasesExclude: [],
+    }),
+    {
+      name: 'vite-plugin-mypackage',
+      transform(code, id, options) {
+        // console.log('dd', id)
+        if (command === 'build' && id.includes('xterio-wallet/src/common/utils/index')) {
+          code = code.replace(/package.json/, '../../package.json')
+        }
+        return { code }
+      }
+    }],
+    //打包配置
+    build: {
+      minify: false,
+      outDir: 'dist',
+      target: 'es2020',
+      //rollup、lib二选一
+      rollupOptions: {
+        //viem仅用了defineChain,@particle-network/auth-core仅用了类型, ethers仅用于getTransaction
+        // external: [/package\.json/, /react/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem/],
+        external: [/package\.json/, /react/, /react-dom\/*/, /xterio-auth/, /ethers\/*/],
+        input: ['./src/index.ts'],
+        output: [
+          {
+            format: 'esm',
+            entryFileNames: '[name].js',
+            preserveModules: true,
+            preserveModulesRoot: './src',
+            exports: undefined,
+            dir: './dist/es'
+            // sourcemap: true
+          },
+          {
+            format: 'commonjs',
+            entryFileNames: '[name].js',
+            preserveModules: true,
+            preserveModulesRoot: './src',
+            exports: 'named',
+            dir: './dist/lib'
+            // sourcemap: true
+          }
+        ]
       },
+
+      lib: {
+        entry: './src/index.ts',
+        // name: 'XterioWallet',
+        // fileName: 'xterio-wallet',
+        // formats: ['es', 'cjs', 'iife']
+      }
     },
   }
 })

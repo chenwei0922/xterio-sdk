@@ -16,6 +16,17 @@ import type {
 import { usePnWallet } from './pnWallet'
 import { AAWrapProvider, SendTransactionMode, Transaction } from '@particle-network/aa'
 
+export interface IPnTransactionState<T extends TypedContract, FN extends ContractFunctionNames<T>> {
+  sendTransaction(
+    { gasLimit, txValue }: Partial<Pick<TransactionOptions, 'gasLimit' | 'txValue'>>,
+    ...args: Params<T, FN>
+  ): Promise<TransactionReceipt | undefined>
+  sendUserOperation(tx: Transaction | Transaction[]): Promise<TransactionReceipt | undefined>
+  state: TransactionStatus
+  resetState(): void
+  events?: LogDescription[]
+}
+
 const isDroppedAndReplaced = (e: any) =>
   e?.code === errors.TRANSACTION_REPLACED && e?.replacement && (e?.reason === 'repriced' || e?.cancelled === false)
 
@@ -83,7 +94,7 @@ const usePromiseTransaction = () => {
 export const useXterioTransaction = <T extends TypedContract, FN extends ContractFunctionNames<T>>(
   contract?: T | Falsy,
   functionName?: FN
-) => {
+): IPnTransactionState<T, FN> => {
   const { pnAA } = usePnWallet()
   const { promiseTransaction, state, resetState } = usePromiseTransaction()
   const [events, setEvents] = useState<LogDescription[] | undefined>(undefined)
@@ -160,7 +171,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
 
   const customSend = useCallback(
     async (
-      { gasLimit, txValue }: Pick<TransactionOptions, 'gasLimit' | 'txValue'>,
+      { gasLimit, txValue }: Partial<Pick<TransactionOptions, 'gasLimit' | 'txValue'>>,
       ...args: Params<T, FN>
     ): Promise<TransactionReceipt | undefined> => {
       // disable feeData

@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Buffer } from 'buffer'
 import { Env, XterioAuth } from 'xterio-auth'
 import { SmartAccount } from '@particle-network/aa'
 import { AuthType } from '@particle-network/auth-core'
@@ -32,10 +31,6 @@ import aaOptions from 'src/common/config/erc4337'
 import { log } from 'src/common/utils'
 import type { IPnWalletState } from 'src/interfaces/types'
 import { xterioBnb, xterioBnbTestnet, xterioEth } from './xterioBnb'
-
-if (typeof window !== 'undefined' && !window.Buffer) {
-  window.Buffer = Buffer
-}
 
 const supportChains: [Chain, ...Chain[]] = [
   mainnet,
@@ -182,6 +177,8 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
     }
     if (smartAccount) return
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
     const _smartAccount = new SmartAccount(provider, {
       projectId: env.PN_PROJECT_ID as string,
       clientKey: env.PN_CLIENT_KEY as string,
