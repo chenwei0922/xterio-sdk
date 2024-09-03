@@ -2,7 +2,7 @@
   "name": "xterio-auth",
   "version": "0.0.1",
   "description": "xterio-auth",
-  "author": "Clover",
+  "author": "xterio platform",
   "license": "ISC",
   "keywords": [
     "xterio-auth"
@@ -28,14 +28,14 @@
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/chenwei0922/xterio-sdk.git#README",
+  "homepage": "https://gitlab.itlibecc.com/changying/platform/xteriosdk-web.git#README",
   "repository": {
     "type": "git",
-    "url": "https://github.com/chenwei0922/xterio-sdk.git",
+    "url": "https://gitlab.itlibecc.com/changying/platform/xteriosdk-web.git",
     "directory": "xterio-auth"
   },
   "bugs": {
-    "url": "https://github.com/chenwei0922/xterio-sdk/issues"
+    "url": "https://gitlab.itlibecc.com/changying/platform/xteriosdk-web/issues"
   },
   "sideEffects": false,
   "publishConfig": {

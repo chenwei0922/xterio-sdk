@@ -33,7 +33,7 @@ Initialize Function
 XterioAuth.init({ client_id:'', client_secret:'', redirect_uri:'' })
 ```
 
-#### `login()`
+#### `login(mode?: 'default' | 'email')`
 login xterio-auth
 ```ts
 XterioAuth.login()
@@ -59,16 +59,18 @@ XterioAuth.userinfo
 ```
 
 ### 3.3 EventEmiter
-```ts
-//1.Register to listen for user information
-XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, (info) => {
-  console.log('info1=', info)
-})
 
-//2.Cancel monitoring for user information
-XterEventEmiter.off(XTERIO_EVENTS.ACCOUNT, (info) => {
-  console.log('info1=', info)
-})
+```ts
+const cb = (info) => {
+  console.log('emiter auth userinfo==', info)
+}
+//Register/Cancel to listen for user information
+
+XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, cb)
+XterEventEmiter.off(XTERIO_EVENTS.ACCOUNT, cb)
+// or
+XterEventEmiter.subscribe(info)
+XterEventEmiter.unsubscribe()
 ```
 
 
