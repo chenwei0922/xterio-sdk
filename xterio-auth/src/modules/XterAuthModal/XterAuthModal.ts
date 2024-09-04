@@ -9,6 +9,7 @@ import { XterAuthModalForgetPwd } from './XterAuthModalForgetPwd'
 import { XterAuthModalStore } from './XertAuthModalStore'
 import { XterAuthModalSignUpCode } from './XterAuthModaSignUpCode'
 import { ModalExtraData } from './interfaces'
+import { XterAuthModaPwdSuccess } from './XterAuthModaPwdSuccess'
 export class XterAuthModal {
   private static _instance: XterAuthModal
   public apiUrl: string
@@ -116,6 +117,9 @@ export class XterAuthModal {
         break
       case 'forgotPassword':
         this.currentState = new XterAuthModalForgetPwd(this, data)
+        break
+      case EAuthState.PasswordSuccess:
+        this.currentState = new XterAuthModaPwdSuccess(this, data)
         break
     }
     this.renderContent()
