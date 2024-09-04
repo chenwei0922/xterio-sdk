@@ -195,12 +195,6 @@ export class XterAuthModalSignUp extends BaseModalState {
   }
 
   private setupListeners(): void {
-    const loginButton = this.modal.modalContainer?.querySelector('#loginButton')
-    // loginButton?.addEventListener('click', () => this.modal.handleLogin())
-
-    // const signUpLink = this.modal.modalContainer.querySelector('p:nth-child(4)')
-    // signUpLink?.addEventListener('click', () => this.modal.switchToSignUp())
-
     const signInLink = this.modal.modalContainer?.querySelector('.xa-to-sign-in')
     signInLink?.addEventListener('click', () => this.modal.switchModalState(EAuthState.Login))
 

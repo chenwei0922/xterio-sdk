@@ -21,7 +21,7 @@ class UserStore {
     )
   }
 
-  setUserInfo(userInfo) {
+  setUserInfo = (userInfo) => {
     this.userInfo = userInfo
   }
 

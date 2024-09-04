@@ -1,7 +1,8 @@
 import { BaseModalState } from './BaseModalState'
 import { EAuthState } from './enums'
 import { ModalExtraData } from './interfaces'
-import { Button, Input, Logo } from './ui'
+import { resetPassword, sendForgotCodeService } from './services'
+import { Button, Input } from './ui'
 import { validateEmail, validatePasswordMatch } from './utils'
 import { XterAuthModal } from './XterAuthModal'
 import { XterAuthModalForm } from './XterAuthModalForm'
@@ -29,7 +30,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
     if (!this.modal.modalContainer) return
     const _container = this.modal.modalContainer
 
-    this.modal.setTitle('orgot password', 'Please enter your email and email verification code')
+    this.modal.setTitle('Forgot password', 'Please enter your email and email verification code')
 
     // Email Input
     this.renderEmailInput(_container)
@@ -83,7 +84,12 @@ export class XterAuthModalForgetPwd extends BaseModalState {
       },
       addonAfterSendButton: {
         onClick: () => {
-          console.log('send code')
+          const email = this.form.getFormItemValue(ForgotFomrItemsName.Email)
+          if (!email) {
+            this.form.findFormItem(ForgotFomrItemsName.Email)?.setError('Email is required')
+            return
+          }
+          sendForgotCodeService({ email: this.form.getFormItemValue(ForgotFomrItemsName.Email) })
         },
         onCountdownEnd: () => {
           console.log('countdown end')
@@ -91,10 +97,10 @@ export class XterAuthModalForgetPwd extends BaseModalState {
       }
     })
 
-    const formItem = new XterModalFormItem(ForgotFomrItemsName.ConfirmPassword, codeInput.getElement(), () => {
+    const formItem = new XterModalFormItem(ForgotFomrItemsName.Code, codeInput.getElement(), () => {
       return codeInput.getValue()
     })
-    this.form.add(ForgotFomrItemsName.Email, formItem)
+    this.form.add(ForgotFomrItemsName.Code, formItem)
     this.append(_container, formItem.getElement())
   }
 
@@ -140,7 +146,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
       disabled: true,
       onClick: (event) => {
         console.log('continueButton clicked')
-        // this.modal.handleLogin()
+        this.handleUpdatePassword()
       }
       // wrapperClassNames: ['xa-login-button']
     })
@@ -174,6 +180,56 @@ export class XterAuthModalForgetPwd extends BaseModalState {
   }
   private handlePasswordChange(value: string): void {
     // this.loginButton?.setDisabled(value.length === 0)
+  }
+
+  private async handleUpdatePassword() {
+    console.log(this.form)
+    const email = this.form.getFormItemValue(ForgotFomrItemsName.Email)
+    const password = this.form.getFormItemValue(ForgotFomrItemsName.Password)
+    const confirmPwd = this.form.getFormItemValue(ForgotFomrItemsName.ConfirmPassword)
+    const code = this.form.getFormItemValue(ForgotFomrItemsName.Code)
+
+    if (!email || !password) return
+    this.continueButton?.setLoading(true)
+    const { error, err_code } = await resetPassword({
+      email,
+      password: password,
+      code
+    })
+    this.continueButton?.setLoading(false)
+    if (error) {
+      // 11001: 'Wrong email or password.',
+      // 11004: 'Too many attempts to login.',
+      // 11102: 'User already registered.',
+      // 11103: 'Invalid password.',
+      // 11111: 'Invalid verification code.',
+      // 11112: 'Verification code expired.',
+      // 11113: 'User does not exist.',
+      // 11401: 'Invalid or expired signature.',
+      // unknown: 'Unknown error, please try again later.'
+      switch (err_code) {
+        case 10001:
+          this.form.findFormItem(ForgotFomrItemsName.Code)?.setError('Invalid verification code')
+          break
+        case 11111:
+          this.form.findFormItem(ForgotFomrItemsName.Code)?.setError('Invalid verification code')
+          break
+        case 11112:
+          this.form.findFormItem(ForgotFomrItemsName.Code)?.setError('Verification code expired')
+          break
+        case 11113:
+          this.form.findFormItem(ForgotFomrItemsName.Email)?.setError('User does not exist')
+          break
+        default:
+          this.form
+            .findFormItem(ForgotFomrItemsName.ConfirmPassword)
+            ?.setError('Unknown error, please try again later.')
+          break
+      }
+      return
+    }
+
+    this.modal.switchModalState(EAuthState.PasswordSuccess)
   }
 
   private append(container: HTMLElement, element: HTMLElement) {

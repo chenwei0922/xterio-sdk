@@ -34,6 +34,10 @@ export class XterModalFormItem {
     }
   }
 
+  isValidate(): boolean {
+    return !this.root.querySelector('.xa-form-item-error')?.innerHTML
+  }
+
   clearError() {
     this.root.querySelector('.xa-form-item-error')!.innerHTML = ''
     this.root.querySelector('.xa-input-wrapper')?.classList.remove('xa-error-border')

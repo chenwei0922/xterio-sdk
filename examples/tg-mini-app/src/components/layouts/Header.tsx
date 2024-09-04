@@ -1,33 +1,42 @@
 import { useXterLoginModal } from 'xterio-auth'
 import { observer } from 'mobx-react-lite'
-import { useNavigate } from 'react-router-dom'
-import { useStores } from 'src/stores'
 import 'xterio-auth/dist/lib/style.css'
+import { useState } from 'react'
 
 export const Header = observer(() => {
-  const navigate = useNavigate()
-  const { userStore } = useStores()
-  const { userInfo } = userStore
-  const { open } = useXterLoginModal()
+  const [isLogin, setIsLogin] = useState(false)
+  const [userInfo, setUserInfo] = useState<any>()
 
-  console.log({ userInfo })
+  const { open, logout } = useXterLoginModal({
+    onLoginStateChange: (isLogin, userInfo) => {
+      setIsLogin(isLogin)
+      setUserInfo(userInfo)
+    }
+  })
+
   return (
     <div className="flex h-16 w-full items-center justify-between bg-black/10 px-4">
       <span className="font-semibold">X-MINI</span>
-      {userInfo?.username ? (
-        <span>{userInfo.username}</span>
-      ) : (
+
+      <div className="flex">
         <div
-          // onClick={() => {
-          //   navigate('/platform-login')
-          // }}
           onClick={() => {
             open()
           }}
         >
-          Login
+          {isLogin ? userInfo?.username : 'Login'}
         </div>
-      )}
+        {isLogin && (
+          <span
+            className="ml-2 cursor-pointer text-sm text-blue-400"
+            onClick={() => {
+              logout()
+            }}
+          >
+            Logout
+          </span>
+        )}
+      </div>
     </div>
   )
 })
