@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, { type AxiosInstance } from 'axios'
 import type { IUserInfo, ITokenRes, IRes, IUserInfoRes, IWalletItem } from 'interfaces/loginInfo'
 import { getPackageVersion, log, randomNonceStr } from 'utils'
 import { XterioAuthInfo } from './XterAuthInfo'

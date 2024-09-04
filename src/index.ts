@@ -7,3 +7,4 @@ export * from './modules/AuthService'
 
 export { LoginType, Env, XTERIO_CONST, XTERIO_EVENTS }
 export type { IUserInfo, ISSoTokensParams } from './interfaces/loginInfo'
+export type { AxiosInstance } from 'axios'
