@@ -6,7 +6,7 @@ import { XterEventEmiter } from './XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
 
 export class XterioAuthService {
-  static request(needLogin?: boolean): AxiosInstance {
+  public static request(needLogin?: boolean): AxiosInstance {
     if (!XterioAuthInfo.client_id) {
       throw new Error('You need set xterio-auth info')
     }

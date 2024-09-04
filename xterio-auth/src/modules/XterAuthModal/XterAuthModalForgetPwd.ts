@@ -1,75 +1,140 @@
 import { BaseModalState } from './BaseModalState'
-import { PrivacyURL, TermsURL } from './constant'
 import { EAuthState } from './enums'
+import { ModalExtraData } from './interfaces'
 import { Button, Input, Logo } from './ui'
+import { validateEmail, validatePasswordMatch } from './utils'
 import { XterAuthModal } from './XterAuthModal'
+import { XterAuthModalForm } from './XterAuthModalForm'
+import { XterModalFormItem } from './XterAuthModalFormItem'
+
+enum ForgotFomrItemsName {
+  Email = 'email',
+  Code = 'code',
+  Password = 'password',
+  ConfirmPassword = 'confirmPassword'
+}
 
 export class XterAuthModalForgetPwd extends BaseModalState {
   private continueButton: Button | null
-  constructor(modal: XterAuthModal) {
+  form: XterAuthModalForm
+
+  constructor(modal: XterAuthModal, extraData?: ModalExtraData) {
     super(modal)
     this.continueButton = null
+
+    this.form = new XterAuthModalForm()
   }
 
   render(): void {
     if (!this.modal.modalContainer) return
     const _container = this.modal.modalContainer
 
-    _container.innerHTML = `
-        <h3 class="xa-signin-title">Forgot password</h3>
-        <p class="xa-signin-sub-title">Please enter your email and email verification code</p>
-       `
-
-    const logo = new Logo()
-    _container.insertBefore(logo.getElement(), _container.firstChild)
+    this.modal.setTitle('orgot password', 'Please enter your email and email verification code')
 
     // Email Input
+    this.renderEmailInput(_container)
+
+    // Enter Code
+    this.renderCodeInput(_container)
+
+    // Password Input
+    this.renderPwdInput(_container)
+
+    // Confirm Password Input
+    this.renderConfirmPwdInput(_container)
+
+    // Continue button
+    this.renderConfirmButton(_container)
+
+    // back to sign in
+    this.renderBackTip(_container)
+
+    this.setupListeners()
+  }
+
+  private renderEmailInput(_container: HTMLElement) {
     const emailInput = new Input({
-      id: 'xaEmailInput',
       label: 'EMAIL',
       type: 'text',
       showClearIcon: true,
       onChange: (value) => {
+        this.form.clearFormItemError(ForgotFomrItemsName.Email)
         this.handleEmailChange(value)
+      },
+      onBlur: (value) => {
+        this.form.findFormItem(ForgotFomrItemsName.Email)?.setError(validateEmail(value))
       }
     })
-    this.append(_container, emailInput.getElement())
 
-    // Enter Code
+    const formItem = new XterModalFormItem(ForgotFomrItemsName.Email, emailInput.getElement(), () => {
+      return emailInput.getValue()
+    })
+    this.form.add(ForgotFomrItemsName.Email, formItem)
+    this.append(_container, formItem.getElement())
+  }
+
+  private renderCodeInput(_container: HTMLElement) {
     const codeInput = new Input({
-      id: 'xaCodeInput',
       label: 'ENTER CODE',
       type: 'text',
       showClearIcon: true,
       onChange: (value) => {
         this.handleEmailChange(value)
+      },
+      addonAfterSendButton: {
+        onClick: () => {
+          console.log('send code')
+        },
+        onCountdownEnd: () => {
+          console.log('countdown end')
+        }
       }
     })
-    this.append(_container, codeInput.getElement())
 
-    // Password Input
+    const formItem = new XterModalFormItem(ForgotFomrItemsName.ConfirmPassword, codeInput.getElement(), () => {
+      return codeInput.getValue()
+    })
+    this.form.add(ForgotFomrItemsName.Email, formItem)
+    this.append(_container, formItem.getElement())
+  }
+
+  private renderPwdInput(_container: HTMLElement) {
     const pwdInput = new Input({
-      id: 'xaPasswordInput',
       label: 'NEW PASSWORD',
       type: 'password',
       onChange: (value) => {
         this.handlePasswordChange(value)
       }
     })
-    this.append(_container, pwdInput.getElement())
+    const formItem = new XterModalFormItem(ForgotFomrItemsName.Password, pwdInput.getElement(), () => {
+      return pwdInput.getValue()
+    })
+    this.form.add(ForgotFomrItemsName.Password, formItem)
+    this.append(_container, formItem.getElement())
+  }
 
-    // Confirm Password Input
+  private renderConfirmPwdInput(_container: HTMLElement) {
     const confirmPwdInput = new Input({
-      id: 'xaConfirmPasswordInput',
       label: 'CONFRIM PASSWORD',
       type: 'password',
       onChange: (value) => {
         this.handlePasswordChange(value)
+      },
+      onBlur: (value) => {
+        this.form
+          .findFormItem(ForgotFomrItemsName.ConfirmPassword)
+          ?.setError(validatePasswordMatch(this.form.getFormItemValue(ForgotFomrItemsName.Password), value))
       }
     })
-    this.append(_container, confirmPwdInput.getElement())
 
-    // continue button
+    const formItem = new XterModalFormItem(ForgotFomrItemsName.ConfirmPassword, confirmPwdInput.getElement(), () => {
+      return confirmPwdInput.getValue()
+    })
+    this.form.add(ForgotFomrItemsName.ConfirmPassword, formItem)
+    this.append(_container, formItem.getElement())
+  }
+
+  private renderConfirmButton(_container: HTMLElement) {
     const continueButton = new Button({
       text: 'CONTINUE',
       disabled: true,
@@ -81,28 +146,21 @@ export class XterAuthModalForgetPwd extends BaseModalState {
     })
     this.continueButton = continueButton
     this.append(_container, continueButton.getElement())
+  }
 
-    // back to sign in
+  private renderBackTip(_container: HTMLElement) {
     const toSignInTips = document.createElement('div')
     toSignInTips.classList.add('xa-w-full', 'xa-text-center')
     toSignInTips.innerHTML = `
       <div class="xa-login-tip">
-        <span>Back to </span>
+       <span>Back to </span>
         <a class="xa-to-sign-in"> Sign in </a>
       </div>
     `
     this.append(_container, toSignInTips)
-
-    this.setupListeners()
   }
 
   private setupListeners(): void {
-    const loginButton = this.modal.modalContainer?.querySelector('#loginButton')
-    // loginButton?.addEventListener('click', () => this.modal.handleLogin())
-
-    // const signUpLink = this.modal.modalContainer.querySelector('p:nth-child(4)')
-    // signUpLink?.addEventListener('click', () => this.modal.switchToSignUp())
-
     const signInLink = this.modal.modalContainer?.querySelector('.xa-to-sign-in')
     signInLink?.addEventListener('click', () => this.modal.switchModalState(EAuthState.Login))
 
