@@ -158,7 +158,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
         })
       }
     } catch (error) {
-      log('getPnWalletUrl error', error)
+      log('getWalletIFrame error', error)
     }
     return null
   }, [connected, getWalletDom])

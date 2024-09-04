@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint'
 import pluginPrettierRecommendedConfigs from 'eslint-plugin-prettier/recommended'
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules'] },
+  { ignores: ['**/*/dist', 'node_modules'] },
   {
     extends: [
       //eslint 默认规则

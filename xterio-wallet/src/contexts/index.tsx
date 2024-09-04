@@ -228,6 +228,6 @@ export const XterioWalletProvider: React.FC<PropsWithChildren<IXterioWalletConte
   )
 }
 
-export const useXterioWalletContext = () => {
+export const useXterioWalletContext = (): IWalletContextState => {
   return useContext(WalletContext)
 }

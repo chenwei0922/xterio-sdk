@@ -14,7 +14,7 @@ import type {
   TypedContract
 } from 'src/interfaces/dappType'
 import { usePnWallet } from './pnWallet'
-import { AAWrapProvider, SendTransactionMode, Transaction } from '@particle-network/aa'
+import { AAWrapProvider, SendTransactionMode, type Transaction } from '@particle-network/aa'
 
 export interface IPnTransactionState<T extends TypedContract, FN extends ContractFunctionNames<T>> {
   sendTransaction(

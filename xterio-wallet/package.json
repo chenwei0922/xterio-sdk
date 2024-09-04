@@ -1,6 +1,6 @@
 {
   "name": "xterio-wallet",
-  "private": true,
+  "private": false,
   "version": "0.0.0",
   "description": "xterio-wallet",
   "author": "xterio platform",
@@ -15,9 +15,16 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/es/index.js",
-      "require": "./dist/lib/index.js"
+      "require": "./dist/lib/index.js",
+      "default": "./dist/es/index.js",
+      "style": "./dist/es/style.css"
+    },
+    "./main.css": {
+      "import": "./dist/es/style.css",
+      "require": "./dist/es/style.css"
     }
   },
+  "style": "./dist/es/style.css",
   "files": [
     "dist"
   ],
@@ -41,6 +48,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "peerDependencies": {
+    "ethers": "^5.7.2"
+  },
   "dependencies": {
     "@particle-network/aa": "^2.0.1",
     "@particle-network/auth-core": "^2.0.2",
@@ -48,7 +58,7 @@
     "ethers": "^5.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "xterio-auth": "file:../xterio-auth"
+    "xterio-auth": "0.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

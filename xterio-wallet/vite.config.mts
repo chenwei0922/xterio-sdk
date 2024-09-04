@@ -21,11 +21,42 @@ const particleWasmPlugin: Plugin | undefined = {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    console.log('copiedPath:', copiedPath)
-    console.log('resultPath:', resultPath)
+    // console.log('copiedPath:', copiedPath)
+    // console.log('resultPath:', resultPath)
     fs.copyFileSync(copiedPath, resultPath);
   },
 };
+
+const dtsPlugin = dts({
+  //dts工作根目录, xterio-wallet
+  root: './',
+  entryRoot: './src',
+  // outDir: ['./dist/es', './dist/lib'],
+  outDir: ['./dist/types'],
+  //排除dts操作的目录
+  exclude: [],
+  tsconfigPath: './tsconfig.build.json',
+  aliasesExclude: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
+  beforeWriteFile(filePath, content) {
+    if (content.includes("../src/")) {
+      console.log('change content:', filePath)
+      content = content.replace(/src\//g, '')
+    }
+    return { filePath, content }
+  },
+})
+const packagePlugin: Plugin | undefined = {
+  name: 'vite-plugin-mypackage',
+  apply: (_, env: ConfigEnv) => {
+    return env.mode === 'production';
+  },
+  transform(code, id, options) {
+    if (id.includes('xterio-wallet/src/common/utils/index')) {
+      code = code.replace(/package.json/, '../../package.json')
+    }
+    return { code }
+  }
+}
 
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
@@ -33,38 +64,18 @@ export default defineConfig(({ command, mode }) => {
   console.log('command=', command)
 
   return {
-    plugins: [tsconfigPaths(), react(), particleWasmPlugin,
-    dts({
-      //dts工作根目录, xterio-wallet
-      root: './',
-      entryRoot: './src',
-      outDir: ['./dist/es', './dist/lib'],
-      // outDir: ['./dist/types'],
-      //排除dts操作的目录
-      exclude: [],
-      tsconfigPath: './tsconfig.build.json',
-      // aliasesExclude: [],
-    }),
-    {
-      name: 'vite-plugin-mypackage',
-      transform(code, id, options) {
-        // console.log('dd', id)
-        if (command === 'build' && id.includes('xterio-wallet/src/common/utils/index')) {
-          code = code.replace(/package.json/, '../../package.json')
-        }
-        return { code }
-      }
-    }],
+    plugins: [tsconfigPaths(), react(), particleWasmPlugin, dtsPlugin, packagePlugin],
     //打包配置
     build: {
       minify: false,
       outDir: 'dist',
       target: 'es2020',
+      // cssMinify: 'esbuild'
       //rollup、lib二选一
       rollupOptions: {
         //viem仅用了defineChain,@particle-network/auth-core仅用了类型, ethers仅用于getTransaction
-        // external: [/package\.json/, /react/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem/],
-        external: [/package\.json/, /react/, /react-dom\/*/, /xterio-auth/, /ethers\/*/],
+        external: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
+        // external: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/],
         input: ['./src/index.ts'],
         output: [
           {
@@ -73,7 +84,7 @@ export default defineConfig(({ command, mode }) => {
             preserveModules: true,
             preserveModulesRoot: './src',
             exports: undefined,
-            dir: './dist/es'
+            dir: './dist/es',
             // sourcemap: true
           },
           {
