@@ -56,7 +56,7 @@ export class XterAuthModalStore extends ModalObservable {
       this.userState.isLogin = false
     }
 
-    return this.userState.isLogin
+    return { error: !!error, err_code }
   }
 
   public async confirmSignUpLogin({ username, password, code }: { username: string; password: string; code: string }) {

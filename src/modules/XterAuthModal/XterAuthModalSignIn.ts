@@ -1,8 +1,6 @@
-import Cookies from 'js-cookie'
 import { BaseModalState } from './BaseModalState'
 import { EAuthState } from './enums'
-import { loginService } from './services'
-import { Button, Input, Logo } from './ui'
+import { Button, Input } from './ui'
 import { XterAuthModal } from './XterAuthModal'
 import { ModalExtraData } from './interfaces'
 import { XterAuthModalForm } from './XterAuthModalForm'
@@ -11,10 +9,7 @@ import { XterModalFormItem } from './XterAuthModalFormItem'
 
 enum FomrItemsName {
   Email = 'email',
-  Password = 'password',
-  ConfirmPassword = 'confirmPassword',
-  Terms = 'terms',
-  Subscribe = 'subscribe'
+  Password = 'password'
 }
 
 export class XterAuthModalSignIn extends BaseModalState {
@@ -65,6 +60,7 @@ export class XterAuthModalSignIn extends BaseModalState {
       },
       onBlur: (value) => {
         this.form.findFormItem(FomrItemsName.Email)?.setError(validateEmail(value))
+        this.handleEmailChange(value)
       }
     })
     this.emailInput = emailInput
@@ -84,6 +80,7 @@ export class XterAuthModalSignIn extends BaseModalState {
       },
       onBlur: (value) => {
         this.form.findFormItem(FomrItemsName.Password)?.setError(validatePassword(value))
+        this.handlePasswordChange(value)
       }
     })
     this.pwdInput = pwdInput
@@ -114,19 +111,12 @@ export class XterAuthModalSignIn extends BaseModalState {
         console.log('signUpButton clicked')
         this.handleLogin()
       }
-      // wrapperClassNames: ['xa-login-button']
     })
     this.loginButton = loginButton
     this.append(_container, loginButton.getElement())
   }
 
   private setupListeners(): void {
-    const loginButton = this.modal.modalContainer?.querySelector('#loginButton')
-    // loginButton?.addEventListener('click', () => this.modal.handleLogin())
-
-    // const signUpLink = this.modal.modalContainer.querySelector('p:nth-child(4)')
-    // signUpLink?.addEventListener('click', () => this.modal.switchToSignUp())
-
     const signUpLink = this.modal.modalContainer?.querySelector('.xa-to-sign-up')
     signUpLink?.addEventListener('click', () => this.modal.switchModalState(EAuthState.Signup))
 
@@ -136,10 +126,10 @@ export class XterAuthModalSignIn extends BaseModalState {
 
   private handleEmailChange(value: string): void {
     console.log({ value })
-    this.loginButton?.setDisabled(value.length === 0)
+    this.loginButton?.setDisabled(value.length === 0 || !this.form.findFormItem(FomrItemsName.Email)?.isValidate())
   }
   private handlePasswordChange(value: string): void {
-    // this.loginButton?.setDisabled(value.length === 0)
+    this.loginButton?.setDisabled(value.length === 0 || !this.form.findFormItem(FomrItemsName.Password)?.isValidate())
   }
 
   private async handleLogin() {
@@ -147,11 +137,39 @@ export class XterAuthModalSignIn extends BaseModalState {
     const password = this.pwdInput?.getValue()
     if (!userName || !password) return
     this.loginButton?.setLoading(true)
-    const isLoggedIn = await this.modal.store.login(userName, password)
+    const { error, err_code } = await this.modal.store.login(userName, password)
     this.loginButton?.setLoading(false)
-    if (isLoggedIn) {
-      this.modal.close()
+    if (error) {
+      // 11001: 'Wrong email or password.',
+      // 11004: 'Too many attempts to login.',
+      // 11102: 'User already registered.',
+      // 11103: 'Invalid password.',
+      // 11111: 'Invalid verification code.',
+      // 11112: 'Verification code expired.',
+      // 11113: 'User does not exist.',
+      // 11401: 'Invalid or expired signature.',
+      // unknown: 'Unknown error, please try again later.'
+      switch (err_code) {
+        case 11001:
+          this.form.findFormItem(FomrItemsName.Email)?.setError('Wrong email or password')
+          break
+        case 11103:
+          this.form.findFormItem(FomrItemsName.Password)?.setError('Invalid password')
+          break
+        case 11113:
+          this.form.findFormItem(FomrItemsName.Password)?.setError('User does not exist.')
+          break
+        case 11004:
+          this.form.findFormItem(FomrItemsName.Password)?.setError('Too many attempts to login')
+          break
+        default:
+          this.form.findFormItem(FomrItemsName.Password)?.setError('Unknown error, please try again later')
+          break
+      }
+      return
     }
+
+    this.modal.close()
   }
 
   private append(container: HTMLElement, element: HTMLElement) {
