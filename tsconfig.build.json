@@ -27,5 +27,7 @@
     "node_modules",
     "example",
     "./package.json",
+    "./src/main.ts",
+    "./src/__test__"
   ]
 }
