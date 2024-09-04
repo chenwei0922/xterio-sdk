@@ -1,28 +1,31 @@
+import './styles/common.scss'
 import './styles/login-modal.scss'
-
-import { generateSVGIcon } from 'ui/svg-icon'
+import { Logo } from './ui'
 import { EAuthState } from './enums'
 import { BaseModalState } from './BaseModalState'
 import { XterAuthModalSignIn } from './XterAuthModalSignIn'
 import { XterAuthModalSignUp } from './XterAuthModalSignUp'
 import { XterAuthModalForgetPwd } from './XterAuthModalForgetPwd'
-// import { sumtowards } from "src/utils";
+import { XterAuthModalStore } from './XertAuthModalStore'
+import { XterAuthModalSignUpCode } from './XterAuthModaSignUpCode'
+import { ModalExtraData } from './interfaces'
 export class XterAuthModal {
   private static _instance: XterAuthModal
-  private apiUrl: string
+  public apiUrl: string
   private redirectUri?: string
   public modalContainer?: HTMLElement
+  private modalOverlay?: HTMLElement
   private currentState: BaseModalState
+
+  public store
 
   constructor(apiUrl: string) {
     this.apiUrl = apiUrl
-    this.modalContainer = document.createElement('div')
-    this.modalContainer.className = 'xa-modal-overlay'
     this.currentState = new XterAuthModalSignIn(this)
-    // sumtowards([1, 2]);
+
+    this.store = new XterAuthModalStore()
   }
 
-  // 通过静态属性直接访问实例
   public static get instance(): XterAuthModal {
     if (!XterAuthModal._instance) {
       throw new Error('AuthSDK is not initialized. Call AuthSDK.init(apiUrl, redirectUri) first.')
@@ -39,83 +42,82 @@ export class XterAuthModal {
   public open(): void {
     const modalOverlay = document.createElement('div')
     modalOverlay.className = 'xa-modal-overlay'
+    this.modalOverlay = modalOverlay
+    modalOverlay.addEventListener('click', (e) => {
+      if (e.target === modalOverlay) {
+        // this.close() //TEMP disable close if click overlay
+      }
+    })
 
     const modalContainer = document.createElement('div')
     this.modalContainer = modalContainer
     modalContainer.className = 'xa-modal'
+
+    this.renderCommonElement(modalContainer)
 
     modalOverlay.appendChild(modalContainer)
     document.body.appendChild(modalOverlay)
 
     this.currentState.render()
-    // this.loginModalInit()
-    // 监听登录按钮点击事件
-    // const loginBtn = document.getElementById("auth-login-btn");
-    // loginBtn?.addEventListener("click", this.handleLogin.bind(this));
   }
 
-  private loginModalInit() {
-    const modalOverlay = document.createElement('div')
-    modalOverlay.className = 'xa-modal-overlay'
+  public close(): void {
+    this.modalContainer?.remove()
+    this.modalOverlay?.remove()
+  }
 
-    const modalContainer = document.createElement('div')
-    this.modalContainer = modalContainer
-    modalContainer.className = 'xa-modal'
+  private renderCommonElement(_container: HTMLElement) {
+    // Logo
+    const logo = new Logo()
+    _container.appendChild(logo.getElement())
 
-    modalOverlay.appendChild(modalContainer)
-    document.body.appendChild(modalOverlay)
+    // Title
+    const titleContainer = document.createElement('div')
+    titleContainer.className = 'xa-signin-title-container'
+    titleContainer.innerHTML = `
+        <h3 class="xa-signin-title">Sign in</h3>
+        <p class="xa-signin-sub-title">Sign in with email</p>
+        <div class="xa-signin-title-email"></div>
+       `
 
-    modalOverlay.addEventListener('click', (e) => {
-      if (e.target === modalOverlay) {
-        modalOverlay.remove()
-      }
-    })
+    _container.appendChild(titleContainer)
+  }
 
-    const iconWrapper = document.querySelector('.xa-icon-close')
-    const _iconClose = generateSVGIcon('icon-close', '16px', '#0a116133')
-    iconWrapper?.appendChild(_iconClose)
+  public setTitle(title: string, subTitle: string, extraTitle?: string) {
+    const titleContainer = document.querySelector('.xa-signin-title')
+    const subTitleContainer = document.querySelector('.xa-signin-sub-title')
+    const thirdTitleContainer = document.querySelector('.xa-signin-title-email')
+    titleContainer!.innerHTML = title
+    subTitleContainer!.innerHTML = subTitle
+    if (thirdTitleContainer && extraTitle) thirdTitleContainer!.innerHTML = extraTitle
   }
 
   private renderContent() {
+    // render 不同状态的内容前先清空内容
+    if (this.modalContainer) {
+      this.modalContainer.innerHTML = ''
+
+      this.renderCommonElement(this.modalContainer)
+    }
     this.currentState.render()
     // this.currentState.addEventListeners(this)
   }
 
-  public switchModalState(state: EAuthState) {
+  public switchModalState(state: EAuthState, data?: ModalExtraData) {
     switch (state) {
       case 'login':
-        this.currentState = new XterAuthModalSignIn(this)
+        this.currentState = new XterAuthModalSignIn(this, data)
         break
       case 'signup':
-        this.currentState = new XterAuthModalSignUp(this)
+        this.currentState = new XterAuthModalSignUp(this, data)
+        break
+      case 'signupCode':
+        this.currentState = new XterAuthModalSignUpCode(this, data)
         break
       case 'forgotPassword':
-        this.currentState = new XterAuthModalForgetPwd(this)
+        this.currentState = new XterAuthModalForgetPwd(this, data)
         break
     }
     this.renderContent()
-  }
-
-  private async handleLogin(): Promise<void> {
-    const email = (document.getElementById('auth-email') as HTMLInputElement).value
-    const password = (document.getElementById('auth-password') as HTMLInputElement).value
-
-    try {
-      //   const response = await axios.post(`${this.apiUrl}/login`, { email, password });
-      //   const { token } = response.data;
-
-      //   // 保存 token 到 cookie 中
-      //   Cookies.set('auth_token', token);
-
-      // 重定向到指定的 URL（如果有）
-      if (this.redirectUri) {
-        window.location.href = this.redirectUri
-      } else {
-        alert('Login successful')
-        document.querySelector('.auth-modal-overlay')?.remove()
-      }
-    } catch (error) {
-      alert('Login failed. Please try again.')
-    }
   }
 }

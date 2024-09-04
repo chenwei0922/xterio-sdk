@@ -1,6 +1,6 @@
 export interface InputProps {
   type: 'text' | 'password'
-  id: string // selector id
+  id?: string // selector id
   label: string
   placeholder?: string
   errorMessage?: string
@@ -8,17 +8,27 @@ export interface InputProps {
   showClearIcon?: boolean
   showPasswordToggleIcon?: boolean
   wrapperClassNames?: string[]
+  addonAfterButton?: {
+    text: string
+    onClick: () => void
+  }
+  addonAfterSendButton?: {
+    onClick: () => void
+    onCountdownEnd: () => void
+  }
   onChange?: (value: string) => void
-  onFocus?: () => void
-  onBlur?: () => void
+  onFocus?: (value: string) => void
+  onBlur?: (value: string) => void
 }
 
 export class Input {
   private props: InputProps
   private root: HTMLElement
+  private inputElement!: HTMLInputElement | null
 
   constructor(props: InputProps) {
     this.props = props
+    this.inputElement = null
     this.root = this.createInputElement()
     this.setUpEventListeners()
   }
@@ -46,6 +56,7 @@ export class Input {
     inputElement.id = 'auth-input'
     inputElement.className = 'xa-input'
     inputElement.placeholder = ''
+    this.inputElement = inputElement
     inputInnerDiv.appendChild(inputElement)
 
     if (showClearIcon) {
@@ -70,8 +81,51 @@ export class Input {
           toggleIcon.className = 'xa-icon-hide'
         }
       })
+
       inputInnerDiv.appendChild(toggleIcon)
     }
+
+    if (this.props.addonAfterSendButton) {
+      const { onClick, onCountdownEnd } = this.props.addonAfterSendButton
+      const addBtn = document.createElement('button')
+      addBtn.className = 'xa-input-addon-btn'
+      addBtn.textContent = 'SEND'
+      addBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        addBtn.disabled = true
+
+        let countdown = 60
+        const timer = setInterval(() => {
+          countdown--
+          if (countdown === 0) {
+            addBtn.disabled = false
+            addBtn.textContent = 'SEND'
+            clearInterval(timer)
+            onCountdownEnd?.()
+          } else {
+            addBtn.disabled = true
+            addBtn.textContent = `${countdown - 1}s`
+          }
+        }, 1000)
+        addBtn.textContent = `${countdown}s`
+        onClick?.()
+      })
+      inputInnerDiv.appendChild(addBtn)
+    }
+
+    // if (this.props.addonAfterButton) {
+    //   const { text, onClick } = this.props.addonAfterButton
+    //   const addBtn = document.createElement('button')
+    //   addBtn.className = 'xa-input-addon-btn'
+    //   addBtn.textContent = text
+    //   addBtn.addEventListener('click', (e) => {
+    //     e.stopPropagation()
+    //     e.preventDefault()
+    //     onClick?.()
+    //   })
+    //   inputInnerDiv.appendChild(addBtn)
+    // }
 
     // Event callback
     inputElement.addEventListener('input', (event) => {
@@ -81,15 +135,15 @@ export class Input {
       }
     })
 
-    inputElement.addEventListener('focus', () => {
+    inputElement.addEventListener('focus', (event) => {
       if (onFocus) {
-        onFocus()
+        onFocus((event.target as HTMLInputElement)?.value ?? '')
       }
     })
 
-    inputElement.addEventListener('blur', () => {
+    inputElement.addEventListener('blur', (event) => {
       if (onBlur) {
-        onBlur()
+        onBlur((event.target as HTMLInputElement)?.value ?? '')
       }
     })
 
@@ -152,5 +206,19 @@ export class Input {
   public hideError() {
     const errorTip = this.root.querySelector('.xa-error-tip') as HTMLElement
     errorTip.style.display = 'none'
+  }
+
+  // 新增方法：获取输入框的值
+  public getValue(): string {
+    return this.inputElement!.value
+  }
+
+  // 新增方法：设置输入框的值
+  public setValue(value: string) {
+    this.inputElement!.value = value
+    // 如果提供了 onChange 回调，也可以在这里触发它
+    if (this.props.onChange) {
+      this.props.onChange(value)
+    }
   }
 }

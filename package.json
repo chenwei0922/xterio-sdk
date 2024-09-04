@@ -74,7 +74,9 @@
     "vite-tsconfig-paths": "^5.0.1"
   },
   "dependencies": {
+    "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.3",
+    "js-cookie": "^3.0.5",
     "query-string": "^9.1.0"
   }
 }

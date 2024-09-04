@@ -1,75 +1,100 @@
+import Cookies from 'js-cookie'
 import { BaseModalState } from './BaseModalState'
 import { EAuthState } from './enums'
+import { loginService } from './services'
 import { Button, Input, Logo } from './ui'
 import { XterAuthModal } from './XterAuthModal'
+import { ModalExtraData } from './interfaces'
+import { XterAuthModalForm } from './XterAuthModalForm'
+import { validateEmail, validatePassword } from './utils'
+import { XterModalFormItem } from './XterAuthModalFormItem'
+
+enum FomrItemsName {
+  Email = 'email',
+  Password = 'password',
+  ConfirmPassword = 'confirmPassword',
+  Terms = 'terms',
+  Subscribe = 'subscribe'
+}
 
 export class XterAuthModalSignIn extends BaseModalState {
   private loginButton: Button | null
-  constructor(modal: XterAuthModal) {
+  private emailInput: Input | null
+  private pwdInput: Input | null
+  form: XterAuthModalForm
+
+  constructor(modal: XterAuthModal, extraData?: ModalExtraData) {
     super(modal)
     this.loginButton = null
+    this.emailInput = null
+    this.pwdInput = null
+
+    this.form = new XterAuthModalForm()
   }
 
   render(): void {
     if (!this.modal.modalContainer) return
+
     const _container = this.modal.modalContainer
 
-    _container.innerHTML = `
-        <h3 class="xa-signin-title">Sign in</h3>
-        <p class="xa-signin-sub-title">Sign in with email</p>
-       `
-
-    // _container.innerHTML = `
-    //     <h3 class="xa-signin-title">Sign in</h3>
-    //     <p class="xa-signin-sub-title">Sign in with email</p>
-    //     <div class="xa-input-wrapper xa-input-wrapper-email">
-    //       <span class="xa-input-label">EMAIL</span>
-    //       <div class="xa-input-inner">
-    //         <input type="email" id="auth-email" class="xa-input" placeholder="" />
-    //       </div>
-    //     </div>
-    //     <div class="xa-input-wrapper">
-    //       <span class="xa-input-label">PASSWORD</span>
-    //       <div class="xa-input-inner">
-    //         <input type="password" id="auth-password" class="xa-input" placeholder="" />
-    //         <div class="xa-icon-close"></div>
-    //       </div>
-    //     </div>
-    //     <div class="xa-login-tip">
-    //       <div>No account yet? <a class="xa-to-sign-up">Sign up</a></div>
-    //       <div>
-    //         <a class="xa-to-forgotpwd">Forgot password?</a>
-    //       </div>
-    //     </div>
-    //     <button id="auth-login-btn" class="xa-login-button">SIGN IN</button>`
-    // logo
-    const logo = new Logo()
-    _container.insertBefore(logo.getElement(), _container.firstChild)
+    this.modal.setTitle('Sign in', 'Sign in with email')
 
     // Email Input
+    this.renderEmailInput(_container)
+
+    // Password Input
+    this.renderPwdInput(_container)
+
+    // tips
+    this.renderTips(_container)
+
+    // login button
+    this.renderLoginButton(_container)
+
+    this.setupListeners()
+  }
+
+  private renderEmailInput(_container: HTMLElement) {
     const emailInput = new Input({
-      id: 'xa-input-email',
       label: 'EMAIL',
       type: 'text',
       showClearIcon: true,
       onChange: (value) => {
+        this.form.clearFormItemError(FomrItemsName.Email)
         this.handleEmailChange(value)
+      },
+      onBlur: (value) => {
+        this.form.findFormItem(FomrItemsName.Email)?.setError(validateEmail(value))
       }
     })
-    _container.appendChild(emailInput.getElement())
+    this.emailInput = emailInput
+    const formItem = new XterModalFormItem(FomrItemsName.Email, emailInput.getElement(), () => {
+      return emailInput.getValue()
+    })
+    this.form.add(FomrItemsName.Email, formItem)
+    this.append(_container, formItem.getElement())
+  }
 
-    // Password Input
+  private renderPwdInput(_container: HTMLElement) {
     const pwdInput = new Input({
-      id: 'xa-input-password',
       label: 'PASSWORD',
       type: 'password',
       onChange: (value) => {
         this.handlePasswordChange(value)
+      },
+      onBlur: (value) => {
+        this.form.findFormItem(FomrItemsName.Password)?.setError(validatePassword(value))
       }
     })
-    _container.appendChild(pwdInput.getElement())
+    this.pwdInput = pwdInput
+    const formItem = new XterModalFormItem(FomrItemsName.Password, pwdInput.getElement(), () => {
+      return pwdInput.getValue()
+    })
+    this.form.add(FomrItemsName.Password, formItem)
+    this.append(_container, formItem.getElement())
+  }
 
-    // tips
+  private renderTips(_container: HTMLElement) {
     const tips = document.createElement('div')
     tips.classList.add(...['xa-login-tip', 'xa-flex', 'xa-justify-between'])
     tips.innerHTML = `
@@ -79,21 +104,20 @@ export class XterAuthModalSignIn extends BaseModalState {
       </div>
     `
     _container.appendChild(tips)
+  }
 
-    // login button
+  private renderLoginButton(_container: HTMLElement) {
     const loginButton = new Button({
       text: 'SIGN IN',
       disabled: true,
       onClick: (event) => {
-        console.log('loginButton clicked')
-        // this.modal.handleLogin()
+        console.log('signUpButton clicked')
+        this.handleLogin()
       }
       // wrapperClassNames: ['xa-login-button']
     })
     this.loginButton = loginButton
-    _container.appendChild(loginButton.getElement())
-
-    this.setupListeners()
+    this.append(_container, loginButton.getElement())
   }
 
   private setupListeners(): void {
@@ -116,5 +140,21 @@ export class XterAuthModalSignIn extends BaseModalState {
   }
   private handlePasswordChange(value: string): void {
     // this.loginButton?.setDisabled(value.length === 0)
+  }
+
+  private async handleLogin() {
+    const userName = this.emailInput?.getValue()
+    const password = this.pwdInput?.getValue()
+    if (!userName || !password) return
+    this.loginButton?.setLoading(true)
+    const isLoggedIn = await this.modal.store.login(userName, password)
+    this.loginButton?.setLoading(false)
+    if (isLoggedIn) {
+      this.modal.close()
+    }
+  }
+
+  private append(container: HTMLElement, element: HTMLElement) {
+    container.appendChild(element)
   }
 }
