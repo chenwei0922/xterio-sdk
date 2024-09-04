@@ -1,5 +1,3 @@
-//TODO：缓存tokens，1.初始化判断token是否过期，过期的清除。2.登录时若token未过期，直接get userinfo即可，无需重新授权
-
 import type { ITokenRes } from 'interfaces/loginInfo'
 import { XTERIO_CONST } from 'utils'
 

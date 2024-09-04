@@ -1,0 +1,8 @@
+// 通用scss 代码片段
+
+/*** 水平垂直居中 ***/
+%double-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

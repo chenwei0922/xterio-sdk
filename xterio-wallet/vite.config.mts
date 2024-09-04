@@ -39,7 +39,7 @@ const dtsPlugin = dts({
   aliasesExclude: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
   beforeWriteFile(filePath, content) {
     if (content.includes("../src/")) {
-      console.log('change content:', filePath)
+      console.log('change content *.d.ts:', filePath)
       content = content.replace(/src\//g, '')
     }
     return { filePath, content }

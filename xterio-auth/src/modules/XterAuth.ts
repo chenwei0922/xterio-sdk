@@ -4,6 +4,7 @@ import { XterioAuthInfo } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XterioAuthService } from './AuthService'
 import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
+import { XterAuthModal } from './XterAuthModal'
 import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
@@ -116,6 +117,9 @@ export class XterioAuth {
     window.addEventListener('load', async (event: Event) => {
       await this.checkCode()
     })
+
+    // init XterAuthLoginModal
+    XterAuthModal.init(_baseURL)
   }
   static logout() {
     log('logout success')

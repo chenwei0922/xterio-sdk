@@ -7,15 +7,21 @@ const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
 XterioAuth.init({ client_id, client_secret, redirect_uri })
 XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, (info) => {
-  console.log('info1=', info)
+  console.log('emit userinfo=', info)
 })
 
 window.onload = () => {
   const btn = document.getElementById('login')
   const logoutBtn = document.getElementById('logout')
+  const emailBtn = document.getElementById('email')
   if (btn) {
     btn.onclick = () => {
       XterioAuth.login()
+    }
+  }
+  if (emailBtn) {
+    emailBtn.onclick = () => {
+      XterioAuth.login('email')
     }
   }
   if (logoutBtn) {
