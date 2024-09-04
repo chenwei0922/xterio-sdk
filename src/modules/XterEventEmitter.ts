@@ -1,4 +1,4 @@
-import { IUserInfo } from 'interfaces/loginInfo'
+import type { IUserInfo } from 'interfaces/loginInfo'
 import { log, XTERIO_EVENTS } from 'utils'
 
 type Func = (() => void) | ((...args: any) => unknown)

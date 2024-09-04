@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import dts from 'vite-plugin-dts'
+import svgr from 'vite-plugin-svgr'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -16,8 +17,8 @@ export default defineConfig(({ command, mode }) => {
         //dts工作根目录, xterio-auth
         root: './',
         entryRoot: './src',
-        outDir: ['./dist/es', './dist/lib'],
-        // outDir: ['./dist/types'],
+        // outDir: ['./dist/es', './dist/lib'],
+        outDir: ['./dist/types'],
         //排除dts操作的目录
         exclude: ['./src/main.ts', './src/__test__'],
         tsconfigPath: './tsconfig.build.json'
@@ -30,7 +31,8 @@ export default defineConfig(({ command, mode }) => {
           }
           return { code }
         }
-      }
+      },
+      svgr()
     ],
     //定义全局变量
     define: {
@@ -69,8 +71,8 @@ export default defineConfig(({ command, mode }) => {
 
       lib: {
         entry: './src/index.ts',
-        name: 'MyLib'
-        // fileName: 'my-lib',
+        // name: 'XterioAuth'
+        // fileName: 'xterio-auth',
         // formats: ['es', 'cjs', 'iife', 'umd']
       }
     },
