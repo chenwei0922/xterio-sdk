@@ -2,5 +2,6 @@ export enum EAuthState {
   Login = 'login',
   Signup = 'signup',
   SignupCode = 'signupCode',
-  ForgotPassword = 'forgotPassword'
+  ForgotPassword = 'forgotPassword',
+  PasswordSuccess = 'passwordSuccess'
 }

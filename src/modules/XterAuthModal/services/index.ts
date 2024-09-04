@@ -135,3 +135,36 @@ export const registerConfirmService = async ({
   })
   return res.error ? res : { ...res, error: false }
 }
+
+export const sendForgotCodeService = async ({ email }: { email: string }): Promise<ILoginServiceRes> => {
+  const res = await postFetcher<ILoginServiceRes, { username: string }>('/account/v1/password/forgot?source=forgot', {
+    username: email
+  }).catch((e) => {
+    return {
+      error: true,
+      err_code: e.err_code
+    } as ILoginServiceResError
+  })
+  return res.error ? res : { ...res, error: false }
+}
+
+export const resetPassword = async ({ email, code, password }: { email: string; code: string; password: string }) => {
+  const res = await postFetcher<
+    ILoginServiceRes,
+    {
+      username: string
+      password: string
+      confirmation_code: string
+    }
+  >('/account/v1/password/forgot/confirm', {
+    username: email,
+    password,
+    confirmation_code: code
+  }).catch((e) => {
+    return {
+      error: true,
+      err_code: e.err_code
+    } as ILoginServiceResError
+  })
+  return res.error ? res : { ...res, error: false }
+}
