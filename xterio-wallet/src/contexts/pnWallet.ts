@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Env, XterioAuth } from 'xterio-auth'
+import { Env, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { SmartAccount } from '@particle-network/aa'
 import { AuthType } from '@particle-network/auth-core'
 import {
@@ -93,7 +93,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
       const res = await connect({
         chain: targetChain,
         provider: AuthType.jwt,
-        thirdpartyCode: jwt || XterioAuth.id_token || ''
+        thirdpartyCode: jwt || XterioAuthTokensManager.idToken || ''
       })
         .then((userInfo) => {
           log('connect pn eoa success')

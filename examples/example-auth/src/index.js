@@ -1,7 +1,7 @@
 console.log(111)
 
 //方式1，先授权，再登录
-import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from 'xterio-auth'
+import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from '@xterio-sdk/auth'
 
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'

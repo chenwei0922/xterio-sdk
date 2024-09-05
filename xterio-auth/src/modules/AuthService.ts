@@ -1,44 +1,22 @@
-import axios, { type AxiosInstance } from 'axios'
-import type { IUserInfo, ITokenRes, IRes, IUserInfoRes, IWalletItem } from 'interfaces/loginInfo'
-import { getPackageVersion, log, randomNonceStr } from 'utils'
-import { XterioAuthInfo } from './XterAuthInfo'
+import type {
+  IUserInfo,
+  ITokenRes,
+  IUserInfoRes,
+  IWalletItem,
+  ILoginServiceRes,
+  ILoginServiceBody,
+  ILoginServiceResError,
+  IRefreshServiceRes,
+  IRefreshServiceBody,
+  IRegisterConfirmServiceBody
+} from 'interfaces/loginInfo'
+import { log } from 'utils'
+import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
-import { XterioCache } from './XterCache'
+import { getFetcher, postFetcher } from 'utils/fetchers'
 
 export class XterioAuthService {
-  static request(needLogin?: boolean, _headers?: Record<string, string | number>): AxiosInstance {
-    if (!XterioAuthInfo.client_id) {
-      throw new Error('You need set xterio-auth info')
-    }
-    let headers: Record<string, string | number> = {
-      sdkVersion: getPackageVersion(),
-      platform: 'pc',
-      clientId: XterioAuthInfo.client_id,
-      timestamp: Date.now(),
-      language: 'en',
-      nonce: randomNonceStr(),
-      ..._headers
-      //app端
-      // appVersion: '',
-      // appPackage: '',
-    }
-    if (needLogin) {
-      const idtoken = XterioAuthInfo.tokens?.id_token || ''
-      if (!idtoken) {
-        throw new Error('You need first login')
-      }
-      headers = { ...headers, Authorization: idtoken }
-    }
-
-    const instance = axios.create({
-      baseURL: XterioAuthInfo.baseURL,
-      timeout: 60000,
-      headers: headers
-    })
-    return instance
-  }
-
   /**
    * 平台登录
    * @param code 授权code
@@ -50,23 +28,17 @@ export class XterioAuthService {
     const data = param
     log('go login')
 
-    const headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    const res = await this.request()
-      .post<{ data: ITokenRes; err_code: number }>(`/account/v1/oauth2/token`, data, { headers })
+    const res = await postFetcher<ITokenRes, typeof data>(`/account/v1/oauth2/token`, data)
       .then((res) => {
         log('login success.')
-        XterioAuthInfo.tokens = res.data.data
-        XterioCache.tokens = res.data.data
-        return res.data
+        XterioAuthTokensManager.setTokens(res)
+        return res
       })
       .catch((err) => {
         log('login failed.')
-        return { data: null }
+        return null
       })
-
-    if (res.data?.id_token) {
+    if (res?.id_token) {
       log('get userinfo')
       const info = await this.getUserInfo()
       if (info.uuid) {
@@ -86,7 +58,7 @@ export class XterioAuthService {
       ...profileInfo,
       wallet
     }
-    XterioAuthInfo.userInfo = res
+    XterioAuthUserInfoManager.setUserInfo(res)
     if (res?.uuid) {
       XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, res)
     }
@@ -94,30 +66,148 @@ export class XterioAuthService {
   }
 
   private static async getProfile(): Promise<IUserInfoRes> {
-    const res = await this.request(true)
-      .get<IRes<IUserInfoRes>>(`/account/v1/user/profile`)
+    const res = await getFetcher<IUserInfoRes>(`/account/v1/user/profile`)
       .then((res) => {
         log('get profile success.')
-        return res.data
+        return res
       })
       .catch((err) => {
         log('get profile failed.')
-        return { data: null }
+        return null
       })
-    return res.data?.uuid ? { ...res.data } : {}
+
+    return res?.uuid ? { ...res } : {}
   }
 
   private static async getWallet(): Promise<IWalletItem[]> {
-    const res = await this.request(true)
-      .get<IRes<{ wallet: IWalletItem[] }>>(`/account/v1/wallet`)
+    const res = await getFetcher<{ wallet: IWalletItem[] }>(`/account/v1/wallet`)
       .then((res) => {
         log('get wallet success.')
-        return res.data
+        return res
       })
       .catch((err) => {
         log('get wallet failed.')
-        return { data: null }
+        return null
       })
-    return res.data?.wallet || []
+    return res?.wallet || []
+  }
+
+  /**
+   * tt login
+   * @param username username
+   * @param password password
+   * @returns Promise <ILoginServiceRes>
+   */
+  static async loginService(username: string, password: string): Promise<ILoginServiceRes> {
+    const res = await postFetcher<ILoginServiceRes, ILoginServiceBody>('/account/v1/login', {
+      username,
+      password
+    }).catch((e) => {
+      return {
+        ...e,
+        error: true
+      } as ILoginServiceResError
+    })
+    log('ttl login', res.error ? 'failed' : 'success')
+    return res?.error ? { ...res, error: true } : { ...res, error: false }
+  }
+
+  /**
+   * refresh tokens
+   * @param refresh_token string
+   * @returns Promise<IRefreshServiceRes>
+   */
+  static refreshTokenService(refresh_token: string): Promise<IRefreshServiceRes> {
+    return postFetcher<IRefreshServiceRes, IRefreshServiceBody>('/auth/v1/refresh', {
+      refresh_token
+    }).catch(() => {
+      return {}
+    })
+  }
+
+  static async registerService({
+    username,
+    password,
+    subscribe
+  }: {
+    username: string
+    password: string
+    subscribe: boolean
+  }): Promise<{
+    error: boolean
+    err_code?: string | number
+  }> {
+    const res = await postFetcher<object, ILoginServiceBody>('/account/v1/register', {
+      username,
+      password,
+      subscribe: subscribe ? 1 : 0,
+      invite_code: '', // sdk 暂不支持 invite_code
+      'h-recaptcha-response': '' // sdk 暂不支持 recaptch
+    }).catch((e) => {
+      return {
+        ...e,
+        error: true
+      }
+    })
+    log('ttl register', res.error ? 'failed' : 'success')
+    return res?.error ? { error: true, err_code: res.err_code } : { error: false }
+  }
+
+  static async registerConfirmService({
+    username,
+    password,
+    code
+  }: {
+    username: string
+    password: string
+    code: string
+  }): Promise<ILoginServiceRes> {
+    const res = await postFetcher<ILoginServiceRes, IRegisterConfirmServiceBody>('/account/v1/register/code/confirm', {
+      username,
+      code,
+      password
+    }).catch((e) => {
+      return {
+        error: true,
+        err_code: e.err_code
+      } as ILoginServiceResError
+    })
+    log('ttl register confirm', res.error ? 'failed' : 'success')
+    return res.error ? res : { ...res, error: false }
+  }
+
+  static async sendForgotCodeService({ email }: { email: string }): Promise<ILoginServiceRes> {
+    const res = await postFetcher<ILoginServiceRes, { username: string }>('/account/v1/password/forgot?source=forgot', {
+      username: email
+    }).catch((e) => {
+      return {
+        error: true,
+        err_code: e.err_code
+      } as ILoginServiceResError
+    })
+    log('ttl forgot psd', res.error ? 'failed' : 'success')
+    return res.error ? res : { ...res, error: false }
+  }
+
+  static async resetPassword({ email, code, password }: { email: string; code: string; password: string }) {
+    const res = await postFetcher<
+      ILoginServiceRes,
+      {
+        username: string
+        password: string
+        confirmation_code: string
+      }
+    >('/account/v1/password/forgot/confirm', {
+      username: email,
+      password,
+      confirmation_code: code
+    }).catch((e) => {
+      return {
+        error: true,
+        err_code: e.err_code
+      } as ILoginServiceResError
+    })
+    log('ttl forgot psd confirm', res.error ? 'failed' : 'success')
+    return res.error ? res : { ...res, error: false }
   }
 }

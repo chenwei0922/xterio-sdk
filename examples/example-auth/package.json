@@ -1,5 +1,5 @@
 {
-  "name": "example",
+  "name": "example-auth",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,8 +14,6 @@
     "vite": "^5.4.1"
   },
   "dependencies": {
-    "axios": "^1.7.4",
-    "query-string": "^9.1.0",
-    "xterio-auth": "file:.."
+    "@xterio-sdk/auth": "workspace:^"
   }
 }

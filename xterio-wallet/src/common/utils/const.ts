@@ -1,4 +1,4 @@
-import { Env } from 'xterio-auth'
+import { Env } from '@xterio-sdk/auth'
 
 type EnvItemType = {
   PN_CHAIN_ID: string | number

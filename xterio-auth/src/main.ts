@@ -1,4 +1,4 @@
-import { XterEventEmiter, XTERIO_EVENTS, XterioAuth } from './index'
+import { LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from './index'
 
 console.log('initial')
 const redirect_uri = 'http://localhost:3000/'
@@ -14,6 +14,13 @@ window.onload = () => {
   const btn = document.getElementById('login')
   const logoutBtn = document.getElementById('logout')
   const emailBtn = document.getElementById('email')
+  const miniBtn = document.getElementById('login_mini')
+  if (miniBtn) {
+    miniBtn.onclick = () => {
+      // XterioAuth.
+      XterioAuth.login(LoginType.Mini)
+    }
+  }
   if (btn) {
     btn.onclick = () => {
       XterioAuth.login()
@@ -21,7 +28,7 @@ window.onload = () => {
   }
   if (emailBtn) {
     emailBtn.onclick = () => {
-      XterioAuth.login('email')
+      XterioAuth.login(LoginType.Email)
     }
   }
   if (logoutBtn) {

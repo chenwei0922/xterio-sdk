@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { XterioAuth } from 'xterio-auth'
+import { XterioAuth } from '@xterio-sdk/auth'
 
 defineProps<{ msg: string }>()
 

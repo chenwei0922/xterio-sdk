@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import App from './App.tsx'
+import App from './App.js'
 import './index.css'
 
 createRoot(document.getElementById('root')!).render(
@@ -9,7 +9,7 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 )
 
-import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from 'xterio-auth'
+import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from '@xterio-sdk/auth'
 
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'

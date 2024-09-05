@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import { XterioCache } from 'modules/XterCache'
 
 export class XterAuthModalTokenManager {
   public accessToken: string | undefined
@@ -6,9 +6,9 @@ export class XterAuthModalTokenManager {
   public idToken: string | undefined
 
   constructor() {
-    this.accessToken = Cookies.get('_access_token')
-    this.refreshToken = Cookies.get('_refresh_token')
-    this.idToken = Cookies.get('_id_token')
+    this.accessToken = XterioCache.tokens?.access_token
+    this.refreshToken = XterioCache.tokens?.refresh_token
+    this.idToken = XterioCache.tokens?.id_token
   }
 
   public setTokens({
@@ -23,17 +23,13 @@ export class XterAuthModalTokenManager {
     this.accessToken = accessToken
     this.refreshToken = refreshToken
     this.idToken = idToken
-    Cookies.set('_access_token', accessToken, { expires: 1 })
-    Cookies.set('_id_token', idToken || '', { expires: 1 })
-    Cookies.set('_refresh_token', refreshToken)
+    XterioCache.tokens = { access_token: accessToken, id_token: idToken, refresh_token: refreshToken }
   }
 
   public removeTokens() {
     this.accessToken = undefined
     this.refreshToken = undefined
     this.idToken = undefined
-    Cookies.remove('_access_token')
-    Cookies.remove('_refresh_token')
-    Cookies.remove('_id_token')
+    XterioCache.deleteTokens()
   }
 }

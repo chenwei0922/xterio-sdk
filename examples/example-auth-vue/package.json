@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.4.37",
-    "xterio-auth": "file:.."
+    "@xterio-sdk/auth": "workspace:^",
+    "vue": "^3.4.37"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",

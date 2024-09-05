@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx -y only-allow pnpm",
+    "clear": "find . -name \"node_modules\" -type d -exec rm -rf {} +",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
     "commitlint": "npx commitlint --edit $1",
@@ -14,7 +16,12 @@
     "build:wallet": "tsx sh/build.ts wallet",
     "dev:auth": "cd xterio-auth && npm run dev",
     "dev:wallet": "cd xterio-wallet && npm run dev",
-    "dev:examples-tg":"turbo dev-watch --filter=tg-mini-app --filter=xterio-auth"
+    "dev:examples-tg": "turbo dev-watch --filter=tg-mini-app --filter=xterio-auth",
+    "example:auth": "cd examples/example-auth && npm run dev",
+    "example:auth-react": "cd examples/example-auth-react && npm run dev",
+    "example:auth-vue": "cd examples/example-auth-vue && npm run dev",
+    "example:auth-tg": "cd examples/tg-mini-app && npm run dev",
+    "example:wallet": "cd examples/example-auth-vue && npm run dev"
   },
   "keywords": [],
   "author": "",

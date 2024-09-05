@@ -3,7 +3,7 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { XterioAuth } from 'xterio-auth'
+import { XterioAuth } from '@xterio-sdk/auth'
 import { useMount } from 'ahooks'
 
 function App() {

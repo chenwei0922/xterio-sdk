@@ -3,6 +3,7 @@ import { useXterioTransaction, useXterioWalletContext } from './index'
 import { useState } from 'react'
 import { Contract, ContractInterface, ethers } from 'ethers'
 import { ERC20_ABI } from './common/abi'
+import { LoginType } from '@xterio-sdk/auth'
 
 /**
  * 区分区块链网络的名称，平台前后端统一定义的枚举类型
@@ -119,7 +120,8 @@ function App() {
         <p>是否登录: {isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
         <button onClick={() => login()}>默认登录</button>
-        <button onClick={() => login('email')}>邮箱登录</button>
+        <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
+        <button onClick={() => login(LoginType.Mini)}>TT 登录</button>
         <button onClick={logout}>退出登录</button>
       </div>
 

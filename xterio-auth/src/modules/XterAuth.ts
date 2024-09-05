@@ -1,6 +1,6 @@
 import type { ISSoTokensParams, Payload } from 'interfaces/loginInfo'
 import { Env, LoginType } from 'interfaces/loginInfo'
-import { XterioAuthInfo } from './XterAuthInfo'
+import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XterioAuthService } from './AuthService'
 import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
@@ -17,16 +17,13 @@ const EnvBaseURLConst: Record<Env, string> = {
 
 export class XterioAuth {
   static get isLogin() {
-    return !!XterioAuthInfo.userInfo?.uuid
+    return !!XterioAuthUserInfoManager.userInfo?.uuid
   }
   static get userinfo() {
-    return XterioAuthInfo.userInfo
-  }
-  static get id_token() {
-    return XterioAuthInfo.tokens?.id_token
+    return XterioAuthUserInfoManager.userInfo
   }
   private static get isVaildIdToken() {
-    const id_token = XterioAuthInfo.tokens?.id_token || ''
+    const id_token = XterioAuthTokensManager.idToken
 
     if (!id_token) {
       log('invalid token 1')
@@ -49,14 +46,22 @@ export class XterioAuth {
   }
 
   private static async checkToken() {
-    if (XterioCache.tokens) {
-      XterioAuthInfo.tokens = XterioCache.tokens
+    const _tokens = XterioCache.tokens
+    if (_tokens) {
+      XterioAuthTokensManager.setTokens(_tokens)
     }
+    const id_token = XterioAuthTokensManager.idToken
+    const refresh_token = XterioAuthTokensManager.refreshToken
+    if (!id_token && refresh_token) {
+      //req tokens by refresh
+      const res = await XterioAuthService.refreshTokenService(refresh_token)
+      XterioAuthTokensManager.setTokens({ refresh_token, id_token: res.id_token, access_token: res.access_token })
+    }
+
     const isvalid = XterioAuth.isVaildIdToken
     log('check the tokens valid status:', isvalid)
     if (!isvalid) {
-      XterioAuthInfo.tokens = undefined
-      XterioCache.delete(XTERIO_CONST.TOKENS)
+      this.clearData()
     } else {
       //get userinfo
       await XterioAuthService.getUserInfo()
@@ -67,7 +72,7 @@ export class XterioAuth {
     const _type = XterioCache.loginType
     log('check the authorize status', _type)
 
-    if (_type !== LoginType.Authorize) return
+    if (_type !== LoginType.Default && _type !== LoginType.Email) return
 
     const uri = XterioAuthInfo.config?.redirect_uri
     if (!uri || !location.href.startsWith(uri)) {
@@ -120,20 +125,26 @@ export class XterioAuth {
 
     // init XterAuthLoginModal
     XterAuthModal.init(_baseURL)
+    log(XterAuthModal.instance)
+  }
+  private static clearData() {
+    XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
+    XterioCache.deleteTokens()
+    XterioCache.deleteUserInfo()
+    XterioAuthTokensManager.removeTokens()
+    XterioAuthUserInfoManager.removeUserInfo()
   }
   static logout() {
     log('logout success')
-    XterioAuthInfo.userInfo = undefined
-    XterioAuthInfo.tokens = undefined
-    XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
-    XterioCache.delete(XTERIO_CONST.TOKENS)
+    this.clearData()
+    XterAuthModal?.instance?.store?.logout()
   }
-  static async login(mode?: 'default' | 'email') {
+  static async login(mode?: LoginType) {
     if (!XterioAuthInfo.config) {
       log('xterio auth sdk initial failed')
       return
     }
-    if (mode) {
+    if (mode && mode !== LoginType.Mini) {
       XterioAuthInfo.config = { ...XterioAuthInfo.config, mode }
       XterioAuthInfo.authorizeUrl =
         XterioAuthInfo.baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(XterioAuthInfo.config)
@@ -142,7 +153,7 @@ export class XterioAuth {
     if (XterioAuth.isLogin) {
       //logined, callback the account info
       log('already logined.')
-      XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, XterioAuthInfo.userInfo)
+      XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, XterioAuthUserInfoManager.userInfo)
       return
     }
     if (XterioAuth.isVaildIdToken) {
@@ -151,7 +162,12 @@ export class XterioAuth {
       return XterioAuthService.getUserInfo()
     }
 
-    XterioCache.loginType = LoginType.Authorize
+    if (mode === LoginType.Mini) {
+      XterAuthModal.instance.open()
+      return
+    }
+
+    XterioCache.loginType = mode || LoginType.Default
 
     //go to authorize
     log('going to authorize ...')

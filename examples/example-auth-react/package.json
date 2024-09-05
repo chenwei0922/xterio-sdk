@@ -1,5 +1,5 @@
 {
-  "name": "example-react",
+  "name": "example-auth-react",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@xterio-sdk/auth": "workspace:^",
     "ahooks": "^3.8.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "xterio-auth": "file:.."
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

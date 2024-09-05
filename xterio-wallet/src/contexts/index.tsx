@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
-import { IUserInfo, XterEventEmiter, XterioAuth } from 'xterio-auth'
+import { IUserInfo, LoginType, XterEventEmiter, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
 import { PnWalletModal } from 'src/templates/PnWalletModal'
 import { createRoot } from 'react-dom/client'
@@ -18,7 +18,7 @@ const initState = {
 interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData'> {
   userinfo: IUserInfo | undefined
   isLogin: boolean
-  login(mode?: 'default' | 'email'): Promise<void>
+  login(mode?: LoginType): Promise<void>
   logout(): Promise<void>
   aaAddress: string
   isConnect: boolean
@@ -99,16 +99,28 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   }, [_p, aaAddress, connectPnAA, connectPnEoA, isLogin, isPnLogin])
 
   const connectWallet = useCallback(async () => {
+    if (!isLogin) {
+      log('please login first')
+      return
+    }
     log('connect wallet')
-    await connectPnEoAAndAA(XterioAuth.id_token)
-  }, [connectPnEoAAndAA])
+    await connectPnEoAAndAA(XterioAuthTokensManager.idToken)
+  }, [connectPnEoAAndAA, isLogin])
 
   const disconnectWallet = useCallback(async () => {
+    if (!isLogin) {
+      log('please login first')
+      return
+    }
     log('disconnect wallet')
     await disconnectPnEoA()
-  }, [disconnectPnEoA])
+  }, [disconnectPnEoA, isLogin])
 
   const openWallet = useCallback(() => {
+    if (!isLogin) {
+      log('please login first')
+      return
+    }
     if (walletHtmlRoot) {
       walletHtmlRoot.remove()
       setWalletHtmlRoot(undefined)
@@ -137,9 +149,9 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       />
     )
     setWalletHtmlRoot(div)
-  }, [getWalletIFrame, walletHtmlRoot])
+  }, [getWalletIFrame, isLogin, walletHtmlRoot])
 
-  const login = useCallback(async (mode?: 'default' | 'email') => {
+  const login = useCallback(async (mode?: LoginType) => {
     await XterioAuth.login(mode)
   }, [])
 

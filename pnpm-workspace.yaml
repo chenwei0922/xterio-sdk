@@ -1,0 +1,6 @@
+packages:
+  # - 'packages/*'
+  # all packages in subdirs of packages/
+  - 'examples/*'
+  - 'xterio-auth'
+  - 'xterio-wallet'

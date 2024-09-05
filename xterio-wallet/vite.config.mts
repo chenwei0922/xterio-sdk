@@ -64,7 +64,7 @@ export default defineConfig(({ command, mode }) => {
   console.log('command=', command)
 
   return {
-    plugins: [tsconfigPaths(), react(), particleWasmPlugin, dtsPlugin, packagePlugin],
+    plugins: [tsconfigPaths(), react(), dtsPlugin, packagePlugin],
     //打包配置
     build: {
       minify: false,
