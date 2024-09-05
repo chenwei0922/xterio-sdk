@@ -47,6 +47,7 @@ $error-color: #f53f3f;
 
 /* 模态框样式 */
 .xa-modal {
+  position: relative;
   background: #fff;
   padding: 20px;
   width: 400px;
@@ -80,6 +81,14 @@ $error-color: #f53f3f;
     color: rgba(0, 0, 0, 0.7);
     font-weight: 600;
     font-size: 0.785rem;
+  }
+
+  .xa-signin-close{
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    cursor: pointer;
+
   }
 }
 

@@ -10,6 +10,7 @@ import { XterAuthModalStore } from './XertAuthModalStore'
 import { XterAuthModalSignUpCode } from './XterAuthModaSignUpCode'
 import { ModalExtraData } from './interfaces'
 import { XterAuthModaPwdSuccess } from './XterAuthModaPwdSuccess'
+import { generateSVGIcon } from 'ui/svg-icon'
 export class XterAuthModal {
   private static _instance: XterAuthModal
   public apiUrl: string
@@ -71,6 +72,12 @@ export class XterAuthModal {
     // Logo
     const logo = new Logo()
     _container.appendChild(logo.getElement())
+
+    //Close
+    const iconClose = generateSVGIcon('icon-close', 24, '#838383')
+    iconClose.addEventListener('click', () => this.close())
+    iconClose.className = 'xa-signin-close'
+    _container.appendChild(iconClose)
 
     // Title
     const titleContainer = document.createElement('div')
