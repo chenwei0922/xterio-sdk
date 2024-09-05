@@ -8,7 +8,7 @@ import { XterModalFormItem } from './XterAuthModalFormItem'
 import { XterAuthModal } from './XterAuthModal'
 import { XterAuthModalForm } from './XterAuthModalForm'
 import { validateEmail, validatePassword, validatePasswordMatch } from './utils'
-import { registerService } from './services'
+import { XterioAuthService } from 'modules/AuthService'
 
 enum FomrItemsName {
   Email = 'email',
@@ -227,7 +227,7 @@ export class XterAuthModalSignUp extends BaseModalState {
 
     if (!userName || !password) return
     this.signUpButton?.setLoading(true)
-    const { error, err_code } = await registerService({
+    const { error, err_code } = await XterioAuthService.registerService({
       username: userName,
       password: password,
       subscribe: subscribeChecked
