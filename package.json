@@ -22,7 +22,8 @@
     "./main.css": {
       "import": "./dist/es/style.css",
       "require": "./dist/es/style.css"
-    }
+    },
+    "./dist/es/style.css": "./dist/es/style.css" 
   },
   "style": "./dist/es/style.css",
   "files": [
@@ -45,6 +46,7 @@
     "test": "jest",
     "dev": "vite --port 3000",
     "build": "rm -rf dist/* && vite build",
+    "dev-watch": "vite build --watch",
     "preview": "vite preview"
   },
   "devDependencies": {
