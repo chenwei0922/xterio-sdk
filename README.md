@@ -46,10 +46,7 @@ export const LoginPage = () => {
 ```
 
 ## Development
-
-### Xterio Auth Login Modal
-
-### TG MINI APP
+### TG MINI APP with xterio-auth
 In workspace root, run:
 ```bash
 npm install
@@ -58,7 +55,7 @@ npm run dev:examples-tg
 ```base
 "dev:examples-tg":"turbo dev-watch --filter=tg-mini-app --filter=xterio-auth"
 ```
-#### ntergrate with xterio-auth sdk in develop mode
+#### Intergrate with xterio-auth sdk in develop mode
 To integrate the xterio-auth SDK in a `tg-mini-app` with hot-reloading in development mode, Turborepo's capabilities are needed to manage package dependencies.Manage the dependencies of various packages through Turborepo by configuring the turbo.json file.
 
 
