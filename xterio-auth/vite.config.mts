@@ -83,6 +83,10 @@ export default defineConfig(({ command, mode }) => {
         // formats: ['es', 'cjs', 'iife', 'umd']
       }
     },
+    watch: {
+      include: 'src/**', // 监控 src 目录的文件变化
+      clearScreen: false, // 防止清空屏幕日志
+    },
 
     //开发服务器配置
     server: {}

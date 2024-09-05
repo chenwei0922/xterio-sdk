@@ -1,5 +1,5 @@
 {
-  "name": "x-tg-mini-app",
+  "name": "tg-mini-app",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -35,6 +35,7 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
+    "dev-watch": "vite --host 0.0.0.0",
     "build:devtest": "npm run svgo && tsc && vite build --mode devtest",
     "build:pre": "npm run svgo && tsc && vite build --mode pre",
     "build": "npm run svgo && tsc && vite build",
