@@ -1,7 +1,7 @@
+import { XterioAuthService } from 'modules/AuthService'
 import { BaseModalState } from './BaseModalState'
 import { EAuthState } from './enums'
 import { ModalExtraData } from './interfaces'
-import { resetPassword, sendForgotCodeService } from './services'
 import { Button, Input } from './ui'
 import { validateEmail, validatePasswordMatch } from './utils'
 import { XterAuthModal } from './XterAuthModal'
@@ -89,7 +89,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
             this.form.findFormItem(ForgotFomrItemsName.Email)?.setError('Email is required')
             return
           }
-          sendForgotCodeService({ email: this.form.getFormItemValue(ForgotFomrItemsName.Email) })
+          XterioAuthService.sendForgotCodeService({ email: this.form.getFormItemValue(ForgotFomrItemsName.Email) })
         },
         onCountdownEnd: () => {
           console.log('countdown end')
@@ -191,7 +191,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
 
     if (!email || !password) return
     this.continueButton?.setLoading(true)
-    const { error, err_code } = await resetPassword({
+    const { error, err_code } = await XterioAuthService.resetPassword({
       email,
       password: password,
       code
