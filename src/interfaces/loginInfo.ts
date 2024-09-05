@@ -41,6 +41,7 @@ export interface IUserInfoRes {
   username?: string
   uuid?: string
   source?: number // 0：email，1：facebook，2：google
+  password?: number // 0: 未设置；1：已设置
 }
 
 export interface IWalletItem {
@@ -69,6 +70,42 @@ export enum Language {
 }
 
 export enum LoginType {
-  Authorize = 'Authorize',
-  Union = 'Union'
+  Default = 'default',
+  Email = 'email',
+  Mini = 'mini'
+}
+
+export interface ILoginServiceBody {
+  'h-recaptcha-response'?: string
+  username: string
+  password: string
+  subscribe?: 0 | 1
+  invite_code?: string
+}
+
+interface ILoginServiceResSuccess {
+  access_token: string
+  id_token: string
+  refresh_token: string
+  error: false
+  err_code?: string | number
+}
+
+export interface ILoginServiceResError extends Partial<Omit<ILoginServiceResSuccess, 'error'>> {
+  error: true
+  err_code: string | number
+}
+
+export type ILoginServiceRes = ILoginServiceResSuccess | ILoginServiceResError
+
+export interface IRefreshServiceRes {
+  id_token?: string
+  access_token?: string
+}
+export interface IRefreshServiceBody {
+  refresh_token: string
+}
+
+export interface IRegisterConfirmServiceBody extends Omit<ILoginServiceBody, 'h-recaptcha-response'> {
+  code: string
 }

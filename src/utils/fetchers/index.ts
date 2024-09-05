@@ -1,7 +1,8 @@
-import Cookies from 'js-cookie'
 import qs from 'query-string'
 import { IResponse } from './interfaces'
 import { XterioAuthInfo } from 'modules/XterAuthInfo'
+import { getPackageVersion, randomNonceStr } from 'utils/logger'
+import { XterioCache } from 'modules/XterCache'
 
 async function resolveResp<T>(resp: Response): Promise<T> {
   const res: IResponse<T> = await resp.json()
@@ -35,87 +36,48 @@ interface FetcherConfig {
   params?: Record<string, unknown>
   headers?: Record<string, string>
   data?: unknown
+  Authorization?: string
 }
 
-export async function fetcher<T>(config: string | (FetcherConfig & { Authorization?: string })): Promise<T> {
-  let cfg: FetcherConfig
-  let Authorization = ''
-  if (typeof config === 'string' || config instanceof String) {
-    cfg = {
-      method: 'GET',
-      path: config as string
-    }
-  } else {
-    cfg = config
-    Authorization = config.Authorization || Cookies.get('_id_token') || ''
+const fetcher = async <T>({ method, path, params, headers, data, Authorization }: FetcherConfig): Promise<T> => {
+  if (!XterioAuthInfo.client_id) {
+    throw new Error('You need set xterio-auth info')
   }
-  let path = cfg.path
-  if (!path) {
-    throw new Error('Error: fetch path is required')
-  }
-  if (cfg.params) {
-    const queryParam = qs.stringify(cfg.params)
-    path = `${path}?${queryParam}`
-  }
-  if (typeof window === 'undefined') {
-    // running on the server, we use an inner api_base to avoid freq limit of WAF
-    cfg.headers = { ...cfg.headers }
-    // if (!process.env.NEXT_API_KEY) {
-    //   console.error('NEXT_API_KEY not configured, will be rate limited by WAF')
-    // }
-  }
-  // const url = fullUrl(path, process.env.NEXT_PUBLIC_API_BASE)
-  const url = fullUrl(path, XterioAuthInfo.baseURL) // TODO:
 
-  let sensorsdataCookieValue
-  if (typeof document !== 'undefined') {
-    sensorsdataCookieValue = document?.cookie
-      .split('; ')
-      .find((row) => row.startsWith('sensorsdata2015jssdkcross='))
-      ?.split('=')[1]
+  if (params) {
+    const queryParam = qs.stringify(params)
+    path += (path.includes('?') ? '&' : '?') + `${queryParam}`
   }
+  const url = fullUrl(path, XterioAuthInfo.baseURL)
 
   const requestOptions: RequestInit = {
-    method: cfg.method,
+    method,
     headers: {
-      sensorsdatajssdkcross: sensorsdataCookieValue ?? '',
-      ...cfg.headers
-    }
-  }
-
-  if (cfg.method !== 'PUT') {
-    requestOptions.headers = {
       'content-type': 'application/json',
-      ...requestOptions.headers,
-      Authorization
+      sdkVersion: getPackageVersion(),
+      platform: 'pc',
+      clientId: XterioAuthInfo.client_id,
+      timestamp: Date.now().toString(),
+      language: 'en',
+      nonce: randomNonceStr(),
+      Authorization: Authorization || XterioCache.tokens?.id_token || '',
+      ...headers
     }
   }
 
-  if (cfg.data) {
-    // PUT 和 pplication/x-www-form-urlencoded 提交的是表单数据，不能stringify
-    const needStringify = cfg.method !== 'PUT' && cfg?.headers?.['content-type'] !== 'application/x-www-form-urlencoded'
-    requestOptions.body = needStringify ? JSON.stringify(cfg.data) : (cfg.data as ReadableStream)
+  if (data) {
+    // PUT 和 application/x-www-form-urlencoded 提交的是表单数据，不能stringify
+    const needStringify = method !== 'PUT' && headers?.['content-type'] !== 'application/x-www-form-urlencoded'
+    requestOptions.body = needStringify ? JSON.stringify(data) : (data as ReadableStream)
   }
 
   const req = new Request(url, requestOptions)
   try {
     const resp = await fetch(req)
-    return cfg.method === 'PUT' ? (resp as T) : resolveResp<T>(resp)
+    return method === 'PUT' ? (resp as T) : resolveResp<T>(resp)
   } catch {
     throw new Error('Network error')
   }
-}
-
-export async function getFetchers<T extends Array<unknown>>(
-  ...paths: (string | [string, Record<string, unknown>])[]
-): Promise<T> {
-  const datas = await Promise.all(
-    paths.map((path) => {
-      const rest: [string, Record<string, unknown> | undefined] = typeof path === 'string' ? [path, undefined] : path
-      return getFetcher(...rest)
-    })
-  )
-  return datas as T
 }
 
 export async function getFetcher<T>(
@@ -177,5 +139,3 @@ export async function patchFetcher<T, D>(
     Authorization
   })
 }
-
-// mocks

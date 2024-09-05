@@ -15,12 +15,12 @@ const client_secret = ''
 XterioAuth.init({ client_id, client_secret, redirect_uri })
 
 //2. Register to listen for user information
-XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, (info) => {
-  console.log('info1=', info)
+XterEventEmiter.subscribe(info=>{
+  console.log('info=', info)
 })
 
-//3. SignIn (Authorize / Union)
-XterioAuth.login()
+//3. SignIn LoginType.Default,LoginType.Email, LoginType.Mini
+XterioAuth.login(LoginType.Default)
 ...
 ```
 
@@ -33,7 +33,7 @@ Initialize Function
 XterioAuth.init({ client_id:'', client_secret:'', redirect_uri:'' })
 ```
 
-#### `login(mode?: 'default' | 'email')`
+#### `login(mode?: LoginType)`
 login xterio-auth
 ```ts
 XterioAuth.login()
@@ -69,7 +69,7 @@ const cb = (info) => {
 XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, cb)
 XterEventEmiter.off(XTERIO_EVENTS.ACCOUNT, cb)
 // or
-XterEventEmiter.subscribe(info)
+XterEventEmiter.subscribe(cb)
 XterEventEmiter.unsubscribe()
 ```
 

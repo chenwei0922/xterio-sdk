@@ -5,5 +5,9 @@ export const XTERIO_EVENTS = {
 }
 export const XTERIO_CONST = {
   LOGIN_TYPE: 'xter_auth_login_type',
-  TOKENS: 'xter_auth_login_tokens'
+  TOKENS: 'xter_auth_login_tokens',
+  ID_TOKEN: 'xter_auth_id_token',
+  REFRESH_TOKEN: 'xter_auth_refresh_token',
+  ACCESS_TOKEN: 'xter_auth_access_token',
+  USERINFO: 'xter_auth_userinfo'
 }

@@ -1,4 +1,4 @@
-import { IUserInfo } from './XertAuthModalStore'
+import { IUserInfo } from 'interfaces/loginInfo'
 import { XterAuthModal } from './XterAuthModal'
 export { XterAuthModal }
 

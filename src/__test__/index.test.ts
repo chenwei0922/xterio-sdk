@@ -1,5 +1,6 @@
 import { getPackageVersion } from 'utils'
-import * as XterioAuth from 'index'
+import { XterioAuth, XterioAuthService } from 'index'
+import { XterioAuthInfo } from 'modules/XterAuthInfo'
 
 describe('xterioauth', () => {
   test('sdkversion:', () => {
@@ -13,12 +14,12 @@ describe('xterioauth', () => {
       client_secret: 'ABC23',
       redirect_uri: 'http://localhost:3000'
     })
-    const authorizeUrl = XterioAuth.XterioAuthInfo.authorizeUrl
+    const authorizeUrl = XterioAuthInfo.authorizeUrl
     console.log('authorizeUrl=', authorizeUrl)
   })
   test('userinfo', async () => {
-    await XterioAuth.XterioAuthService.login('ZWRLMWVIMWYTZTM5NY0ZYTI4LTHMYJKTZJY4MDFLYJE3ODZL')
-    const userinfo = XterioAuth.XterioAuthInfo.userInfo
+    await XterioAuthService.login('ZWRLMWVIMWYTZTM5NY0ZYTI4LTHMYJKTZJY4MDFLYJE3ODZL')
+    const userinfo = XterioAuthInfo.userInfo
     console.log('userinfo=', userinfo)
   })
 })
