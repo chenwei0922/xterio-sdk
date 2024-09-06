@@ -2,7 +2,15 @@
 Only React, etherv5
 
 ## 1. Install
-`npm install @xterio-sdk/wallet` | `yarn add @xterio-sdk/wallet` | `pnpm add @xterio-sdk/wallet` 
+`npm install @xterio-sdk/wallet @xterio-sdk/auth`
+
+or
+
+`yarn add @xterio-sdk/wallet @xterio-sdk/auth`
+
+or
+
+`pnpm add @xterio-sdk/wallet @xterio-sdk/auth` 
 
 ## 2.Configuration
 
