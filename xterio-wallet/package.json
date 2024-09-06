@@ -1,7 +1,7 @@
 {
   "name": "@xterio-sdk/wallet",
   "private": false,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "xterio-wallet",
   "author": "xterio platform",
   "license": "ISC",
@@ -55,7 +55,7 @@
     "@particle-network/aa": "^2.0.1",
     "@particle-network/auth-core": "^2.0.2",
     "@particle-network/authkit": "^2.0.2",
-    "@xterio-sdk/auth": "workspace:^",
+    "@xterio-sdk/auth": "^0.0.1",
     "ethers": "^5.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

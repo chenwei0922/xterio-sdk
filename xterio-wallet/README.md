@@ -147,45 +147,45 @@ the wallet context
 
 ### 3.2 `useXterioWalletContext()`
 
-#### 3.2.1 `userinfo`
+#### `userinfo`
 xterio user information
 
-#### 3.2.2 `isLogin`
+#### `isLogin`
 xterio user login status
 
-#### 3.2.3 `aaAddress`
+#### `aaAddress`
 xterio user aa wallet address
 
-#### 3.2.4 `isConnect`
+#### `isConnect`
 aa wallet connection status
 
-#### 3.2.5 `login(mode?: 'default' | 'email')`
+#### `login(mode?: 'default' | 'email')`
 
-#### 3.2.6 `logout()`
+#### `logout()`
 
-#### 3.2.7 `connectWallet()`
+#### `connectWallet()`
 
-#### 3.2.8 `disconnectWallet()`
+#### `disconnectWallet()`
 
-#### 3.2.9 `obtainWallet()`
+#### `obtainWallet()`
 
-#### 3.2.10`openWallet()`
+#### `openWallet()`
 
-#### 3.2.11 `signMessage()`
+#### `signMessage()`
 
 ### 3.3 `useXterioTransaction(contract?, funcName?)`
 
-#### 3.3.1 `state`
+#### `state`
 transaction status
 
-#### 3.3.2 `sendTransaction({gasLimit,txValue}, ...args)`
+#### `sendTransaction({gasLimit,txValue}, ...args)`
 send a transaction
 
 ```ts
 await sendTransaction?.({ gasLimit: '', txValue:'' }, toAddr, amount)
 ```
 
-#### 3.3.3 `sendUserOperation(transaction|transaction[])`
+#### `sendUserOperation(transaction|transaction[])`
 send a transaction
 
 ```ts
