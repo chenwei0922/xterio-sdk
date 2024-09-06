@@ -1,12 +1,13 @@
-# xterio-auth
+# @xterio-sdk/auth
 
 ## 1. Install
-`npm install xterio-auth` | `yarn add xterio-auth` | `pnpm add xterio-auth` 
+`npm install @xterio-sdk/auth` | `yarn add @xterio-sdk/auth` | `pnpm add @xterio-sdk/auth` 
 
-## 2. Quick Start
+## 2. Usage
 
 ```ts
-import { XterioAuth, XterEventEmiter, XTERIO_EVENTS } from 'xterio-auth'
+import '@xterio-sdk/auth/style/main.css'
+import { XterioAuth, XterEventEmiter } from '@xterio-sdk/auth'
 
 //1. Initialize only once
 const redirect_uri = ''
@@ -16,31 +17,36 @@ XterioAuth.init({ client_id, client_secret, redirect_uri })
 
 //2. Register to listen for user information
 XterEventEmiter.subscribe(info=>{
+  //subscribe
   console.log('info=', info)
 })
+//unsubscribe
+XterEventEmiter.unsubscribe()
 
-//3. SignIn LoginType.Default,LoginType.Email, LoginType.Mini
-XterioAuth.login(LoginType.Default)
+//3. SignIn
+XterioAuth.login()
 ...
 ```
 
 ## 3. API Reference
 
 ### 3.1 Method
-#### `init()`
+#### `init(config, env?:Env)`
 Initialize Function
 ```ts
-XterioAuth.init({ client_id:'', client_secret:'', redirect_uri:'' })
+XterioAuth.init({ client_id:'', client_secret:'', redirect_uri:'' }, Env.Dev)
 ```
 
 #### `login(mode?: LoginType)`
-login xterio-auth
+login xterio
 ```ts
-XterioAuth.login()
+XterioAuth.login() //default: LoginType.Default
+XterioAuth.login(LoginType.Email)
+XterioAuth.login(LoginType.Mini)
 ```
 
 #### `logout()`
-quit xterio-auth
+quit xterio
 ```ts
 XterioAuth.logout()
 ```
@@ -49,7 +55,7 @@ XterioAuth.logout()
 #### `isLogin`
 whether to log in
 ```ts
-XterioAuth.isLogin //true/false
+XterioAuth.isLogin //boolean
 ```
 
 #### `userinfo`
@@ -60,17 +66,28 @@ XterioAuth.userinfo
 
 ### 3.3 EventEmiter
 
+#### `subscribe(callback:Func, _event?: string)`
+```ts
+XterEventEmiter.subscribe(()=>{}) //default: XTERIO_EVENTS.ACCOUNT
+```
+
+#### `unsubscribe(_event?: string)`
+```ts
+XterEventEmiter.unsubscribe() //default: XTERIO_EVENTS.ACCOUNT
+```
+
+#### `off/on(event:string, callback:Func)`
+
 ```ts
 const cb = (info) => {
   console.log('emiter auth userinfo==', info)
 }
-//Register/Cancel to listen for user information
-
-XterEventEmiter.on(XTERIO_EVENTS.ACCOUNT, cb)
-XterEventEmiter.off(XTERIO_EVENTS.ACCOUNT, cb)
-// or
-XterEventEmiter.subscribe(cb)
-XterEventEmiter.unsubscribe()
+XterEventEmiter.on(cb, 'event_name')
+XterEventEmiter.off(cb, 'event_name')
 ```
+
+#### `clear()`
+clear all listeners
+
 
 

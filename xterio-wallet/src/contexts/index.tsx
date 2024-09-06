@@ -99,28 +99,16 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   }, [_p, aaAddress, connectPnAA, connectPnEoA, isLogin, isPnLogin])
 
   const connectWallet = useCallback(async () => {
-    if (!isLogin) {
-      log('please login first')
-      return
-    }
     log('connect wallet')
     await connectPnEoAAndAA(XterioAuthTokensManager.idToken)
-  }, [connectPnEoAAndAA, isLogin])
+  }, [connectPnEoAAndAA])
 
   const disconnectWallet = useCallback(async () => {
-    if (!isLogin) {
-      log('please login first')
-      return
-    }
     log('disconnect wallet')
     await disconnectPnEoA()
-  }, [disconnectPnEoA, isLogin])
+  }, [disconnectPnEoA])
 
   const openWallet = useCallback(() => {
-    if (!isLogin) {
-      log('please login first')
-      return
-    }
     if (walletHtmlRoot) {
       walletHtmlRoot.remove()
       setWalletHtmlRoot(undefined)
@@ -149,7 +137,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       />
     )
     setWalletHtmlRoot(div)
-  }, [getWalletIFrame, isLogin, walletHtmlRoot])
+  }, [getWalletIFrame, walletHtmlRoot])
 
   const login = useCallback(async (mode?: LoginType) => {
     await XterioAuth.login(mode)

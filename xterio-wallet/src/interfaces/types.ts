@@ -6,7 +6,7 @@ import type {
   TypedDataV1,
   TypedMessage
 } from '@particle-network/auth-core'
-import type { Env } from 'xterio-auth'
+import type { Env } from '@xterio-sdk/auth'
 
 export interface IXterioWalletContextProps {
   redirect_uri: string

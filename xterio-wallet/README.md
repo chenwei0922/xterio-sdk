@@ -1,8 +1,8 @@
-# xterio-wallet 
+# @xterio-sdk/wallet 
 Only React, etherv5
 
 ## 1. Install
-`npm install xterio-wallet` | `yarn add xterio-wallet` | `pnpm add xterio-wallet` 
+`npm install @xterio-sdk/wallet` | `yarn add @xterio-sdk/wallet` | `pnpm add @xterio-sdk/wallet` 
 
 ## 2.Configuration
 
@@ -16,13 +16,16 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 //add code lines
-import 'xterio-wallet/main.css'
-import { type IXterioWalletContextProps, XterioWalletProvider } from 'xterio-wallet'
+import { type IXterioWalletContextProps, XterioWalletProvider } from '@xterio-sdk/wallet'
+import { Env } from '@xterio-sdk/auth'
+import '@xterio-sdk/wallet/style/main.css'
+import '@xterio-sdk/auth/style/main.css'
 
 const config: IXterioWalletContextProps = {
   client_id:'',
   client_secret:'',
-  redirect_uri:''
+  redirect_uri:'',
+  env: Env.Dev
 }
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -40,9 +43,11 @@ Below is an example of an `App.tsx` file.
 ```tsx
 import { useState } from 'react'
 import './App.css'
-import { useXterioWalletContext, useXterioTransaction } from 'xterio-wallet'
 import { ERC20_ABI } from './abi'
 import { getContract, NETWORK_NAME } from './common'
+
+import { useXterioWalletContext, useXterioTransaction } from '@xterio-sdk/wallet'
+import { LoginType } from '@xterio-sdk/auth'
 
 function App() {
   const {
@@ -94,7 +99,8 @@ function App() {
         <p>isLogin: {isLogin ? 'true' : 'false'}</p>
         <p>userinfo: {userinfo ? JSON.stringify(userinfo) : ''}</p>
         <button onClick={() => login()}>default login</button>
-        <button onClick={() => login('email')}>email login</button>
+        <button onClick={() => login(LoginType.Email)}>email login</button>
+        <button onClick={() => login(LoginType.Mini)}>TT login</button>
         <button onClick={logout}>quit login</button>
       </div>
 

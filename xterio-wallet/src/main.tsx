@@ -1,7 +1,9 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
-import '@xterio-sdk/auth/main.css'
+
+import '@xterio-sdk/auth/style/main.css'
+import './common/styles/main.css'
 import { IXterioWalletContextProps, XterioWalletProvider } from './index.ts'
 
 const redirect_uri = 'http://localhost:3000/'

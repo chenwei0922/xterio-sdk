@@ -13,6 +13,7 @@ const particleWasmPlugin: Plugin | undefined = {
       __dirname,
       'node_modules/@particle-network/thresh-sig/wasm/thresh_sig_wasm_bg.wasm' //@particle-network/thresh-sig dir
     )
+    if (!fs.existsSync(copiedPath)) return
     const dir = path.join(__dirname, 'node_modules/.vite/wasm')
     const resultPath = path.join(dir, 'thresh_sig_wasm_bg.wasm')
     if (!fs.existsSync(dir)) {

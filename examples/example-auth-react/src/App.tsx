@@ -1,22 +1,34 @@
-import { useCallback, useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { XterioAuth } from '@xterio-sdk/auth'
-import { useMount } from 'ahooks'
+import { IUserInfo, LoginType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [userinfo, setUserinfo] = useState('')
+  const [isLogin, setIsLogin] = useState(XterioAuth.isLogin)
 
-  useMount(() => {})
+  useEffect(() => {
+    //监听登录成功事件
+    XterEventEmiter.subscribe((res: IUserInfo) => {
+      console.log('info1=', res)
+      setUserinfo(JSON.stringify(res))
+      setIsLogin(XterioAuth.isLogin)
+    })
+    return () => {
+      XterEventEmiter.unsubscribe()
+    }
+  }, [])
 
-  const onLogin = useCallback(() => {
-    XterioAuth.login()
-  }, [])
-  const onGetProfile = useCallback(() => {
-    console.log('info2=', XterioAuth.userinfo)
-  }, [])
+  const login = (mode?: LoginType) => {
+    XterioAuth.login(mode)
+  }
+  const logout = () => {
+    XterioAuth.logout()
+    setUserinfo('')
+    setIsLogin(XterioAuth.isLogin)
+  }
 
   return (
     <>
@@ -30,15 +42,13 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <button onClick={onLogin}>平台登录</button>
-        <button onClick={onGetProfile}>用户信息</button>
-
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <p>是否登录: {isLogin ? 'true' : 'false'}</p>
+        <p>用户信息: {userinfo}</p>
+        <button onClick={() => login()}>默认登录</button>
+        <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
+        <button onClick={() => login(LoginType.Mini)}>TT 登录</button>
+        <button onClick={logout}>退出登录</button>
       </div>
-      <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
     </>
   )
 }

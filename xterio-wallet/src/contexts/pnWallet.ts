@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Env, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
+import { Env, XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { SmartAccount } from '@particle-network/aa'
 import { AuthType } from '@particle-network/auth-core'
 import {

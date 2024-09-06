@@ -1,5 +1,31 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import { IUserInfo, LoginType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
+
+defineProps<{ msg: string }>()
+
+const userinfo = ref('')
+const isLogin = ref(XterioAuth.isLogin)
+
+onMounted(() => {
+  XterEventEmiter.subscribe((res: IUserInfo) => {
+    console.log('info1=', res)
+    userinfo.value = JSON.stringify(res)
+    isLogin.value = XterioAuth.isLogin
+  })
+})
+onUnmounted(() => {
+  XterEventEmiter.unsubscribe()
+})
+
+const login = (mode?: LoginType) => {
+  XterioAuth.login(mode)
+}
+const logout = () => {
+  XterioAuth.logout()
+  userinfo.value = ''
+  isLogin.value = XterioAuth.isLogin
+}
 </script>
 
 <template>
@@ -12,6 +38,14 @@ import HelloWorld from './components/HelloWorld.vue'
     </a>
   </div>
   <HelloWorld msg="Vite + Vue" />
+  <div className="card">
+    <p>是否登录: {{ isLogin ? 'true' : 'false' }}</p>
+    <p>用户信息: {{ userinfo }}</p>
+    <button @click="login()">默认登录</button>
+    <button @click="login(LoginType.Email)">邮箱登录</button>
+    <button @click="login(LoginType.Mini)">TT 登录</button>
+    <button @click="logout()">退出登录</button>
+  </div>
 </template>
 
 <style scoped>

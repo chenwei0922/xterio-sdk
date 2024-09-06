@@ -16,6 +16,7 @@ const particleWasmPlugin: Plugin | undefined = {
       __dirname,
       'node_modules/@particle-network/thresh-sig/wasm/thresh_sig_wasm_bg.wasm' //@particle-network/thresh-sig dir
     );
+    if (!fs.existsSync(copiedPath)) return
     const dir = path.join(__dirname, 'node_modules/.vite/wasm');
     const resultPath = path.join(dir, 'thresh_sig_wasm_bg.wasm');
     if (!fs.existsSync(dir)) {
@@ -36,7 +37,7 @@ const dtsPlugin = dts({
   //排除dts操作的目录
   exclude: [],
   tsconfigPath: './tsconfig.build.json',
-  aliasesExclude: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
+  aliasesExclude: [/package\.json/, /react\/*/, /react-dom\/*/, /@xterio-sdk\/auth\/*/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
   beforeWriteFile(filePath, content) {
     if (content.includes("../src/")) {
       console.log('change content *.d.ts:', filePath)
@@ -52,7 +53,8 @@ const packagePlugin: Plugin | undefined = {
   },
   transform(code, id, options) {
     if (id.includes('xterio-wallet/src/common/utils/index')) {
-      code = code.replace(/package.json/, '../../package.json')
+      console.log('change package.json path:', id)
+      code = code.replace(/package.json/, '../../../package.json')
     }
     return { code }
   }
@@ -74,7 +76,7 @@ export default defineConfig(({ command, mode }) => {
       //rollup、lib二选一
       rollupOptions: {
         //viem仅用了defineChain,@particle-network/auth-core仅用了类型, ethers仅用于getTransaction
-        external: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
+        external: [/package\.json/, /react\/*/, /react-dom\/*/, /@xterio-sdk\/auth\/*/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
         // external: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/],
         input: ['./src/index.ts'],
         output: [

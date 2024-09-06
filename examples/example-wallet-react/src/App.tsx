@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import './App.css'
-import { useXterioWalletContext, useXterioTransaction } from 'xterio-wallet'
 import { ERC20_ABI } from './abi'
 import { getContract, NETWORK_NAME } from './common'
+
+import { useXterioWalletContext, useXterioTransaction } from '@xterio-sdk/wallet'
+import { LoginType } from '@xterio-sdk/auth'
 
 function App() {
   const {
@@ -56,7 +58,8 @@ function App() {
         <p>是否登录: {isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
         <button onClick={() => login()}>默认登录</button>
-        <button onClick={() => login('email')}>邮箱登录</button>
+        <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
+        <button onClick={() => login(LoginType.Mini)}>TT 登录</button>
         <button onClick={logout}>退出登录</button>
       </div>
 

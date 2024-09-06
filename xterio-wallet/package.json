@@ -20,7 +20,7 @@
       "default": "./dist/es/index.js",
       "style": "./dist/es/style.css"
     },
-    "./main.css": {
+    "./style/main.css": {
       "import": "./dist/es/style.css",
       "require": "./dist/es/style.css"
     }

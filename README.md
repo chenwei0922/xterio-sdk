@@ -1,65 +1,34 @@
 # Xterio SDK
 
-## Usage
-### Xterio Auth Login Modal (UI)
-In app entry file:
+[xterio-auth](./xterio-auth/README.md)
 
-Step 1: Init
-```js
-const redirect_uri = 'http://someappdomain.com'
-const client_id = 'xxxx'
-const client_secret = 'abcde'
+[xterio-wallet](./xterio-wallet/README.md)
 
-XterioAuth.init({ client_id, client_secret, redirect_uri })
-```
-Step 2: Import useXterioAuthModal and css
+## 1. Install
+`pnpm install`
 
-```js
-import { useXterLoginModal } from 'xterio-auth'
-import 'xterio-auth/dist/es/style.css'
+## 2. Dev Start
+run auth
+`pnpm run dev:auth`
 
-```
-Step 3: Use useXterioAuthModal
-```js
-import { useState } from 'react'
-import { useXterLoginModal } from 'xterio-auth'
-import 'xterio-auth/dist/es/style.css'
-export const LoginPage = () => {
-  const [isLogin, setIsLogin] = useState(false)
-  const [userInfo, setUserInfo] = useState<any>()
+run wallet
+`pnpm run build:auth && pnpm run dev:wallet`
 
-  const { open, logout } = useXterLoginModal({
-    onLoginStateChange: (isLogin, userInfo) => {
-      setIsLogin(isLogin)
-      setUserInfo(userInfo)
-    }
-  })
+## 3. Build
+`pnpm run build`
 
-  return (
-    <div>
-      <div onClick={() => {open()}}> {isLogin ? userInfo?.username : 'Login'} </div>
-      {isLogin && ( <span onClick={() => { logout() }}> Logout </span>)}
-    </div>
-  )
-}
+## 4. Example
+example-auth
+`pnpm run example:auth`
 
-```
+example-auth-react
+`pnpm run example:auth-react`
 
-## Development
-### TG MINI APP with xterio-auth
-In workspace root, run:
-```bash
-npm install
-npm run dev:examples-tg
-```
-```base
-"dev:examples-tg":"turbo dev-watch --filter=tg-mini-app --filter=xterio-auth"
-```
-#### Intergrate with xterio-auth sdk in develop mode
-To integrate the xterio-auth SDK in a `tg-mini-app` with hot-reloading in development mode, Turborepo's capabilities are needed to manage package dependencies.Manage the dependencies of various packages through Turborepo by configuring the turbo.json file.
+example-auth-vue
+`pnpm run example:auth-vue`
 
+tg-mini-app
+`pnpm run example:auth-tg`
 
-
-## [xterio-auth](./xterio-auth/README.md)
-
-## [xterio-wallet](./xterio-wallet/README.md)
+example-wallet-react
+`pnpm run example:wallet`
