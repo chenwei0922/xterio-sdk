@@ -1,7 +1,6 @@
-import type { IUserInfo } from 'interfaces/loginInfo'
 import { log, XTERIO_EVENTS } from 'utils'
 
-type Func = (() => void) | ((...args: any) => unknown)
+type Func = (...args: any) => void | unknown
 
 export class XterEventEmiter {
   private static _listeners: { [key: string]: Func[] } = {}
@@ -34,21 +33,29 @@ export class XterEventEmiter {
       delete this._listeners[event]
     }
   }
-  private static _userInfoCB: (p?: IUserInfo) => void
-  static subscribe(callback: (p?: IUserInfo) => void, _event?: string) {
-    log('subscribe userinfo listen')
-    this._userInfoCB = (info?: IUserInfo) => {
+
+  //one to one
+  private static _cacheMap: Map<string, Func> = new Map()
+  static subscribe<T>(callback: (p: T) => void, _event?: string) {
+    const _key = _event || XTERIO_EVENTS.ACCOUNT
+    log('subscribe event', _key)
+    const _callback = (info: T) => {
       callback?.(info)
     }
-    this.on(_event || XTERIO_EVENTS.ACCOUNT, this._userInfoCB)
+    this._cacheMap.set(_key, _callback)
+    this.on(_key, _callback)
   }
   static unsubscribe(_event?: string) {
-    log('unsubscribe userinfo listen')
-    this.off(_event || XTERIO_EVENTS.ACCOUNT, this._userInfoCB)
+    const _key = _event || XTERIO_EVENTS.ACCOUNT
+    log('unsubscribe event', _key)
+    const _callback = this._cacheMap.get(_key)
+    if (_callback) {
+      this.off(_key, _callback)
+      this._cacheMap.delete(_key)
+    }
   }
   static clear() {
     this.listeners = {}
+    this._cacheMap.clear()
   }
 }
-// XterEventEmiter.on('login', () => { })
-// XterEventEmiter.emit('login', 'ddd')

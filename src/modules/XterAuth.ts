@@ -106,8 +106,8 @@ export class XterioAuth {
       response_type: 'code',
       scope: 'all',
       mode: mode || 'default',
-      grant_type: 'authorization_code'
-      // logout: '1'
+      grant_type: 'authorization_code',
+      logout: '1'
     }
     XterioAuthInfo.client_id = client_id || ''
     XterioAuthInfo.env = _env
@@ -115,7 +115,8 @@ export class XterioAuth {
     XterioAuthInfo.authorizeUrl = _baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(_config)
     XterioAuthInfo.config = _config
 
-    XterEventEmiter.listeners = {}
+    XterEventEmiter.clear()
+
     log('initial')
 
     await this.checkToken()
