@@ -4,7 +4,7 @@ import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } fr
 import { XterEventEmiter } from './XterEventEmitter'
 import { XterioAuthService } from './AuthService'
 import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
-import { XterAuthModal } from './XterAuthModal'
+import { XterAuthModal } from './XterAuthModal/XterAuthModal'
 import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
@@ -117,16 +117,15 @@ export class XterioAuth {
 
     XterEventEmiter.clear()
 
-    log('initial')
+    // init XterAuthLoginModal
+    // must init before async function
+    XterAuthModal.init(_baseURL)
+    log(XterAuthModal.instance)
 
     await this.checkToken()
     window.addEventListener('load', async (event: Event) => {
       await this.checkCode()
     })
-
-    // init XterAuthLoginModal
-    XterAuthModal.init(_baseURL)
-    log(XterAuthModal.instance)
   }
   private static clearData() {
     XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)

@@ -16,8 +16,8 @@ const getCssText = (...args: any[]): string => {
 
 export const generateSVGIcon = (
   iconName: keyof typeof iconContentMap,
-  size: string | number,
-  color: string
+  size: string | number = 16,
+  color?: string
 ): HTMLDivElement => {
   const iconContainer = document.createElement('div')
   iconContainer.style.cssText = `width: ${size}px; height:${size}px; display:inline-block; color: ${color ?? '#ccc'};`

@@ -1,3 +1,5 @@
+import { generateSVGIcon } from 'ui/svg-icon'
+
 export interface InputProps {
   type: 'text' | 'password'
   id?: string // selector id
@@ -25,6 +27,7 @@ export class Input {
   private props: InputProps
   private root: HTMLElement
   private inputElement!: HTMLInputElement | null
+  clearIcon: HTMLDivElement | null = null
 
   constructor(props: InputProps) {
     this.props = props
@@ -61,24 +64,27 @@ export class Input {
 
     if (showClearIcon) {
       const clearIcon = document.createElement('div')
-      clearIcon.className = 'xa-icon-close'
+      clearIcon.className = 'xa-input-clear'
+      clearIcon.appendChild(generateSVGIcon('icon-close'))
+      clearIcon.style.visibility = 'hidden'
       clearIcon.addEventListener('click', () => {
         inputElement.value = ''
-        clearIcon.style.display = 'none'
+        clearIcon.style.visibility = 'hidden'
       })
+      this.clearIcon = clearIcon
       inputInnerDiv.appendChild(clearIcon)
     }
 
     if (type === 'password' && showPasswordToggleIcon) {
       const toggleIcon = document.createElement('div')
-      toggleIcon.className = 'xa-icon-hide'
+      toggleIcon.className = 'xa-input-value-hide'
       toggleIcon.addEventListener('click', () => {
         if (inputElement.type === 'password') {
           inputElement.type = 'text'
-          toggleIcon.className = 'xa-icon-show'
+          toggleIcon.className = 'xa-input-value-show'
         } else {
           inputElement.type = 'password'
-          toggleIcon.className = 'xa-icon-hide'
+          toggleIcon.className = 'xa-input-value-hide'
         }
       })
 
@@ -129,9 +135,12 @@ export class Input {
 
     // Event callback
     inputElement.addEventListener('input', (event) => {
-      console.log(event)
+      const _val = (event.target as HTMLInputElement)?.value ?? ''
+      if (this.clearIcon) {
+        this.clearIcon.style.visibility = _val ? 'visible' : 'hidden'
+      }
       if (onChange) {
-        onChange((event.target as HTMLInputElement)?.value ?? '')
+        onChange(_val)
       }
     })
 

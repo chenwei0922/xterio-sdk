@@ -31,7 +31,7 @@
     "typescript": "^4.7.4",
     "vite-plugin-svg-icons": "^2.0.1",
     "web-vitals": "^2.1.4",
-    "xterio-auth": "*"
+    "@xterio-sdk/auth": "workspace:*"
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",

@@ -136,6 +136,7 @@ export class XterAuthModalSignUp extends BaseModalState {
     const confirmPwdInput = new Input({
       label: 'CONFRIM PASSWORD',
       type: 'password',
+      showClearIcon: true,
       onChange: (value) => {
         this.handlePasswordChange(value)
       },
@@ -158,6 +159,7 @@ export class XterAuthModalSignUp extends BaseModalState {
     const pwdInput = new Input({
       label: 'PASSWORD',
       type: 'password',
+      showClearIcon: true,
       onChange: (value) => {
         this.handlePasswordChange(value)
       },
