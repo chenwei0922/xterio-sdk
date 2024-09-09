@@ -109,6 +109,9 @@ export class XterioAuthService {
       } as ILoginServiceResError
     })
     log('ttl login', res.error ? 'failed' : 'success')
+    if (!res?.error) {
+      XterioAuthTokensManager.setTokens(res)
+    }
     return res?.error ? { ...res, error: true } : { ...res, error: false }
   }
 
@@ -173,6 +176,9 @@ export class XterioAuthService {
       } as ILoginServiceResError
     })
     log('ttl register confirm', res.error ? 'failed' : 'success')
+    if (!res?.error) {
+      XterioAuthTokensManager.setTokens(res)
+    }
     return res.error ? res : { ...res, error: false }
   }
 
