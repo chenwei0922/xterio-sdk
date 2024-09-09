@@ -140,13 +140,17 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
 
   const connectPnEoAAndAA = useCallback(
     async (jwt?: string, _chainId?: number) => {
+      if (connected) {
+        log('connected')
+        return
+      }
       log('connect pn eoa')
       const _userInfo = await connectPnEoA(jwt, _chainId)
       log('connect pn aa')
       const _eoaAddress = _userInfo?.wallets.find((w) => w.chain_name === 'evm_chain')?.public_address
       await connectPnAA(_chainId, _eoaAddress)
     },
-    [connectPnAA, connectPnEoA]
+    [connectPnAA, connectPnEoA, connected]
   )
 
   const getWalletIFrame = useCallback(() => {

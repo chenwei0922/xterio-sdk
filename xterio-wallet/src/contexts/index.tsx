@@ -52,7 +52,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     isLogin: isPnLogin,
     signMessage,
     signTypedData
-  } = usePnWallet('', env)
+  } = usePnWallet(aaAddress, env)
 
   const [walletHtmlRoot, setWalletHtmlRoot] = useState<HTMLDivElement>()
 
@@ -144,7 +144,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   }, [])
 
   const logout = useCallback(async () => {
-    // await disconnectWallet()
+    await disconnectWallet()
     await XterioAuth.logout()
     setUserInfo(undefined)
     setIsLogin(false)
