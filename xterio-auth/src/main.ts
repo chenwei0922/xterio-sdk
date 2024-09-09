@@ -8,8 +8,12 @@ const client_secret = 'ABC23'
 XterioAuth.init({ client_id, client_secret, redirect_uri }, Env.Dev)
 XterEventEmiter.subscribe((info: IUserInfo) => {
   console.log('emit userinfo=', info)
+  if (p) {
+    p.innerText = JSON.stringify(info)
+  }
 })
 
+const p = document.getElementById('userinfo')
 window.onload = () => {
   const btn = document.getElementById('login')
   const logoutBtn = document.getElementById('logout')
@@ -34,6 +38,9 @@ window.onload = () => {
   if (logoutBtn) {
     logoutBtn.onclick = () => {
       XterioAuth.logout()
+      if (p) {
+        p.innerText = ''
+      }
     }
   }
 }
