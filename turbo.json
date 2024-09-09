@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".dist/**",".next/**", "!.next/cache/**"]
+      "outputs": [".dist/**", ".next/**", "!.next/cache/**"]
     },
     "check-types": {
       "dependsOn": ["^check-types"]
@@ -13,12 +13,13 @@
       "cache": false
     },
     "dev-watch": {
-      "persistent": true,
       "cache": false
     },
-    "dev-watch:examples": {
-      "dependsOn": ["xterio-auth#dev-watch"], 
-      "outputs": []
+    "tg-mini-app#dev-watch": {
+      "dependsOn": ["@xterio-sdk/auth#build"]
+    },
+    "tg-mini-app#build": {
+      "dependsOn": ["@xterio-sdk/auth#build"]
     }
   }
 }

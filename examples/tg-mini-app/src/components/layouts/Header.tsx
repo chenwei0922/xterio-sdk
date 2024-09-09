@@ -1,6 +1,6 @@
-import { useXterLoginModal } from 'xterio-auth'
+import { useXterLoginModal, XterAuthModal } from '@xterio-sdk/auth'
 import { observer } from 'mobx-react-lite'
-import 'xterio-auth/dist/es/style.css'
+import '@xterio-sdk/auth/dist/es/style.css'
 import { useState } from 'react'
 
 export const Header = observer(() => {

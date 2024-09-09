@@ -12,11 +12,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "build": "tsx sh/build.ts",
+    "build:tg-mini-app": "turbo tg-mini-app#build --filter=tg-mini-app --filter=@xterio-sdk/auth",
     "build:auth": "tsx sh/build.ts auth",
     "build:wallet": "tsx sh/build.ts wallet",
     "dev:auth": "cd xterio-auth && npm run dev",
     "dev:wallet": "cd xterio-wallet && npm run dev",
-    "dev:examples-tg": "turbo dev-watch --filter=tg-mini-app --filter=xterio-auth",
+    "dev:tg-mini-app": "turbo watch dev-watch --filter=tg-mini-app --filter=@xterio-sdk/auth",
     "example:auth": "cd examples/example-auth && npm run dev",
     "example:auth-react": "cd examples/example-auth-react && npm run dev",
     "example:auth-vue": "cd examples/example-auth-vue && npm run dev",
@@ -56,5 +57,5 @@
   "lint-staged": {
     "*.{js,ts,jsx,tsx}": "eslint --fix"
   },
-  "packageManager": "npm@10.5.0"
+  "packageManager": "pnpm@9.9.0"
 }

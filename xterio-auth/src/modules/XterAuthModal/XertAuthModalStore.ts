@@ -3,6 +3,8 @@ import { XterAuthModalTokenManager } from './XterAuthModalTokenManager'
 import { XterioAuthService } from 'modules/AuthService'
 import { IUserInfo } from 'interfaces/loginInfo'
 import { XterioCache } from 'modules/XterCache'
+import { XterioAuth } from 'modules/XterAuth'
+import { XterEventEmiter } from 'modules/XterEventEmitter'
 
 interface UserState {
   isLogin: boolean
@@ -99,6 +101,10 @@ export class XterAuthModalStore extends ModalObservable {
   }
 
   private async refreshUserInfo() {
+    XterEventEmiter.subscribe((res: IUserInfo) => {
+      this.userState.userInfo = res
+      this.userState.isLogin = XterioAuth.isLogin
+    })
     /*
     const { refreshToken, idToken } = this.tokenManager
     if (refreshToken && !idToken) {
