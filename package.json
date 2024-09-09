@@ -22,7 +22,9 @@
     "example:auth-react": "cd examples/example-auth-react && npm run dev",
     "example:auth-vue": "cd examples/example-auth-vue && npm run dev",
     "example:auth-tg": "cd examples/tg-mini-app && npm run dev",
-    "example:wallet": "cd examples/example-wallet-react && npm run dev"
+    "example:wallet": "cd examples/example-wallet-react && npm run dev",
+    "publish:auth": "tsx sh/publish.ts auth",
+    "publish:wallet": "tsx sh/publish.ts wallet"
   },
   "keywords": [],
   "author": "",
