@@ -17,7 +17,7 @@ async function init() {
   const walletVersion = WalletJsonData.version
 
   if (isExecuteAuth) {
-    await run('npm run publish', pathAuth)
+    await run('npm publish', pathAuth)
     // publish success, commit all change content and push release lock.
     await run(`bash release.sh auth ${authVersion}`, pathSh)
   }
@@ -26,7 +26,7 @@ async function init() {
     //tip: change package.json content
     WalletJsonData.dependencies['@xterio-sdk/auth'] = '^' + authVersion
     writeJSONSync(pathWalletJson, WalletJsonData, { encoding: 'utf-8', spaces: 2 })
-    await run('npm run publish', pathWallet)
+    await run('npm publish', pathWallet)
     await run(`bash release.sh wallet ${walletVersion}`, pathSh)
     await reset()
   }
