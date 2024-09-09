@@ -83,12 +83,11 @@ $error-color: #f53f3f;
     font-size: 0.785rem;
   }
 
-  .xa-signin-close{
+  .xa-signin-close {
     position: absolute;
     right: 16px;
     top: 16px;
     cursor: pointer;
-
   }
 }
 
@@ -124,6 +123,15 @@ $error-color: #f53f3f;
     display: flex;
     align-items: center;
     justify-content: space-between;
+  }
+
+  .xa-input-clear {
+  }
+
+  .xa-input-value-hide {
+  }
+
+  .xa-input-value-show {
   }
 
   button.xa-input-addon-btn {

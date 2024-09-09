@@ -78,7 +78,6 @@ export class XterAuthModalForgetPwd extends BaseModalState {
     const codeInput = new Input({
       label: 'ENTER CODE',
       type: 'text',
-      showClearIcon: true,
       onChange: (value) => {
         this.handleEmailChange(value)
       },
@@ -108,6 +107,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
     const pwdInput = new Input({
       label: 'NEW PASSWORD',
       type: 'password',
+      showClearIcon: true,
       onChange: (value) => {
         this.handlePasswordChange(value)
       }
@@ -123,6 +123,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
     const confirmPwdInput = new Input({
       label: 'CONFRIM PASSWORD',
       type: 'password',
+      showClearIcon: true,
       onChange: (value) => {
         this.handlePasswordChange(value)
       },

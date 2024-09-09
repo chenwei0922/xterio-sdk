@@ -75,6 +75,7 @@ export class XterAuthModalSignIn extends BaseModalState {
     const pwdInput = new Input({
       label: 'PASSWORD',
       type: 'password',
+      showClearIcon: true,
       onChange: (value) => {
         this.handlePasswordChange(value)
       },
