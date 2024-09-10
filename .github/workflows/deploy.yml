@@ -9,14 +9,12 @@ on:
 
 jobs:
   deploy:
-    # needs: dependencies
     name: Deploy Page
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
-      #使用pnpm
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
@@ -31,20 +29,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
       
-      # 打包库
       - name: Build Modules
         run: pnpm run build
 
-      # 打包示例
       - name: Build Examples
         run: pnpm run example:build
       
-      # 部署到github pages
-      - name: Deploy Docs
-        uses: peaceiris/actions-gh-pages@v3 # 使用部署到 GitHub pages 的 action
+      - name: Deploy Examples
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          publish_dir: ./examples/dist   # 部署打包后的 example 目录
-          github_token: ${{ secrets.DEPLOY_SECRET }} # secret 名
+          publish_dir: ./examples/dist
+          github_token: ${{ secrets.DEPLOY_SECRET }}
           user_name: ${{ secrets.MY_USER_NAME }}
           user_email: ${{ secrets.MY_USER_EMAIL }}
-          commit_message: 自动部署 # 部署时的 git 提交信息，自由填写
+          commit_message: auto deploy example
