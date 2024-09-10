@@ -31,6 +31,10 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
       
+      # 打包库
+      - name: Build Modules
+        run: pnpm run build
+
       # 打包示例
       - name: Build Examples
         run: pnpm run example:build
