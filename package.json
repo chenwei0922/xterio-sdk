@@ -24,7 +24,8 @@
     "example:auth-tg": "cd examples/tg-mini-app && npm run dev",
     "example:wallet": "cd examples/example-wallet-react && npm run dev",
     "publish:auth": "tsx sh/publish.ts auth",
-    "publish:wallet": "tsx sh/publish.ts wallet"
+    "publish:wallet": "tsx sh/publish.ts wallet",
+    "example:build": "tsx sh/deploy.ts"
   },
   "keywords": [],
   "author": "",

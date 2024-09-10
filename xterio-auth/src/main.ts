@@ -17,7 +17,7 @@ const p = document.getElementById('userinfo')
 window.onload = () => {
   const btn = document.getElementById('login')
   const logoutBtn = document.getElementById('logout')
-  const emailBtn = document.getElementById('email')
+  const emailBtn = document.getElementById('login_email')
   const miniBtn = document.getElementById('login_mini')
   if (miniBtn) {
     miniBtn.onclick = () => {
