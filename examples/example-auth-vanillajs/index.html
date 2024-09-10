@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XterSDK Login Demo</title>
+    <link rel="stylesheet" href="./lib/xterio-auth/style.css" />
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <header><h1>XterSDK Login Demo</h1></header>
+    <main>
+      <section class="login-btn">
+        <button id="loginButton">Open Login</button>
+      </section>
+
+      <section class="login-info" style="display: none">
+        <h2>Welcome, <span id="userName"></span></h2>
+        <p>Email: <span id="userEmail"></span></p>
+        <button id="logoutButton">Logout</button>
+      </section>
+    </main>
+    <script src="./lib/xterio-auth/xterio-auth.js"></script>
+    <script src="/js/main.js"></script>
+  </body>
+</html>
