@@ -15,7 +15,7 @@ export const isRightNickname = (nickname: string): boolean => {
 }
 
 export const validateEmail = (inputStr: string) => {
-  return isEmail(inputStr) ? '' : 'Invalie Email'
+  return isEmail(inputStr) ? '' : 'Invalid Email'
 }
 
 export const validatePassword = (inputStr: string) => {
