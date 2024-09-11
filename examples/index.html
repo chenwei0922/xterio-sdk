@@ -9,22 +9,21 @@
 
 <body>
   <div id="app">
-    <button id="auth-react" onclick="onAuthReact()">Xterio Auth(React)</button>
-    <button id="auth-vue" onclick="onAuthVue()">Xterio Auth(Vue)</button>
-    <button id="wallet-react" onclick="onWalletReact()">Xterio Wallet(React)</button>
+    <button id="auth-react">Xterio Auth(React)</button>
+    <button id="auth-tt">Xterio Auth(tg)</button>
+    <button id="wallet-react">Xterio Wallet(React)</button>
   </div>
 </body>
 
-<script>
-  const onAuthReact = () => {
-    location.href = "auth-react/index.html"
-  }
-  const onAuthVue = () => {
-    location.href = "auth-react/index.html"
-  }
-  const onWalletReact = () => {
-    location.href = "auth-react/index.html"
-  }
+<script type="module">
+  document.getElementById("auth-react").onclick = () => {
+    location.href = "./auth-react/index.html";
+  };
+  document.getElementById("auth-tt").onclick = () => {
+    location.href = "./auth-tg/index.html";
+  };
+  document.getElementById("wallet-react").onclick = () => {
+    location.href = "./wallet-react/index.html";
+  };
 </script>
-
 </html>
