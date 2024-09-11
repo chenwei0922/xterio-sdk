@@ -5,6 +5,9 @@ import type { ConfigEnv, Plugin } from 'vite';
 import path from 'path';
 import fs from 'fs';
 import dts from 'vite-plugin-dts'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import packageJsonData from './package.json'
+const version = packageJsonData.version
 
 const particleWasmPlugin: Plugin | undefined = {
   name: 'particle-wasm',
@@ -46,40 +49,44 @@ const dtsPlugin = dts({
     return { filePath, content }
   },
 })
-const packagePlugin: Plugin | undefined = {
-  name: 'vite-plugin-mypackage',
-  apply: (_, env: ConfigEnv) => {
-    return env.mode === 'production';
-  },
-  transform(code, id, options) {
-    if (id.includes('xterio-wallet/src/common/utils/index')) {
-      console.log('change package.json path:', id)
-      code = code.replace(/package.json/, '../../../package.json')
-    }
-    return { code }
-  }
-}
 
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
   console.log(mode, '=', env)
   console.log('command=', command)
+  const minify = mode === 'production'
 
   return {
-    plugins: [tsconfigPaths(), react(), dtsPlugin, packagePlugin],
+    plugins: [tsconfigPaths(), react(), dtsPlugin, nodePolyfills()],
+    define: {
+      __SDK_VERSION__: JSON.stringify(version),
+    },
     //打包配置
     build: {
-      minify: false,
+      sourcemap: minify,
+      minify,
       outDir: 'dist',
       target: 'es2020',
       // cssMinify: 'esbuild'
       //rollup、lib二选一
       rollupOptions: {
         //viem仅用了defineChain,@particle-network/auth-core仅用了类型, ethers仅用于getTransaction
-        external: [/package\.json/, /react\/*/, /react-dom\/*/, /@xterio-sdk\/auth\/*/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
-        // external: [/package\.json/, /react\/*/, /react-dom\/*/, /xterio-auth/, /ethers\/*/],
+        // external: [/package\.json/, /react\/*/, /react-dom\/*/, /@xterio-sdk\/auth\/*/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
+        external: [/@xterio-sdk\/auth\/*/, /react\/*/, /react-dom\/*/, /@particle-network\/*/],
         input: ['./src/index.ts'],
         output: [
+          {
+            format: 'umd',
+            entryFileNames: `[name]${minify ? '.min' : ''}.js`,
+            exports: 'named',
+            dir: './dist/umd',
+            name: 'XterioWallet',
+            banner: `\n /*! XterioWallet v${version} */ \n`,
+            footer: `\n /*! XterioWallet v${version} */ \n`,
+            globals: {
+              '@xterio-sdk/auth': 'XterioAuth'
+            }
+          },
           {
             format: 'esm',
             entryFileNames: '[name].js',
@@ -87,7 +94,6 @@ export default defineConfig(({ command, mode }) => {
             preserveModulesRoot: './src',
             exports: undefined,
             dir: './dist/es',
-            // sourcemap: true
           },
           {
             format: 'commonjs',
@@ -95,8 +101,7 @@ export default defineConfig(({ command, mode }) => {
             preserveModules: true,
             preserveModulesRoot: './src',
             exports: 'named',
-            dir: './dist/lib'
-            // sourcemap: true
+            dir: './dist/lib',
           }
         ]
       },

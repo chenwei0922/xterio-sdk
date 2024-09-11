@@ -5,17 +5,20 @@
     "rootDir": "./src",
     "outDir": "./dist/types",
     "paths": {
-      "*": [
-        "./src/*"
-      ],
       "interfaces/*": [
         "./src/interfaces/*"
       ],
       "modules/*": [
         "./src/modules/*"
       ],
+      "utils": [
+        "./src/utils/index"
+      ],
       "utils/*": [
         "./src/utils/*"
+      ],
+      "ui/*": [
+        "./src/ui/*"
       ],
     }
   },

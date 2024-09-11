@@ -1,4 +1,4 @@
-import { version } from '../../../package.json'
+const version = __SDK_VERSION__ || '0.0.0'
 
 export const log = (...args: any[]) => {
   console.log(`[XterioWallet(v${version})]`, ...args)

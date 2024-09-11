@@ -1,4 +1,4 @@
-import { Contract, ethers } from 'ethers'
+import { Contract, ContractInterface, ethers } from 'ethers'
 
 /**
  * 区分区块链网络的名称，平台前后端统一定义的枚举类型

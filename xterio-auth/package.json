@@ -25,6 +25,8 @@
     },
     "./dist/es/style.css": "./dist/es/style.css"
   },
+  "unpkg": "./dist/umd/index.min.js",
+  "jsdelivr": "./dist/umd/index.min.js",
   "style": "./dist/es/style.css",
   "files": [
     "dist"
@@ -66,6 +68,7 @@
     "typescript": "^5.5.4",
     "vite": "^5.4.0",
     "vite-plugin-dts": "^4.0.3",
+    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^5.0.1"
   },

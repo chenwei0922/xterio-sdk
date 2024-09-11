@@ -25,7 +25,7 @@
     "example:wallet": "cd examples/example-wallet-react && npm run dev",
     "publish:auth": "tsx sh/publish.ts auth",
     "publish:wallet": "tsx sh/publish.ts wallet",
-    "example:build": "tsx sh/deploy.ts"
+    "deploy": "tsx sh/deploy.ts"
   },
   "keywords": [],
   "author": "",

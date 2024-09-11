@@ -17,11 +17,11 @@ import chalk from 'chalk'
 
 async function init() {
   //example-auth-react
-  // await buildExample(pathExampleAuthReact, pathExampleOutputAuthReact)
+  await buildExample(pathExampleAuthReact, pathExampleOutputAuthReact)
   consola.log(chalk.greenBright('🎈example-auth-react build finish ✅'))
 
   //tg-mini-app
-  // await buildExample(pathExampleAuthTG, pathExampleOutputAuthTg, 'tg')
+  await buildExample(pathExampleAuthTG, pathExampleOutputAuthTg, 'tg')
   consola.log(chalk.green('🎈tg-mini-app build finish ✅'))
 
   //example-wallet-react
@@ -41,12 +41,6 @@ async function buildExample(input: string, output: string, _flag?: string) {
   await emptyDir(outDist)
 
   await run('pnpm run build', input)
-
-  // if (_flag === 'tg') {
-  //   await run('pnpm run -w build:tg-mini-app', pathRoot)
-  // } else {
-  //   await run('pnpm run build', input)
-  // }
   await copy(srcdist, outDist)
 }
 init()

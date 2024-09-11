@@ -2,6 +2,9 @@ import { ConfigEnv, defineConfig, loadEnv, Plugin } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import dts from 'vite-plugin-dts'
 import svgr from 'vite-plugin-svgr'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import packageJsonData from './package.json'
+const version = packageJsonData.version
 
 const dtsPlugin = dts({
   //dts工作根目录, xterio-auth
@@ -15,54 +18,53 @@ const dtsPlugin = dts({
   tsconfigPath: './tsconfig.build.json'
 })
 
-const packagePlugin: Plugin | undefined = {
-  name: 'vite-plugin-mypackage',
-  apply: (_, env: ConfigEnv) => {
-    return env.mode === 'production';
-  },
-  transform(code, id, options) {
-    if (id.includes('xterio-auth/src/utils/logger')) {
-      code = code.replace(/package.json/, '../package.json')
-    }
-    return { code }
-  }
-}
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd())
   console.log(mode, '=', env)
   console.log('command=', command)
 
+  const minify = mode === 'production'
+
   return {
     //插件配置
     plugins: [
       tsconfigPaths(),
       dtsPlugin,
-      packagePlugin,
-      svgr()
+      svgr(),
+      nodePolyfills()
     ],
     //定义全局变量
     define: {
-      __APP_ENV__: JSON.stringify(env.APP_ENV)
+      __SDK_VERSION__: JSON.stringify(version),
     },
     //打包配置
     build: {
-      minify: false,
+      sourcemap: minify,
+      minify,
       outDir: 'dist',
       target: 'es2015',
       //rollup、lib二选一
       rollupOptions: {
-        external: [/package\.json/, /axios/, /js-cookie/, /js-base64/, /query-string/],
+        // external: [/package\.json/, /axios/, /js-cookie/, /js-base64/, /query-string/],
         input: ['./src/index.ts'],
         output: [
+          {
+            format: 'umd',
+            entryFileNames: `[name]${minify ? '.min' : ''}.js`,
+            exports: 'named',
+            dir: './dist/umd',
+            name: 'XterioAuth',
+            banner: `\n /*! XterioAuth v${version} */\n`,
+            footer: `\n /*! XterioAuth v${version} */\n`,
+          },
           {
             format: 'esm',
             entryFileNames: '[name].js',
             preserveModules: true,
             preserveModulesRoot: './src',
             exports: undefined,
-            dir: './dist/es'
-            // sourcemap: true
+            dir: './dist/es',
           },
           {
             format: 'commonjs',
@@ -70,8 +72,7 @@ export default defineConfig(({ command, mode }) => {
             preserveModules: true,
             preserveModulesRoot: './src',
             exports: 'named',
-            dir: './dist/lib'
-            // sourcemap: true
+            dir: './dist/lib',
           }
         ]
       },

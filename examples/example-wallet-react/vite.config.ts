@@ -27,5 +27,10 @@ const particleWasmPlugin: Plugin | undefined = {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), particleWasmPlugin]
+  base: './',
+  plugins: [react(), particleWasmPlugin],
+  build: {
+    minify: true,
+    chunkSizeWarningLimit: 3024
+  }
 })
