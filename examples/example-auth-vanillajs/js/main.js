@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const redirect_uri = 'http://localhost:3000/'
   const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
   const client_secret = 'ABC23'
-  XterioAuth.XterioAuth.init({ client_id, client_secret, redirect_uri })
+  XterioAuth.XterioAuth.init({ client_id, client_secret, redirect_uri }, 'Dev') //ENV:'Dev','Staging','Production'
 
   // call useLoginModal
   const { open, logout } = XterioAuth.useXterLoginModal({
