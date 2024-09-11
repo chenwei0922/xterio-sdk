@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       chunkSizeWarningLimit: 3024
     },
     define: {
-      __EXAMPLE_ENV__: mode === 'production' ? 'Staging' : 'Dev'
+      __EXAMPLE_ENV__: JSON.stringify(mode === 'production' ? 'Staging' : 'Dev')
     }
   }
 })

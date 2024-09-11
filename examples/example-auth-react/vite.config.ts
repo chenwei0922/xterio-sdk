@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
     base: './',
     plugins: [react()],
     define: {
-      __EXAMPLE_ENV__: mode === 'production' ? 'Staging' : 'Dev'
+      __EXAMPLE_ENV__: JSON.stringify(mode === 'production' ? 'Staging' : 'Dev')
     }
   }
 })

@@ -12,7 +12,7 @@ export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     define: {
-      __EXAMPLE_ENV__: mode === 'production' ? 'Staging' : 'Dev'
+      __EXAMPLE_ENV__: JSON.stringify(mode === 'production' ? 'Staging' : 'Dev')
     },
     base: env.VITE_BASE_URL,
     css: {
