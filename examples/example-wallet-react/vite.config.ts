@@ -2,6 +2,7 @@ import { ConfigEnv, defineConfig, Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
 import fs from 'fs'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 const particleWasmPlugin: Plugin | undefined = {
   name: 'particle-wasm',
@@ -28,7 +29,7 @@ const particleWasmPlugin: Plugin | undefined = {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
-  plugins: [react(), particleWasmPlugin],
+  plugins: [react(), particleWasmPlugin, nodePolyfills()],
   build: {
     minify: true,
     chunkSizeWarningLimit: 3024
