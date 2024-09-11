@@ -13,7 +13,6 @@ export class Loader {
     this.loader?.classList.remove('xa-hide')
   }
   hide() {
-    console.log('laoder', this.loader)
     this.loader?.classList.add('xa-hide')
   }
 }
