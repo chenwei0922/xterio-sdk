@@ -1,6 +1,7 @@
 export interface ISSoTokensParams {
   app_id: string
   client_id: string
+  client_secret: string
   redirect_uri: string
   response_type: string
   scope: string

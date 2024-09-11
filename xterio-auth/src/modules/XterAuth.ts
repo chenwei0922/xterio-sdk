@@ -96,12 +96,20 @@ export class XterioAuth {
   }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {
-    const { app_id = '', client_id = '', redirect_uri = '', mode = 'default', logout = '1' } = config
+    const {
+      app_id = '',
+      client_id = '',
+      client_secret = '',
+      redirect_uri = '',
+      mode = 'default',
+      logout = '1'
+    } = config
     const _env = env ?? Env.Dev
     const _baseURL = EnvBaseURLConst[_env]
     const _config: ISSoTokensParams = {
       app_id,
       client_id,
+      client_secret,
       redirect_uri,
       response_type: 'code',
       scope: 'all',
@@ -133,7 +141,6 @@ export class XterioAuth {
     })
   }
   private static clearData() {
-    XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
     XterioCache.deleteTokens()
     XterioCache.deleteUserInfo()
     XterioAuthTokensManager.removeTokens()

@@ -15,11 +15,13 @@ declare global {
 const devConfig = {
   redirect_uri: 'http://localhost:3000/',
   client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
+  client_secret: 'ABC23',
   app_id: ''
 }
 const stageConfig = {
   redirect_uri: location.href,
   client_id: '3094298453404953',
+  client_secret: 'mzmhYqcqDGdymblv5gb7s9OWcnYpH1ha',
   app_id: '6c684e202700'
 }
 const _config = __EXAMPLE_ENV__ === Env.Staging ? stageConfig : devConfig

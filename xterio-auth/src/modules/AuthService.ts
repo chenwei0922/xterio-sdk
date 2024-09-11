@@ -23,8 +23,8 @@ export class XterioAuthService {
    * @returns Promise < IUserInfo | null >
    */
   static async login(code: string) {
-    const { client_id, redirect_uri, grant_type } = XterioAuthInfo.config || {}
-    const param = { client_id, redirect_uri, grant_type, code }
+    const { client_id, client_secret, redirect_uri, grant_type } = XterioAuthInfo.config || {}
+    const param = { client_id, client_secret, redirect_uri, grant_type, code }
     const data = param
     log('go login')
 

@@ -3,8 +3,10 @@ import { Env, IUserInfo, LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth }
 console.log('initial')
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
+const client_secret = 'ABC23'
+const app_id = ''
 //4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
-XterioAuth.init({ client_id, redirect_uri }, Env.Dev)
+XterioAuth.init({ app_id, client_id, client_secret, redirect_uri }, Env.Dev)
 XterEventEmiter.subscribe((info: IUserInfo) => {
   console.log('emit userinfo=', info)
   if (p) {
