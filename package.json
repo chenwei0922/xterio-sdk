@@ -58,6 +58,7 @@
     "typescript-eslint": "^8.0.1"
   },
   "lint-staged": {
+    "!examples/example-auth-vanillajs/**": [],
     "*.{js,ts,jsx,tsx}": "eslint --fix"
   },
   "packageManager": "pnpm@9.9.0"

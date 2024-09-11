@@ -23,7 +23,7 @@
       "import": "./dist/es/style.css",
       "require": "./dist/es/style.css"
     },
-    "./dist/es/style.css": "./dist/es/style.css" 
+    "./dist/es/style.css": "./dist/es/style.css"
   },
   "style": "./dist/es/style.css",
   "files": [
@@ -46,6 +46,7 @@
     "test": "jest",
     "dev": "vite --port 3000",
     "build": "rm -rf dist/* && vite build",
+    "build:umd": "rm -rf dist/* && vite build --config vite.config.umdbuild.mts",
     "dev-watch": "vite build --watch",
     "preview": "vite preview"
   },
@@ -53,6 +54,7 @@
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/preset-typescript": "^7.24.7",
+    "@rollup/plugin-typescript": "^11.1.6",
     "@types/jest": "^29.5.12",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.3.0",

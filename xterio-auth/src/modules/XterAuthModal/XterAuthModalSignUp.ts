@@ -76,7 +76,6 @@ export class XterAuthModalSignUp extends BaseModalState {
       text: 'SIGN UP',
       disabled: true,
       onClick: (event) => {
-        console.log('signUpButton clicked')
         this.handleSignUp()
       }
       // wrapperClassNames: ['xa-login-button']
@@ -205,7 +204,6 @@ export class XterAuthModalSignUp extends BaseModalState {
   }
 
   private handleEmailChange(value: string): void {
-    console.log({ value })
     this.signUpButton?.setDisabled(value.length === 0)
   }
   private handlePasswordChange(value: string): void {
@@ -213,7 +211,6 @@ export class XterAuthModalSignUp extends BaseModalState {
   }
 
   private async handleSignUp() {
-    console.log(this.form)
     const userName = this.form.getFormItemValue(FomrItemsName.Email)
     const password = this.form.getFormItemValue(FomrItemsName.Password)
     const confirmPwd = this.form.getFormItemValue(FomrItemsName.ConfirmPassword)

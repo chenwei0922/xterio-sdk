@@ -108,7 +108,7 @@ export class XterioAuthService {
         error: true
       } as ILoginServiceResError
     })
-    log('ttl login', res.error ? 'failed' : 'success')
+    log('ttl login', res?.error ? 'failed' : 'success')
     if (!res?.error) {
       XterioAuthTokensManager.setTokens(res)
     }
@@ -152,8 +152,7 @@ export class XterioAuthService {
         error: true
       }
     })
-    log('ttl register', res.error ? 'failed' : 'success')
-    return res?.error ? { error: true, err_code: res.err_code } : { error: false }
+    return res?.error ? { error: true, err_code: res?.err_code } : { error: false }
   }
 
   static async registerConfirmService({
@@ -175,11 +174,10 @@ export class XterioAuthService {
         err_code: e.err_code
       } as ILoginServiceResError
     })
-    log('ttl register confirm', res.error ? 'failed' : 'success')
     if (!res?.error) {
       XterioAuthTokensManager.setTokens(res)
     }
-    return res.error ? res : { ...res, error: false }
+    return res?.error ? res : { ...res, error: false }
   }
 
   static async sendForgotCodeService({ email }: { email: string }): Promise<ILoginServiceRes> {
@@ -191,8 +189,7 @@ export class XterioAuthService {
         err_code: e.err_code
       } as ILoginServiceResError
     })
-    log('ttl forgot psd', res.error ? 'failed' : 'success')
-    return res.error ? res : { ...res, error: false }
+    return res?.error ? res : { ...res, error: false }
   }
 
   static async resetPassword({ email, code, password }: { email: string; code: string; password: string }) {
@@ -213,7 +210,6 @@ export class XterioAuthService {
         err_code: e.err_code
       } as ILoginServiceResError
     })
-    log('ttl forgot psd confirm', res.error ? 'failed' : 'success')
-    return res.error ? res : { ...res, error: false }
+    return res?.error ? res : { ...res, error: false }
   }
 }
