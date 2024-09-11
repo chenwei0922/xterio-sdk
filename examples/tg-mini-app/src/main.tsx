@@ -3,7 +3,7 @@ import 'src/styles/index.scss'
 import 'virtual:svg-icons-register'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
-import { XterioAuth } from '@xterio-sdk/auth'
+import { Env, XterioAuth } from '@xterio-sdk/auth'
 
 declare global {
   interface Window {
