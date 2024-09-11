@@ -90,9 +90,7 @@ export class XterAuthModalForgetPwd extends BaseModalState {
           }
           XterioAuthService.sendForgotCodeService({ email: this.form.getFormItemValue(ForgotFomrItemsName.Email) })
         },
-        onCountdownEnd: () => {
-          console.log('countdown end')
-        }
+        onCountdownEnd: () => {}
       }
     })
 
@@ -146,7 +144,6 @@ export class XterAuthModalForgetPwd extends BaseModalState {
       text: 'CONTINUE',
       disabled: true,
       onClick: (event) => {
-        console.log('continueButton clicked')
         this.handleUpdatePassword()
       }
       // wrapperClassNames: ['xa-login-button']
@@ -176,7 +173,6 @@ export class XterAuthModalForgetPwd extends BaseModalState {
   }
 
   private handleEmailChange(value: string): void {
-    console.log({ value })
     this.continueButton?.setDisabled(value.length === 0)
   }
   private handlePasswordChange(value: string): void {
@@ -184,7 +180,6 @@ export class XterAuthModalForgetPwd extends BaseModalState {
   }
 
   private async handleUpdatePassword() {
-    console.log(this.form)
     const email = this.form.getFormItemValue(ForgotFomrItemsName.Email)
     const password = this.form.getFormItemValue(ForgotFomrItemsName.Password)
     const confirmPwd = this.form.getFormItemValue(ForgotFomrItemsName.ConfirmPassword)

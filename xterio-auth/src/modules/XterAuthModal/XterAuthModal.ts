@@ -36,7 +36,6 @@ export class XterAuthModal {
   }
 
   public static init(apiUrl: string): void {
-    console.log('init.....')
     if (!XterAuthModal._instance) {
       XterAuthModal._instance = new XterAuthModal(apiUrl)
     }

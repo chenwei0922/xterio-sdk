@@ -109,7 +109,6 @@ export class XterAuthModalSignIn extends BaseModalState {
       text: 'SIGN IN',
       disabled: true,
       onClick: (event) => {
-        console.log('signUpButton clicked')
         this.handleLogin()
       }
     })
@@ -126,7 +125,6 @@ export class XterAuthModalSignIn extends BaseModalState {
   }
 
   private handleEmailChange(value: string): void {
-    console.log({ value })
     this.loginButton?.setDisabled(value.length === 0 || !this.form.findFormItem(FomrItemsName.Email)?.isValidate())
   }
   private handlePasswordChange(value: string): void {

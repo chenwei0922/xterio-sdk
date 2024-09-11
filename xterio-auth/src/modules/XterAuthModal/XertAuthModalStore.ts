@@ -31,7 +31,6 @@ export class XterAuthModalStore extends ModalObservable {
     }
     this.userState = new Proxy(_userState, {
       set: (target, prop, value) => {
-        console.log('userinfo settttt', value, target)
         if (target[prop as keyof UserState] !== value) {
           target[prop as keyof UserState] = value
           this.setPersistUserInfo()
