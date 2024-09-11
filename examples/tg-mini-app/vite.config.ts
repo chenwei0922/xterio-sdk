@@ -6,14 +6,13 @@ import { createHtmlPlugin } from 'vite-plugin-html'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import basicSsl from '@vitejs/plugin-basic-ssl'
-import { Env } from '@xterio-sdk/auth'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
     define: {
-      __EXAMPLE_ENV__: mode === 'production' ? Env.Staging : Env.Dev
+      __EXAMPLE_ENV__: mode === 'production' ? 'Staging' : 'Dev'
     },
     base: env.VITE_BASE_URL,
     css: {

@@ -1,6 +1,5 @@
 declare enum Env {
   Dev = 'Dev',
-  Staging = 'Staging',
-  Production = 'Production'
+  Staging = 'Staging'
 }
 declare const __EXAMPLE_ENV__: Env
