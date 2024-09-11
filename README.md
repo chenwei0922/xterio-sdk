@@ -12,8 +12,8 @@ import { XterioAuth, XterEventEmiter } from '@xterio-sdk/auth'
 //1. Initialize only once
 const redirect_uri = ''
 const client_id = ''
-const client_secret = ''
-XterioAuth.init({ client_id, client_secret, redirect_uri })
+const app_id = ''
+XterioAuth.init({app_id, client_id, redirect_uri })
 
 //2. Register to listen for user information
 XterEventEmiter.subscribe(info=>{
@@ -34,7 +34,7 @@ XterioAuth.login()
 #### `init(config, env?:Env)`
 Initialize Function
 ```ts
-XterioAuth.init({ client_id:'', client_secret:'', redirect_uri:'' }, Env.Dev)
+XterioAuth.init({app_id:'', client_id:'', redirect_uri:'' }, Env.Dev)
 ```
 
 #### `login(mode?: LoginType)`

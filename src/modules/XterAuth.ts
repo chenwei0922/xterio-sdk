@@ -96,23 +96,28 @@ export class XterioAuth {
   }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {
-    const { client_id, client_secret, redirect_uri = '', mode } = config
+    const { app_id = '', client_id = '', redirect_uri = '', mode = 'default', logout = '1' } = config
     const _env = env ?? Env.Dev
     const _baseURL = EnvBaseURLConst[_env]
     const _config: ISSoTokensParams = {
-      client_id: client_id || '',
-      client_secret: client_secret || '',
+      app_id,
+      client_id,
       redirect_uri,
       response_type: 'code',
       scope: 'all',
-      mode: mode || 'default',
+      mode,
       grant_type: 'authorization_code',
-      logout: '1'
+      logout
     }
-    XterioAuthInfo.client_id = client_id || ''
+    XterioAuthInfo.app_id = app_id
+    XterioAuthInfo.client_id = client_id
     XterioAuthInfo.env = _env
     XterioAuthInfo.baseURL = _baseURL
-    XterioAuthInfo.authorizeUrl = _baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(_config)
+    const { response_type, scope } = _config
+    XterioAuthInfo.authorizeUrl =
+      _baseURL +
+      `/account/v1/oauth2/authorize?` +
+      qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     XterioAuthInfo.config = _config
 
     XterEventEmiter.clear()
@@ -146,8 +151,11 @@ export class XterioAuth {
     }
     if (mode && mode !== LoginType.Mini) {
       XterioAuthInfo.config = { ...XterioAuthInfo.config, mode }
+      const { response_type, scope, logout, client_id, redirect_uri } = XterioAuthInfo.config
       XterioAuthInfo.authorizeUrl =
-        XterioAuthInfo.baseURL + `/account/v1/oauth2/authorize?` + qs.stringify(XterioAuthInfo.config)
+        XterioAuthInfo.baseURL +
+        `/account/v1/oauth2/authorize?` +
+        qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     }
 
     if (XterioAuth.isLogin) {
