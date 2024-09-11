@@ -10,7 +10,6 @@ export class XterAuthModalForm {
 
   findFormItem(name: string) {
     const find = this.formList.find((item) => item.name === name)?.formItem
-    console.log({ find })
     return find
   }
 

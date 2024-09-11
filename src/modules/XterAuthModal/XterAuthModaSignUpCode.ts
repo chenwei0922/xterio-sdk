@@ -62,7 +62,6 @@ export class XterAuthModalSignUpCode extends BaseModalState {
       text: 'CONTINUE',
       disabled: true,
       onClick: (event) => {
-        console.log('signUpButton clicked')
         this.handleContinueSignUp()
       }
     })
@@ -99,7 +98,6 @@ export class XterAuthModalSignUpCode extends BaseModalState {
   }
 
   private async handleContinueSignUp() {
-    console.log(this.form)
     const code = this.form.getFormItemValue(ContinueFormItemsName.Code)
     const password = this.extraData?.password
     const username = this.extraData?.email
