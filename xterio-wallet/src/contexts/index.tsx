@@ -30,13 +30,7 @@ interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'sign
 
 const WalletContext = createContext<IWalletContextState>(initState as IWalletContextState)
 
-const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = ({
-  children,
-  env,
-  client_id,
-  client_secret,
-  redirect_uri
-}) => {
+const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = ({ children, env, ...rest }) => {
   const [mounted, setMounted] = useState<boolean>()
   const [aaAddress, setAaAddress] = useState('')
   const [userinfo, setUserInfo] = useState<IUserInfo | undefined>(XterioAuth.userinfo)
@@ -171,7 +165,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     if (mounted) return
     const init = async () => {
       log('xterio wallet initial')
-      await XterioAuth.init({ client_id, client_secret, redirect_uri }, env)
+      await XterioAuth.init(rest, env)
       XterEventEmiter.subscribe((info?: IUserInfo) => {
         log('emiter auth userinfo=', info)
         initLogic(info)
@@ -184,7 +178,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       log('unmount1')
       //tip: cannot unmount there,
     }
-  }, [client_id, client_secret, env, initLogic, mounted, redirect_uri])
+  }, [env, initLogic, mounted, rest])
 
   useEffect(() => {
     return () => {

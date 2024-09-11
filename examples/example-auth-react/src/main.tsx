@@ -10,11 +10,18 @@ createRoot(document.getElementById('root')!).render(
 )
 
 import '@xterio-sdk/auth/style/main.css'
-import { XterioAuth, Env } from '@xterio-sdk/auth'
-const redirect_uri = 'http://localhost:3000/'
-const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
-//4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
-const client_secret = 'ABC23'
-
+import { Env, XterioAuth } from '@xterio-sdk/auth'
+const devConfig = {
+  redirect_uri: 'http://localhost:3000/',
+  client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
+  app_id: ''
+}
+const stageConfig = {
+  redirect_uri: location.href,
+  client_id: '3094298453404953',
+  app_id: '6c684e202700'
+}
+const config = __EXAMPLE_ENV__ === Env.Staging ? stageConfig : devConfig
+const env = __EXAMPLE_ENV__
 //初始化一次即可
-XterioAuth.init({ client_id, client_secret, redirect_uri }, Env.Dev)
+XterioAuth.init(config, env)

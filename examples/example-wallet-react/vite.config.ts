@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 import fs from 'fs'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { Env } from '@xterio-sdk/auth'
 
 const particleWasmPlugin: Plugin | undefined = {
   name: 'particle-wasm',
@@ -27,11 +28,16 @@ const particleWasmPlugin: Plugin | undefined = {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  base: './',
-  plugins: [react(), particleWasmPlugin, nodePolyfills()],
-  build: {
-    minify: true,
-    chunkSizeWarningLimit: 3024
+export default defineConfig(({ mode }) => {
+  return {
+    base: './',
+    plugins: [react(), particleWasmPlugin, nodePolyfills()],
+    build: {
+      minify: true,
+      chunkSizeWarningLimit: 3024
+    },
+    define: {
+      __EXAMPLE_ENV__: mode === 'production' ? Env.Staging : Env.Dev
+    }
   }
 })

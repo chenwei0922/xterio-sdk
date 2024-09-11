@@ -12,12 +12,20 @@ declare global {
   }
 }
 
-const redirect_uri = 'http://localhost:3000/'
-const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
-//4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
-const client_secret = 'ABC23'
+const devConfig = {
+  redirect_uri: 'http://localhost:3000/',
+  client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
+  app_id: ''
+}
+const stageConfig = {
+  redirect_uri: location.href,
+  client_id: '3094298453404953',
+  app_id: '6c684e202700'
+}
+const _config = __EXAMPLE_ENV__ === Env.Staging ? stageConfig : devConfig
+const env = __EXAMPLE_ENV__
 
-XterioAuth.init({ client_id, client_secret, redirect_uri })
+XterioAuth.init(_config, env)
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 // react18 concurrent，dev模式下，开启StrictMode 会渲染两次

@@ -4,8 +4,7 @@ console.log('initial')
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 //4gsmgur6gkp8u9ps8dlco3k7eo, 4gsmgur6gkp8u9ps8dlco3aaaa
-const client_secret = 'ABC23'
-XterioAuth.init({ client_id, client_secret, redirect_uri }, Env.Dev)
+XterioAuth.init({ client_id, redirect_uri }, Env.Dev)
 XterEventEmiter.subscribe((info: IUserInfo) => {
   console.log('emit userinfo=', info)
   if (p) {

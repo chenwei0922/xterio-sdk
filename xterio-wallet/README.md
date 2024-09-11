@@ -30,8 +30,8 @@ import '@xterio-sdk/wallet/style/main.css'
 import '@xterio-sdk/auth/style/main.css'
 
 const config: IXterioWalletContextProps = {
+  app_id: '',
   client_id:'',
-  client_secret:'',
   redirect_uri:'',
   env: Env.Dev
 }
@@ -150,7 +150,7 @@ export default App
 ### 3.1 `XterioWalletProvider`
 the wallet context
 ```tsx
-<XterioWalletProvider client_id="" client_secret="" redirect_uri="" env={Env.Dev}></XterioWalletProvider>
+<XterioWalletProvider app_id="" client_id="" redirect_uri="" env={Env.Dev}></XterioWalletProvider>
 ```
 
 ### 3.2 `useXterioWalletContext()`

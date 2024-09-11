@@ -31,7 +31,9 @@ export class XterioWalletService extends XterioAuthService {
         wallet_name
       },
       '',
-      { sdkVersion: getPackageVersion() }
+      {
+        'X-SDK-Version': 'wallet-' + getPackageVersion()
+      }
     )
       .then(() => {
         log('bind aa wallet success.')

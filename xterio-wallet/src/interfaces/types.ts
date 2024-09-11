@@ -6,12 +6,9 @@ import type {
   TypedDataV1,
   TypedMessage
 } from '@particle-network/auth-core'
-import type { Env } from '@xterio-sdk/auth'
+import type { Env, ISSoTokensParams } from '@xterio-sdk/auth'
 
-export interface IXterioWalletContextProps {
-  redirect_uri: string
-  client_id: string
-  client_secret: string
+export interface IXterioWalletContextProps extends Partial<ISSoTokensParams> {
   env?: Env
 }
 

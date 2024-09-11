@@ -3,8 +3,10 @@ import { LoginType } from 'interfaces/loginInfo'
 import { XterioCache } from './XterCache'
 
 export class XterioAuthInfo {
-  /** app id */
+  /** client id */
   static client_id: string = ''
+  /** app id */
+  static app_id: string = ''
   /** app env */
   static env: Env
   /** service base url */

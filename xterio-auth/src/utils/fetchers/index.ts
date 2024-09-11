@@ -54,12 +54,13 @@ const fetcher = async <T>({ method, path, params, headers, data, Authorization }
     method,
     headers: {
       'content-type': 'application/json',
-      sdkVersion: getPackageVersion(),
-      platform: 'pc',
-      clientId: XterioAuthInfo.client_id,
-      timestamp: Date.now().toString(),
-      language: 'en',
-      nonce: randomNonceStr(),
+      'X-SDK-Version': 'auth-' + getPackageVersion(),
+      'X-Platform': 'Web',
+      'X-App-ID': XterioAuthInfo.app_id,
+      'X-Client-ID': XterioAuthInfo.client_id,
+      'X-Timestamp': Date.now().toString(),
+      'X-Language': 'en',
+      'X-Nonce': randomNonceStr(),
       Authorization: Authorization || XterioCache.tokens?.id_token || '',
       ...headers
     }
