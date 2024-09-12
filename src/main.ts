@@ -20,6 +20,14 @@ window.onload = () => {
   const logoutBtn = document.getElementById('logout')
   const emailBtn = document.getElementById('login_email')
   const miniBtn = document.getElementById('login_mini')
+  const a = document.getElementById('getIdToken')
+  if (a) {
+    a.onclick = async () => {
+      // XterioAuth.
+      const id_token = await XterioAuth.getIdToken()
+      console.log('id_token=', id_token)
+    }
+  }
   if (miniBtn) {
     miniBtn.onclick = () => {
       // XterioAuth.
