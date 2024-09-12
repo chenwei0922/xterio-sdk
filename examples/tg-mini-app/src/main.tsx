@@ -19,7 +19,7 @@ const devConfig = {
   app_id: ''
 }
 const stageConfig = {
-  redirect_uri: location.href,
+  redirect_uri: location.href.replace(/[?&]code=[^&]+/, ''),
   client_id: '3094298453404953',
   client_secret: 'mzmhYqcqDGdymblv5gb7s9OWcnYpH1ha',
   app_id: '6c684e202700'
