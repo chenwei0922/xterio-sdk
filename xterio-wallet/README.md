@@ -8,9 +8,6 @@ or
 
 `yarn add @xterio-sdk/wallet @xterio-sdk/auth`
 
-or
-
-`pnpm add @xterio-sdk/wallet @xterio-sdk/auth` 
 
 ## 2.Configuration
 
