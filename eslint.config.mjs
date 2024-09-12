@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint'
 import pluginPrettierRecommendedConfigs from 'eslint-plugin-prettier/recommended'
 
 export default tseslint.config(
-  { ignores: ['**/*/dist', 'node_modules', 'examples/example-auth-vanillajs'] },
+  { ignores: ['**/*/dist', 'node_modules', 'examples/example-auth-vanillajs', 'examples/**/*'] },
   {
     extends: [
       //eslint 默认规则

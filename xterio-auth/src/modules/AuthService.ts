@@ -23,12 +23,14 @@ export class XterioAuthService {
    * @returns Promise < IUserInfo | null >
    */
   static async login(code: string) {
-    const { client_id, client_secret, redirect_uri, grant_type } = XterioAuthInfo.config || {}
+    const { client_id = '', client_secret = '', redirect_uri = '', grant_type = '' } = XterioAuthInfo.config || {}
     const param = { client_id, client_secret, redirect_uri, grant_type, code }
-    const data = param
+    const data = new URLSearchParams(param)
     log('go login')
 
-    const res = await postFetcher<ITokenRes, typeof data>(`/account/v1/oauth2/token`, data)
+    const res = await postFetcher<ITokenRes, typeof data>(`/account/v1/oauth2/token`, data, '', {
+      ['content-type']: 'application/x-www-form-urlencoded'
+    })
       .then((res) => {
         log('login success.')
         XterioAuthTokensManager.setTokens(res)

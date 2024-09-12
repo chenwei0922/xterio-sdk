@@ -47,7 +47,8 @@
   "scripts": {
     "lint": "eslint .",
     "dev": "vite --port 3000",
-    "build": "rm -rf dist/* && vite build",
+    "build": "rm -rf dist/* && vite build && npm run build:umd",
+    "build:umd": "vite build --config vite.umd.config.mts",
     "preview": "vite preview"
   },
   "peerDependencies": {

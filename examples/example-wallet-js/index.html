@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <link href="./lib/auth/umd/style.css" />
+  <link href="./lib/wallet/umd/style.css" />
+  <script src="./lib/auth/umd/index.min.js"></script>
+  <script src="./lib/wallet/umd/index.min.js"></script>
+</head>
+
+<body>
+  <div id="app"></div>
+  <div id="xterio-sdk">
+    <h3>xterio-auth sdk</h3>
+    <div class="card">
+      <p>是否登录:
+      <div></div>
+      </p>
+      <p>用户信息:
+      <div></div>
+      </p>
+      <button id="login">默认登录</button>
+      <button id="login-email">邮箱登录</button>
+      <button id="login-tt">TT 登录</button>
+      <button id="logout">退出登录</button>
+    </div>
+    <h3>xterio-wallet sdk</h3>
+    <div class="card">
+      <p>aa wallet address:
+      <div></div>
+      </p>
+      <p>aa wallet connected status:
+      <div></div>
+      </p>
+      <button id="connect">AA钱包连接</button>
+      <button id="disconnect">AA钱包断连</button>
+      <button id="obtain">AA钱包领取</button>
+      <button id="open">打开AA钱包</button>
+    </div>
+  </div>
+</body>
+<script type="text/babel" src="./src/index.js"></script>
+
+</html>

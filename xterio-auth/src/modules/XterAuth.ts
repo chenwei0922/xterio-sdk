@@ -37,7 +37,7 @@ export class XterioAuth {
 
     try {
       const { aud, exp = 0, sub } = JSON.parse(decode(payload)) as Payload
-      const isExpire = !aud || Date.now() > exp * 1000
+      const isExpire = !aud || Date.now() > (exp - 60) * 1000
       return !isExpire
     } catch (error) {
       log('invalid token 3', error)
@@ -45,7 +45,7 @@ export class XterioAuth {
     }
   }
 
-  private static async checkToken() {
+  private static async checkToken(_flag: string = 'init') {
     const _tokens = XterioCache.tokens
     if (_tokens) {
       XterioAuthTokensManager.setTokens(_tokens)
@@ -62,10 +62,11 @@ export class XterioAuth {
     log('check the tokens valid status:', isvalid)
     if (!isvalid) {
       this.clearData()
-    } else {
+    } else if (_flag === 'init') {
       //get userinfo
       await XterioAuthService.getUserInfo()
     }
+    return XterioAuthTokensManager.idToken || ''
   }
 
   private static async checkCode() {
@@ -93,6 +94,10 @@ export class XterioAuth {
     if (res?.uuid) {
       XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
     }
+  }
+
+  static async getIdToken() {
+    return await this.checkToken('getIdToken')
   }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {

@@ -59,7 +59,7 @@ function App() {
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
         <button onClick={() => login()}>默认登录</button>
         <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
-        <button onClick={() => login(LoginType.Mini)}>TT 登录</button>
+        <button onClick={() => login(LoginType.Mini)}>TG 登录</button>
         <button onClick={logout}>退出登录</button>
       </div>
 

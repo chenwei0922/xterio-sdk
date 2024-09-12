@@ -75,18 +75,21 @@ export default defineConfig(({ command, mode }) => {
         external: [/@xterio-sdk\/auth\/*/, /react\/*/, /react-dom\/*/, /@particle-network\/*/],
         input: ['./src/index.ts'],
         output: [
-          {
-            format: 'umd',
-            entryFileNames: `[name]${minify ? '.min' : ''}.js`,
-            exports: 'named',
-            dir: './dist/umd',
-            name: 'XterioWallet',
-            banner: `\n /*! XterioWallet v${version} */ \n`,
-            footer: `\n /*! XterioWallet v${version} */ \n`,
-            globals: {
-              '@xterio-sdk/auth': 'XterioAuth'
-            }
-          },
+          // {
+          //   //tip:pn 库用到react等三方库太多，umd形式使用过于负杂
+          //   format: 'umd',
+          //   entryFileNames: `[name]${minify ? '.min' : ''}.js`,
+          //   exports: 'named',
+          //   dir: './dist/umd',
+          //   name: 'XterioWallet',
+          //   banner: `\n /*! XterioWallet v${version} */ \n`,
+          //   footer: `\n /*! XterioWallet v${version} */ \n`,
+          //   globals: {
+          //     '@xterio-sdk/auth': 'XterioAuth',
+          //     'react': 'React',
+          //     'react-dom': 'ReactDOM',
+          //   }
+          // },
           {
             format: 'esm',
             entryFileNames: '[name].js',
