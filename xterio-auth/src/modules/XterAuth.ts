@@ -12,7 +12,7 @@ import { decode } from 'js-base64'
 const EnvBaseURLConst: Record<Env, string> = {
   [Env.Dev]: 'https://api.playvrs.net',
   [Env.Staging]: 'https://api.xterio.net',
-  [Env.Production]: 'https://api.xterio.net'
+  [Env.Production]: 'https://api.xter.io'
 }
 
 export class XterioAuth {
