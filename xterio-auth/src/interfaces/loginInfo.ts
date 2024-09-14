@@ -110,3 +110,21 @@ export interface IRefreshServiceBody {
 export interface IRegisterConfirmServiceBody extends Omit<ILoginServiceBody, 'h-recaptcha-response'> {
   code: string
 }
+export enum OpenPageMode {
+  alert = 'alert', //open alert
+  page = 'page', //open new page
+  iframeDom = 'dom', //return iframe dom
+  iframeUri = 'url' //return url
+}
+export enum PageType {
+  asset = 'asset',
+  nft = 'nft',
+  account = 'account',
+  wallet = 'wallet'
+}
+export interface PageOptionParam {
+  active?: 'ingame' | 'onchain'
+  keyword?: string
+  collection?: string
+  features?: { k: string; initValues: (number | string)[]; type?: string }[]
+}

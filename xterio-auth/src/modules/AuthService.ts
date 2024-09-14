@@ -214,4 +214,21 @@ export class XterioAuthService {
     })
     return res?.error ? res : { ...res, error: false }
   }
+
+  static async getOtacByTokens() {
+    const id_token = XterioAuthTokensManager.idToken
+    const refresh_token = XterioAuthTokensManager.refreshToken
+    const access_token = XterioAuthTokensManager.accessToken
+    if (!id_token || !refresh_token) {
+      return ''
+    }
+    const res = await postFetcher<{ code?: string }, unknown>(`/auth/v1/otac`, {
+      access_token,
+      id_token,
+      refresh_token
+    }).catch(() => {
+      return { code: '' }
+    })
+    return res?.code || ''
+  }
 }

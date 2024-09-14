@@ -29,9 +29,33 @@ XterioAuth.login()
 ...
 ```
 
-## 3. API Reference
+## 3. How to get userinfo
+### `XterioAuth.userinfo` (`not recommend`)
 
-### 3.1 Method
+### `XterioAuth.getUserInfo((info) => {})` (`recommend`)
+```ts
+//example
+XterioAuth.getUserInfo((info) => {
+  //info:IUserInfo
+})
+```
+
+### `XterEventEmiter.subscribe((info) => {})`
+```ts
+//example1
+XterEventEmiter.subscribe((info: IUserInfo) => {
+  updateInfo(info)
+})
+
+//example2
+XterEventEmiter.subscribe<IUserInfo>((info) => {
+  updateInfo(info)
+})
+```
+
+## 4. API Reference
+
+### 4.1 Method
 #### `init(config, env?:Env)`
 Initialize Function
 ```ts
@@ -52,7 +76,42 @@ quit xterio
 XterioAuth.logout()
 ```
 
-### 3.2 Property
+#### `getIdToken()`
+check whether the idToken is valid. If the idToken is invalid, empty string is returned, else the idToken.
+```ts
+await XterioAuth.getIdToken() //string
+```
+
+#### `getUserInfo(p:Function)`
+get userinfo with callback
+```ts
+//example
+XterioAuth.getUserInfo((info) => {
+  //info:IUserInfo
+})
+```
+
+#### `openPage(page:PageType,mode?:OpenPageMode, options?:PageOptionParam)`
+default mode: `OpenPageMode.alert`
+```ts
+//example1: page:asset, mode:alert
+XterioAuth.openPage(PageType.asset, OpenPageMode.alert, {active: 'ingame'})
+
+//example2: page:account, mode:page
+XterioAuth.openPage(PageType.account, OpenPageMode.page)
+
+//example3: page:wallet, mode:iframeDom
+await XterioAuth.openPage(PageType.wallet, OpenPageMode.iframeDom) //return: domNode
+
+//example4: page:nft, mode:iframeUri
+await XterioAuth.openPage(PageType.nft, OpenPageMode.iframeUri, {
+  keyword: '',
+  collection: '',
+  features: [{ k: '', initValues: [], type: '' }]
+}) //return: uri
+```
+
+### 4.2 Property
 #### `isLogin`
 whether to log in
 ```ts
@@ -65,7 +124,7 @@ get xterio user information
 XterioAuth.userinfo
 ```
 
-### 3.3 EventEmiter
+### 4.3 EventEmiter
 
 #### `subscribe(callback:Func, _event?: string)`
 ```ts
@@ -90,5 +149,43 @@ XterEventEmiter.off(cb, 'event_name')
 #### `clear()`
 clear all listeners
 
+## 5. Interface/Type
+### `Env`
+```ts
+export enum Env {
+  Dev = 'Dev',
+  Staging = 'Staging',
+  Production = 'Production'
+}
+```
+
+### `LoginType`
+```ts
+export enum LoginType {
+  Default = 'default',
+  Email = 'email',
+  Mini = 'mini'
+}
+```
+
+### `OpenPageMode`
+```ts
+export enum OpenPageMode {
+  alert = 'alert', //open alert
+  page = 'page', //open new page
+  iframeDom = 'dom', //return iframe dom
+  iframeUri = 'url' //return url
+}
+```
+
+### `PageType`
+```ts
+export enum PageType {
+  asset = 'asset',
+  nft = 'nft',
+  account = 'account',
+  wallet = 'wallet'
+}
+```
 
 
