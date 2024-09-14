@@ -150,7 +150,8 @@ export class XterioAuth {
 
     XterEventEmiter.clear()
     XterEventEmiter.subscribe((info: IUserInfo) => {
-      XterioAuthInfo.onAccount?.(info)
+      log('the userinfo callback count=', XterioAuthInfo.onAccount.length)
+      XterioAuthInfo.onAccount.map((f) => f(info))
     })
 
     // init XterAuthLoginModal
@@ -212,7 +213,7 @@ export class XterioAuth {
     location.href = XterioAuthInfo.authorizeUrl
   }
   static getUserInfo(callback: (res: IUserInfo) => void) {
-    XterioAuthInfo.onAccount = callback
+    XterioAuthInfo.onAccount.push(callback)
     if (XterioAuth.userinfo) {
       callback(XterioAuth.userinfo)
     }

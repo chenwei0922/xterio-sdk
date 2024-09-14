@@ -163,29 +163,15 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
 
   useEffect(() => {
     if (mounted) return
-    const init = async () => {
-      log('xterio wallet initial')
-      await XterioAuth.init(rest, env)
-      XterEventEmiter.subscribe((info?: IUserInfo) => {
-        log('emiter auth userinfo=', info)
-        initLogic(info)
-      })
-      initLogic(XterioAuth.userinfo)
-    }
     setMounted(true)
-    init()
-    return () => {
-      log('unmount1')
-      //tip: cannot unmount there,
-    }
+    log('xterio wallet initial')
+    XterioAuth.init(rest, env)
+    XterioAuth.getUserInfo((info) => {
+      log('emiter auth userinfo=', info)
+      initLogic(info)
+    })
   }, [env, initLogic, mounted, rest])
 
-  useEffect(() => {
-    return () => {
-      log('unmount2')
-      XterEventEmiter.unsubscribe()
-    }
-  }, [])
   return (
     <WalletContext.Provider
       value={{

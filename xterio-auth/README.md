@@ -17,12 +17,16 @@ const app_id = ''
 XterioAuth.init({app_id, client_id, client_secret, redirect_uri })
 
 //2. Register to listen for user information
-XterEventEmiter.subscribe(info=>{
+const unsubscribe = XterEventEmiter.subscribe(info=>{
   //subscribe
   console.log('info=', info)
 })
-//unsubscribe
-XterEventEmiter.unsubscribe()
+
+unsubscribe() //unsubscribe
+
+//or
+
+XterEventEmiter.unsubscribe()//unsubscribe
 
 //3. SignIn
 XterioAuth.login()
@@ -32,7 +36,7 @@ XterioAuth.login()
 ## 3. How to get userinfo
 ### `XterioAuth.userinfo` (`not recommend`)
 
-### `XterioAuth.getUserInfo((info) => {})` (`recommend`)
+### `XterioAuth.getUserInfo((info) => {})`
 ```ts
 //example
 XterioAuth.getUserInfo((info) => {
@@ -43,12 +47,12 @@ XterioAuth.getUserInfo((info) => {
 ### `XterEventEmiter.subscribe((info) => {})`
 ```ts
 //example1
-XterEventEmiter.subscribe((info: IUserInfo) => {
+const unsubscribe = XterEventEmiter.subscribe((info: IUserInfo) => {
   updateInfo(info)
 })
 
 //example2
-XterEventEmiter.subscribe<IUserInfo>((info) => {
+const unsubscribe = XterEventEmiter.subscribe<IUserInfo>((info) => {
   updateInfo(info)
 })
 ```
@@ -128,16 +132,17 @@ XterioAuth.userinfo
 
 #### `subscribe(callback:Func, _event?: string)`
 ```ts
-XterEventEmiter.subscribe(()=>{}) //default: XTERIO_EVENTS.ACCOUNT
-```
+//subscribe userinfo
+const unsubscribe = XterEventEmiter.subscribe(()=>{}) //default: XTERIO_EVENTS.ACCOUNT
 
-#### `unsubscribe(_event?: string)`
-```ts
+//unsubscribe userinfo(this userinfo event)
+unsubscribe()
+
+//unsubscribe userinfo(all userinfo event)
 XterEventEmiter.unsubscribe() //default: XTERIO_EVENTS.ACCOUNT
 ```
 
 #### `off/on(event:string, callback:Func)`
-
 ```ts
 const cb = (info) => {
   console.log('emiter auth userinfo==', info)
