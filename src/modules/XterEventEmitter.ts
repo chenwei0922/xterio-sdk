@@ -34,28 +34,22 @@ export class XterEventEmiter {
     }
   }
 
-  //one to one
-  private static _cacheMap: Map<string, Func> = new Map()
   static subscribe<T>(callback: (p: T) => void, _event?: string) {
     const _key = _event || XTERIO_EVENTS.ACCOUNT
     log('subscribe event', _key)
-    const _callback = (info: T) => {
-      callback?.(info)
+    this.on(_key, callback)
+    //return unsubscribe func
+    return () => {
+      log('unsubscribe this event', _key)
+      this.off(_key, callback)
     }
-    this._cacheMap.set(_key, _callback)
-    this.on(_key, _callback)
   }
   static unsubscribe(_event?: string) {
     const _key = _event || XTERIO_EVENTS.ACCOUNT
-    log('unsubscribe event', _key)
-    const _callback = this._cacheMap.get(_key)
-    if (_callback) {
-      this.off(_key, _callback)
-      this._cacheMap.delete(_key)
-    }
+    log('unsubscribe all event', _key)
+    this.remove(_key)
   }
   static clear() {
     this.listeners = {}
-    this._cacheMap.clear()
   }
 }

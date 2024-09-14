@@ -22,7 +22,7 @@ export class XterioAuthInfo {
   /** user account */
   static userInfo?: IUserInfo
   /** account callback function */
-  static onAccount?(p: IUserInfo): void
+  static onAccount: ((p: IUserInfo) => void)[] = []
   /** login way */
   static loginType?: LoginType
   /** otac(2m expired) */
