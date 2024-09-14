@@ -1,4 +1,4 @@
-import type { ISSoTokensParams, Payload } from 'interfaces/loginInfo'
+import type { ISSoTokensParams, IUserInfo, Payload } from 'interfaces/loginInfo'
 import { Env, LoginType } from 'interfaces/loginInfo'
 import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
@@ -8,11 +8,25 @@ import { XterAuthModal } from './XterAuthModal/XterAuthModal'
 import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
+import { openPage } from './XterPage'
 
-const EnvBaseURLConst: Record<Env, string> = {
-  [Env.Dev]: 'https://api.playvrs.net',
-  [Env.Staging]: 'https://api.xterio.net',
-  [Env.Production]: 'https://api.xter.io'
+type EnvItemType = {
+  API_BASE: string
+  PAGE_BASE: string
+}
+const EnvBaseURLConst: Record<Env, EnvItemType> = {
+  [Env.Dev]: {
+    API_BASE: 'https://api.playvrs.net',
+    PAGE_BASE: 'https://d39wr9n5mj2b6n.cloudfront.net'
+  },
+  [Env.Staging]: {
+    API_BASE: 'https://api.xterio.net',
+    PAGE_BASE: 'https://d3vi0apu54mmeo.cloudfront.net'
+  },
+  [Env.Production]: {
+    API_BASE: 'https://api.xter.io',
+    PAGE_BASE: 'https://www.xter.io'
+  }
 }
 
 export class XterioAuth {
@@ -110,7 +124,7 @@ export class XterioAuth {
       logout = '1'
     } = config
     const _env = env ?? Env.Dev
-    const _baseURL = EnvBaseURLConst[_env]
+    const _baseURL = EnvBaseURLConst[_env].API_BASE
     const _config: ISSoTokensParams = {
       app_id,
       client_id,
@@ -126,6 +140,7 @@ export class XterioAuth {
     XterioAuthInfo.client_id = client_id
     XterioAuthInfo.env = _env
     XterioAuthInfo.baseURL = _baseURL
+    XterioAuthInfo.pageURL = EnvBaseURLConst[_env].PAGE_BASE
     const { response_type, scope } = _config
     XterioAuthInfo.authorizeUrl =
       _baseURL +
@@ -134,6 +149,9 @@ export class XterioAuth {
     XterioAuthInfo.config = _config
 
     XterEventEmiter.clear()
+    XterEventEmiter.subscribe((info: IUserInfo) => {
+      XterioAuthInfo.onAccount?.(info)
+    })
 
     // init XterAuthLoginModal
     // must init before async function
@@ -193,4 +211,18 @@ export class XterioAuth {
     log('going to authorize ...')
     location.href = XterioAuthInfo.authorizeUrl
   }
+  static getUserInfo(callback: (res: IUserInfo) => void) {
+    XterioAuthInfo.onAccount = callback
+    if (XterioAuth.userinfo) {
+      callback(XterioAuth.userinfo)
+    }
+  }
+  static openPage = openPage
 }
+
+/**
+ * how to get user info, recommend way2.
+ * way1:XterioAuth.userinfo
+ * way2:XterioAuth.getUserInfo((info)=>{})
+ * way3:XterEventEmiter.subscribe((info) => {})
+ */

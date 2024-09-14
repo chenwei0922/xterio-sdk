@@ -11,6 +11,8 @@ export class XterioAuthInfo {
   static env: Env
   /** service base url */
   static baseURL: string = ''
+  /** page base url */
+  static pageURL: string = ''
   /** authrorize url */
   static authorizeUrl: string = ''
   /** sdk initial config info */
@@ -23,6 +25,8 @@ export class XterioAuthInfo {
   static onAccount?(p: IUserInfo): void
   /** login way */
   static loginType?: LoginType
+  /** otac(2m expired) */
+  static otac?: string
 }
 
 export class XterioAuthTokensManager {
@@ -39,6 +43,9 @@ export class XterioAuthTokensManager {
   }
   static get refreshToken() {
     return XterioAuthInfo.tokens?.refresh_token || ''
+  }
+  static get accessToken() {
+    return XterioAuthInfo.tokens?.access_token || ''
   }
 }
 
