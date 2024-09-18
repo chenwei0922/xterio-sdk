@@ -15,7 +15,7 @@ const devConfig = {
   redirect_uri: 'http://localhost:3000/',
   client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
   client_secret: 'ABC23',
-  app_id: ''
+  app_id: 'apiautotest'
 }
 //跳出去跳回来得保证redirect_uri地址一致才行
 const stageConfig = {

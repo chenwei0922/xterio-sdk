@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { IUserInfo, LoginType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, OpenPageMode, PageType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
 
 defineProps<{ msg: string }>()
 
 const userinfo = ref('')
 const isLogin = ref(XterioAuth.isLogin)
+const unsubscribe = ref()
+const currentPage = ref(PageType.asset)
 
 onMounted(() => {
-  XterEventEmiter.subscribe((res: IUserInfo) => {
+  unsubscribe.value = XterEventEmiter.subscribe((res: IUserInfo) => {
     console.log('info1=', res)
     userinfo.value = JSON.stringify(res)
     isLogin.value = XterioAuth.isLogin
   })
 })
 onUnmounted(() => {
-  XterEventEmiter.unsubscribe()
+  unsubscribe.value?.()
 })
 
 const login = (mode?: LoginType) => {
@@ -25,6 +27,16 @@ const logout = () => {
   XterioAuth.logout()
   userinfo.value = ''
   isLogin.value = XterioAuth.isLogin
+}
+const openPage = async (_t: OpenPageMode) => {
+  const res = await XterioAuth.openPage(currentPage.value, _t)
+  if (_t === OpenPageMode.iframeDom) {
+    console.log('dom=', res)
+    alert(res)
+  } else if (_t === OpenPageMode.iframeUri) {
+    console.log('uri=', res)
+    alert(res)
+  }
 }
 </script>
 
@@ -45,6 +57,24 @@ const logout = () => {
     <button @click="login(LoginType.Email)">邮箱登录</button>
     <button @click="login(LoginType.Mini)">TT 登录</button>
     <button @click="logout()">退出登录</button>
+  </div>
+  <div className="card">
+    <p>当前要打开的页面: {{ currentPage }}</p>
+    <button @click="currentPage = PageType.asset">资产页</button>
+    <button @click="currentPage = PageType.account">账户页</button>
+    <button @click="currentPage = PageType.wallet">钱包页</button>
+    <button @click="currentPage = PageType.nft">nft页</button>
+  </div>
+  <div className="card">
+    <p>打开页面的方式如下：</p>
+    <button @click="openPage(OpenPageMode.alert)">弹框形式(iframe)</button>
+    <button @click="openPage(OpenPageMode.page)">新页面形式</button>
+    <button @click="openPage(OpenPageMode.iframeDom)">
+      dom形式
+    </button>
+    <button @click="openPage(OpenPageMode.iframeUri)">
+      uri形式
+    </button>
   </div>
 </template>
 

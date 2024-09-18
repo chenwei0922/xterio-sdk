@@ -37,7 +37,7 @@ git init
 git add -A
 git commit -m "$cmg"
 
-git push -f git@gitlab.itlibecc.com:changying/platform/xteriosdk-web.git main:$branch
+git push -f git@github.com:XterioTech/XterioSDK-Web.git main:$branch
 
 rm -rf .git
 
