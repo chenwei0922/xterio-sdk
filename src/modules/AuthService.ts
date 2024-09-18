@@ -100,10 +100,11 @@ export class XterioAuthService {
    * @param password password
    * @returns Promise <ILoginServiceRes>
    */
-  static async loginService(username: string, password: string): Promise<ILoginServiceRes> {
+  static async loginService(username: string, password: string, hcaptchaToken?: string): Promise<ILoginServiceRes> {
     const res = await postFetcher<ILoginServiceRes, ILoginServiceBody>('/account/v1/login', {
       username,
-      password
+      password,
+      'h-recaptcha-response': hcaptchaToken
     }).catch((e) => {
       return {
         ...e,
@@ -133,11 +134,13 @@ export class XterioAuthService {
   static async registerService({
     username,
     password,
-    subscribe
+    subscribe,
+    hcaptchaResponseToken = ''
   }: {
     username: string
     password: string
     subscribe: boolean
+    hcaptchaResponseToken?: string
   }): Promise<{
     error: boolean
     err_code?: string | number
@@ -147,7 +150,7 @@ export class XterioAuthService {
       password,
       subscribe: subscribe ? 1 : 0,
       invite_code: '', // sdk 暂不支持 invite_code
-      'h-recaptcha-response': '' // sdk 暂不支持 recaptch
+      'h-recaptcha-response': hcaptchaResponseToken
     }).catch((e) => {
       return {
         ...e,

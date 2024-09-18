@@ -9,6 +9,8 @@ import { XterAuthModal } from './XterAuthModal'
 import { XterAuthModalForm } from './XterAuthModalForm'
 import { validateEmail, validatePassword, validatePasswordMatch } from './utils'
 import { XterioAuthService } from 'modules/AuthService'
+import { disableCaptchaVerify } from './utils/config'
+import { EnvVariableConfig } from 'utils'
 
 enum FomrItemsName {
   Email = 'email',
@@ -46,6 +48,9 @@ export class XterAuthModalSignUp extends BaseModalState {
 
     // Confirm Password Input
     this.renderConfirmPwdInput(_container)
+
+    // hCaptcha
+    this.renderHCaptcha(_container)
 
     // tips
     this.renderTipsCheckList(_container)
@@ -154,6 +159,20 @@ export class XterAuthModalSignUp extends BaseModalState {
     this.append(_container, formItem.getElement())
   }
 
+  private renderHCaptcha(_container: HTMLElement) {
+    if (disableCaptchaVerify) return
+    const hcaptchaContainer = document.createElement('div')
+    hcaptchaContainer.id = 'hcaptcha'
+    hcaptchaContainer.classList.add('h-captcha')
+
+    hcaptcha.render(hcaptchaContainer, {
+      size: 'invisible',
+      sitekey: EnvVariableConfig?.[this.modal?.env].HCAPTCHA_SITE_KEY || ''
+    })
+
+    _container.appendChild(hcaptchaContainer)
+  }
+
   private renderPwdInput(_container: HTMLElement) {
     const pwdInput = new Input({
       label: 'PASSWORD',
@@ -210,6 +229,18 @@ export class XterAuthModalSignUp extends BaseModalState {
     // this.loginButton?.setDisabled(value.length === 0)
   }
 
+  private async getHCaptchaResponse(): Promise<string | null> {
+    if (disableCaptchaVerify) return null
+
+    try {
+      const hcaptchaResponsePromise = hcaptcha.execute({ async: true }) as Promise<HCaptchaResponse>
+      const { response } = await hcaptchaResponsePromise
+      return response || null
+    } catch {
+      return null
+    }
+  }
+
   private async handleSignUp() {
     const userName = this.form.getFormItemValue(FomrItemsName.Email)
     const password = this.form.getFormItemValue(FomrItemsName.Password)
@@ -225,11 +256,20 @@ export class XterAuthModalSignUp extends BaseModalState {
     }
 
     if (!userName || !password) return
+
     this.signUpButton?.setLoading(true)
+
+    const hcaptchaResponseToken = await this.getHCaptchaResponse()
+    if (!hcaptchaResponseToken) {
+      this.signUpButton?.setLoading(false)
+      return
+    }
+
     const { error, err_code } = await XterioAuthService.registerService({
       username: userName,
       password: password,
-      subscribe: subscribeChecked
+      subscribe: subscribeChecked,
+      hcaptchaResponseToken
     })
     this.signUpButton?.setLoading(false)
     if (error) {
@@ -257,9 +297,6 @@ export class XterAuthModalSignUp extends BaseModalState {
     }
 
     this.modal.switchModalState(EAuthState.SignupCode, { email: userName, password })
-    // if (isLoggedIn) {
-    //   this.modal.close()
-    // }
   }
 
   private append(container: HTMLElement, element: HTMLElement) {

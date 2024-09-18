@@ -156,7 +156,7 @@ export class XterioAuth {
 
     // init XterAuthLoginModal
     // must init before async function
-    XterAuthModal.init(_baseURL)
+    XterAuthModal.init({ apiUrl: _baseURL, env: _env })
     log(XterAuthModal.instance)
 
     await this.checkToken()
