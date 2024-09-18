@@ -1,6 +1,6 @@
 import qs from 'query-string'
 import { IResponse } from './interfaces'
-import { XterioAuthInfo } from 'modules/XterAuthInfo'
+import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from 'modules/XterAuthInfo'
 import { getPackageVersion, randomNonceStr } from 'utils/logger'
 import { XterioCache } from 'modules/XterCache'
 
@@ -10,6 +10,10 @@ async function resolveResp<T>(resp: Response): Promise<T> {
     if (resp.status === 401 && res.err_code === 91001) {
       // TOAST.noti('error', 'Your session has expired, please sign in again.')
       // loginEvent.emit('Expired')
+      XterioCache.deleteTokens()
+      XterioCache.deleteUserInfo()
+      XterioAuthTokensManager.removeTokens()
+      XterioAuthUserInfoManager.removeUserInfo()
     } else if (resp.status === 429) {
       // TOAST.noti('error', 'Operating too frequently, please try again later.')
     }
