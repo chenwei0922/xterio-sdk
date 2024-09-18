@@ -1,3 +1,8 @@
+/**
+ * 是否禁用 hCaptcha 验证
+ */
+export const disableCaptchaVerify = false
+
 export const errCodeMap = {
   11001: 'Wrong email or password.',
   11004: 'Too many attempts to login.',
