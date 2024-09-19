@@ -150,15 +150,15 @@ export class XterAuthModalSignIn extends BaseModalState {
     this.loginButton?.setDisabled(value.length === 0 || !this.form.findFormItem(FomrItemsName.Password)?.isValidate())
   }
 
-  private async getHCaptchaResponse(): Promise<string | null> {
-    if (disableCaptchaVerify) return null
+  private async getHCaptchaResponse(): Promise<string> {
+    if (disableCaptchaVerify) return ''
 
     try {
       const hcaptchaResponsePromise = hcaptcha.execute({ async: true }) as Promise<HCaptchaResponse>
       const { response } = await hcaptchaResponsePromise
-      return response || null
+      return response || ''
     } catch {
-      return null
+      return ''
     }
   }
 
@@ -170,7 +170,7 @@ export class XterAuthModalSignIn extends BaseModalState {
     this.loginButton?.setLoading(true)
 
     const hcaptchaResponseToken = await this.getHCaptchaResponse()
-    if (!hcaptchaResponseToken) {
+    if (!hcaptchaResponseToken && !disableCaptchaVerify) {
       this.loginButton?.setLoading(false)
       return
     }
