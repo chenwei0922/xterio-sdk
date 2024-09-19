@@ -229,15 +229,15 @@ export class XterAuthModalSignUp extends BaseModalState {
     // this.loginButton?.setDisabled(value.length === 0)
   }
 
-  private async getHCaptchaResponse(): Promise<string | null> {
-    if (disableCaptchaVerify) return null
+  private async getHCaptchaResponse(): Promise<string> {
+    if (disableCaptchaVerify) return ''
 
     try {
       const hcaptchaResponsePromise = hcaptcha.execute({ async: true }) as Promise<HCaptchaResponse>
       const { response } = await hcaptchaResponsePromise
-      return response || null
+      return response || ''
     } catch {
-      return null
+      return ''
     }
   }
 
@@ -260,7 +260,7 @@ export class XterAuthModalSignUp extends BaseModalState {
     this.signUpButton?.setLoading(true)
 
     const hcaptchaResponseToken = await this.getHCaptchaResponse()
-    if (!hcaptchaResponseToken) {
+    if (!hcaptchaResponseToken && !disableCaptchaVerify) {
       this.signUpButton?.setLoading(false)
       return
     }

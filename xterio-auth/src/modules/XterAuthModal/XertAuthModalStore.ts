@@ -42,7 +42,7 @@ export class XterAuthModalStore extends ModalObservable {
   }
 
   // 用户登录方法
-  public async login(username: string, password: string, hcaptchaResponseToken: string) {
+  public async login(username: string, password: string, hcaptchaResponseToken?: string) {
     const { error, err_code, access_token, id_token, refresh_token } = await XterioAuthService.loginService(
       username,
       password,
