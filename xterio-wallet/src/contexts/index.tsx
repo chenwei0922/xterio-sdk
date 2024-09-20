@@ -30,7 +30,12 @@ interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'sign
 
 const WalletContext = createContext<IWalletContextState>(initState as IWalletContextState)
 
-const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = ({ children, env, ...rest }) => {
+const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = ({
+  children,
+  env,
+  enableAuthInit = true,
+  ...rest
+}) => {
   const [mounted, setMounted] = useState<boolean>()
   const [aaAddress, setAaAddress] = useState('')
   const [userinfo, setUserInfo] = useState<IUserInfo | undefined>(XterioAuth.userinfo)
@@ -165,12 +170,15 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     if (mounted) return
     setMounted(true)
     log('xterio wallet initial')
-    XterioAuth.init(rest, env)
+    if (enableAuthInit) {
+      log('auth initial in wallet')
+      XterioAuth.init(rest, env)
+    }
     XterioAuth.getUserInfo((info) => {
       log('emiter auth userinfo=', info)
       initLogic(info)
     })
-  }, [env, initLogic, mounted, rest])
+  }, [enableAuthInit, env, initLogic, mounted, rest])
 
   return (
     <WalletContext.Provider

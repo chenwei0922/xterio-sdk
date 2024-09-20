@@ -10,6 +10,7 @@ import type { Env, ISSoTokensParams } from '@xterio-sdk/auth'
 
 export interface IXterioWalletContextProps extends Partial<ISSoTokensParams> {
   env?: Env
+  enableAuthInit?: boolean
 }
 
 export type PnUserInfoType = import('@particle-network/auth-core').UserInfo | undefined

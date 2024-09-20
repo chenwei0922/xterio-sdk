@@ -100,7 +100,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
           return userInfo
         })
         .catch((error: Error) => {
-          log('connect pn eoa error', error)
+          log('connect pn eoa error', error, targetChain, chains)
           return undefined
         })
       return res
