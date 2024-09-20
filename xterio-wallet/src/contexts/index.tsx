@@ -15,7 +15,7 @@ const initState = {
   disconnectWallet: () => {},
   obtainWallet: () => {}
 }
-interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData'> {
+interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData' | 'switchChain'> {
   userinfo: IUserInfo | undefined
   isLogin: boolean
   login(mode?: LoginType): Promise<void>
@@ -23,7 +23,7 @@ interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'sign
   aaAddress: string
   isConnect: boolean
   openWallet(): void
-  connectWallet(): void
+  connectWallet(chainId?: number): void
   disconnectWallet(): void
   obtainWallet(): void
 }
@@ -34,6 +34,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   children,
   env,
   enableAuthInit = true,
+  showOpenWalletIcon = false,
   ...rest
 }) => {
   const [mounted, setMounted] = useState<boolean>()
@@ -47,6 +48,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     connectPnAA,
     connectPnEoA,
     disconnectPnEoA,
+    switchChain,
     pnUserInfo: _p,
     isLogin: isPnLogin,
     signMessage,
@@ -97,10 +99,13 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     }
   }, [_p, aaAddress, connectPnAA, connectPnEoA, isLogin, isPnLogin])
 
-  const connectWallet = useCallback(async () => {
-    log('connect wallet')
-    await connectPnEoAAndAA(XterioAuthTokensManager.idToken)
-  }, [connectPnEoAAndAA])
+  const connectWallet = useCallback(
+    async (chainId?: number) => {
+      log('connect wallet')
+      await connectPnEoAAndAA(XterioAuthTokensManager.idToken, chainId)
+    },
+    [connectPnEoAAndAA]
+  )
 
   const disconnectWallet = useCallback(async () => {
     log('disconnect wallet')
@@ -194,11 +199,12 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
         openWallet,
         disconnectWallet,
         signMessage,
-        signTypedData
+        signTypedData,
+        switchChain
       }}
     >
       {children}
-      {!!isPnLogin && (
+      {showOpenWalletIcon && !!isPnLogin && (
         <div id="xterio-wallet-btn" onClick={openWallet}>
           Wallet
         </div>

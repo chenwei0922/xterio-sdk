@@ -31,7 +31,11 @@ const config: IXterioWalletContextProps = {
   client_id:'',
   client_secret: '',
   redirect_uri:'',
-  env: Env.Dev
+  env: Env.Dev,
+  //是否在wallet内部初始化auth，default: true
+  enableAuthInit = true,
+  //是否显示快捷按钮wallet，default: false
+  showOpenWalletIcon = false,
 }
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -178,6 +182,8 @@ aa wallet connection status
 #### `openWallet()`
 
 #### `signMessage()`
+
+#### `switchChain(_id?: number)`
 
 ### 3.3 `useXterioTransaction(contract?, funcName?)`
 

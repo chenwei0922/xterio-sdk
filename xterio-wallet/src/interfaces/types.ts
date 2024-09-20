@@ -11,6 +11,7 @@ import type { Env, ISSoTokensParams } from '@xterio-sdk/auth'
 export interface IXterioWalletContextProps extends Partial<ISSoTokensParams> {
   env?: Env
   enableAuthInit?: boolean
+  showOpenWalletIcon?: boolean
 }
 
 export type PnUserInfoType = import('@particle-network/auth-core').UserInfo | undefined
@@ -28,6 +29,7 @@ export interface IPnWalletState {
     _eoaAddress?: string
   ) => Promise<{ aaAddress?: string; eoaAddress?: string; name?: string; version?: string }>
   connectPnEoAAndAA: (jwt?: string, _chainId?: number) => Promise<void>
+  switchChain: (id: number | PrefixedHexString) => Promise<void>
   getWalletIFrame: () => HTMLIFrameElement | null
   openPnWallet: () => void
   signMessage: (message: PrefixedHexString | string, uniq?: boolean) => Promise<string>

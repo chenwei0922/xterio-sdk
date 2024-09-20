@@ -48,7 +48,7 @@ const supportChains: [Chain, ...Chain[]] = [
 ]
 
 export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState => {
-  const { chainInfo, address, provider, signMessage, signTypedData } = useEthereum()
+  const { chainInfo, address, provider, signMessage, signTypedData, switchChain } = useEthereum()
   const { connect, connected, disconnect } = useConnect()
   const { erc4337, setERC4337 } = useCustomize()
   const { userInfo, getWalletIFrame: getWalletDom, openWallet: _openWallet } = useAuthCore()
@@ -200,6 +200,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
     connectPnEoAAndAA,
     getWalletIFrame,
     openPnWallet,
+    switchChain,
     eoaAddress: address || init_address || '',
     pnAAWalletAddress,
     pnUserInfo: userInfo,
