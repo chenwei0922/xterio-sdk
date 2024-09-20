@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
-import { IUserInfo, LoginType, XterEventEmiter, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
 import { PnWalletModal } from 'src/templates/PnWalletModal'
 import { createRoot } from 'react-dom/client'
