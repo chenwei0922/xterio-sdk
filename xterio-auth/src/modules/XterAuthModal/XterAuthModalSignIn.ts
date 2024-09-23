@@ -6,6 +6,8 @@ import { ModalExtraData } from './interfaces'
 import { XterAuthModalForm } from './XterAuthModalForm'
 import { validateEmail, validatePassword } from './utils'
 import { XterModalFormItem } from './XterAuthModalFormItem'
+import { EnvVariableConfig } from 'utils'
+import { disableCaptchaVerify } from './utils/config'
 
 enum FomrItemsName {
   Email = 'email',
@@ -39,6 +41,9 @@ export class XterAuthModalSignIn extends BaseModalState {
 
     // Password Input
     this.renderPwdInput(_container)
+
+    // hCaptcha
+    this.renderHcaptcha(_container)
 
     // tips
     this.renderTips(_container)
@@ -92,6 +97,20 @@ export class XterAuthModalSignIn extends BaseModalState {
     this.append(_container, formItem.getElement())
   }
 
+  private renderHcaptcha(_container: HTMLElement) {
+    if (disableCaptchaVerify) return
+    const hcaptchaContainer = document.createElement('div')
+    hcaptchaContainer.id = 'hcaptcha'
+    hcaptchaContainer.classList.add('h-captcha')
+
+    hcaptcha.render(hcaptchaContainer, {
+      size: 'invisible',
+      sitekey: EnvVariableConfig?.[this.modal?.env].HCAPTCHA_SITE_KEY || ''
+    })
+
+    _container.appendChild(hcaptchaContainer)
+  }
+
   private renderTips(_container: HTMLElement) {
     const tips = document.createElement('div')
     tips.classList.add(...['xa-login-tip', 'xa-flex', 'xa-justify-between'])
@@ -131,12 +150,32 @@ export class XterAuthModalSignIn extends BaseModalState {
     this.loginButton?.setDisabled(value.length === 0 || !this.form.findFormItem(FomrItemsName.Password)?.isValidate())
   }
 
+  private async getHCaptchaResponse(): Promise<string> {
+    if (disableCaptchaVerify) return ''
+
+    try {
+      const hcaptchaResponsePromise = hcaptcha.execute({ async: true }) as Promise<HCaptchaResponse>
+      const { response } = await hcaptchaResponsePromise
+      return response || ''
+    } catch {
+      return ''
+    }
+  }
+
   private async handleLogin() {
     const userName = this.emailInput?.getValue()
     const password = this.pwdInput?.getValue()
     if (!userName || !password) return
+
     this.loginButton?.setLoading(true)
-    const { error, err_code } = await this.modal.store.login(userName, password)
+
+    const hcaptchaResponseToken = await this.getHCaptchaResponse()
+    if (!hcaptchaResponseToken && !disableCaptchaVerify) {
+      this.loginButton?.setLoading(false)
+      return
+    }
+
+    const { error, err_code } = await this.modal.store.login(userName, password, hcaptchaResponseToken)
     this.loginButton?.setLoading(false)
     if (error) {
       // 11001: 'Wrong email or password.',
