@@ -13,8 +13,8 @@ import type {
   TransactionStatus,
   TypedContract
 } from 'src/interfaces/dappType'
-import { usePnWallet } from './pnWallet'
 import { AAWrapProvider, SendTransactionMode, type Transaction } from '@particle-network/aa'
+import { useXterioWalletContext } from '.'
 
 export interface IPnTransactionState<T extends TypedContract, FN extends ContractFunctionNames<T>> {
   sendTransaction(
@@ -95,7 +95,8 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
   contract?: T | Falsy,
   functionName?: FN
 ): IPnTransactionState<T, FN> => {
-  const { pnAA } = usePnWallet()
+  const { pnAA, envConfig } = useXterioWalletContext()
+  // const { pnAA } = usePnWallet()
   const { promiseTransaction, state, resetState } = usePromiseTransaction()
   const [events, setEvents] = useState<LogDescription[] | undefined>(undefined)
 
@@ -132,9 +133,10 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       if (!pnAA) {
         throw new Error('pn smartAccount not ready.')
       }
-      const pnAAWrapProvider = new ethers.providers.Web3Provider(
-        new AAWrapProvider(pnAA, SendTransactionMode.UserSelect) as any
-      )
+      const mode = envConfig?.transactionMode || SendTransactionMode.UserSelect
+      const pnAAWrapProvider = new ethers.providers.Web3Provider(new AAWrapProvider(pnAA, mode) as any)
+      log('sendTransactionMode=', mode)
+
       if (!pnAAWrapProvider) {
         throw new Error(`pnAAWrapProvider not ready.`)
       }
@@ -147,6 +149,13 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       const feeQuotes = await pnAA.getFeeQuotes(tx)
       // use gasless if available
       const { userOp, userOpHash } = feeQuotes.verifyingPaymasterGasless || feeQuotes.verifyingPaymasterNative
+      log(
+        'feeQuotes.verifyingPaymasterGasless=',
+        feeQuotes.verifyingPaymasterGasless,
+        'feeQuotes.verifyingPaymasterNative=',
+        feeQuotes.verifyingPaymasterNative
+      )
+
       const txHash = await pnAA.sendUserOperation({ userOp, userOpHash })
       log('pn AA sendUserOperation txhash ====', txHash)
       const txPromise = getTxPromise(pnAAWrapProvider, txHash)
@@ -166,7 +175,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       }
       return receipt
     },
-    [contract, functionName, getTxPromise, pnAA, promiseTransaction]
+    [contract, envConfig?.transactionMode, functionName, getTxPromise, pnAA, promiseTransaction]
   )
 
   const customSend = useCallback(
@@ -188,22 +197,30 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       if (!pnAA) {
         throw new Error('pn smartAccount not ready.')
       }
-      const pnAAWrapProvider = new ethers.providers.Web3Provider(
-        new AAWrapProvider(pnAA, SendTransactionMode.UserSelect) as any
-      )
+      const mode = envConfig?.transactionMode || SendTransactionMode.UserSelect
+      const pnAAWrapProvider = new ethers.providers.Web3Provider(new AAWrapProvider(pnAA, mode) as any)
+      log('sendTransactionMode=', mode)
+
       if (!pnAAWrapProvider) {
         throw new Error(`pnAAWrapProvider not ready.`)
       }
       const feeQuotes = await pnAA.getFeeQuotes(tx)
       // use gasless if available
       const { userOp, userOpHash } = feeQuotes.verifyingPaymasterGasless || feeQuotes.verifyingPaymasterNative
+      log(
+        'feeQuotes.verifyingPaymasterGasless=',
+        feeQuotes.verifyingPaymasterGasless,
+        'feeQuotes.verifyingPaymasterNative=',
+        feeQuotes.verifyingPaymasterNative
+      )
+
       const txHash = await pnAA.sendUserOperation({ userOp, userOpHash })
       log('pn AA sendUserOperation txhash ====', txHash)
       const txPromise = getTxPromise(pnAAWrapProvider, txHash)
       const receipt = await promiseTransaction(txPromise)
       return receipt
     },
-    [getTxPromise, pnAA, promiseTransaction]
+    [envConfig?.transactionMode, getTxPromise, pnAA, promiseTransaction]
   )
 
   return { sendTransaction: customSend, sendUserOperation, state, resetState, events }

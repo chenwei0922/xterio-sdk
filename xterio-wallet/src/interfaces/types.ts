@@ -1,4 +1,4 @@
-import type { SmartAccount } from '@particle-network/aa'
+import type { SendTransactionMode, SmartAccount } from '@particle-network/aa'
 import type {
   MessageTypes,
   PrefixedHexString,
@@ -12,6 +12,8 @@ export interface IXterioWalletContextProps extends Partial<ISSoTokensParams> {
   env?: Env
   enableAuthInit?: boolean
   showOpenWalletIcon?: boolean
+  pn_app_id?: string
+  transactionMode?: SendTransactionMode
 }
 
 export type PnUserInfoType = import('@particle-network/auth-core').UserInfo | undefined

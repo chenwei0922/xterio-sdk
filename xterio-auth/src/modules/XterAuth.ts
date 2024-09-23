@@ -153,6 +153,10 @@ export class XterioAuth {
       log('the userinfo callback count=', XterioAuthInfo.onAccount.length)
       XterioAuthInfo.onAccount.map((f) => f(info))
     })
+    XterEventEmiter.subscribe(() => {
+      //req expired logic
+      this.clearData()
+    }, XTERIO_EVENTS.Expired)
 
     // init XterAuthLoginModal
     // must init before async function

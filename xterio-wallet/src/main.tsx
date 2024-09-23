@@ -4,7 +4,7 @@ import './index.css'
 
 import '@xterio-sdk/auth/style/main.css'
 import './common/styles/main.css'
-import { IXterioWalletContextProps, XterioWalletProvider } from './index.ts'
+import { IXterioWalletContextProps, SendTransactionMode, XterioWalletProvider } from './index.ts'
 import { Env } from '@xterio-sdk/auth'
 
 const redirect_uri = 'http://localhost:3000/'
@@ -18,7 +18,11 @@ const config: IXterioWalletContextProps = {
   client_id,
   client_secret,
   redirect_uri,
-  env: Env.Dev
+  env: Env.Dev,
+  enableAuthInit: true,
+  showOpenWalletIcon: true,
+  pn_app_id: '',
+  transactionMode: SendTransactionMode.Gasless
 }
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>

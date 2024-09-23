@@ -57,7 +57,7 @@ export default defineConfig(({ command, mode }) => {
   const minify = mode === 'production'
 
   return {
-    plugins: [tsconfigPaths(), react(), dtsPlugin, nodePolyfills()],
+    plugins: [tsconfigPaths(), react(), particleWasmPlugin, dtsPlugin, nodePolyfills()],
     define: {
       __SDK_VERSION__: JSON.stringify(version),
     },

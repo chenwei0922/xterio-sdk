@@ -86,7 +86,7 @@ function App() {
   const contractAddress = '0x12065F0d03cd1Bd280565069164F9E803c2DA988'
   const abi = ERC20_ABI
   const erc20 = getContract(NETWORK_NAME.SEPOLIA, contractAddress, abi)
-  const { sendTransaction, sendUserOperation } = useXterioTransaction(erc20, 'transfer')
+  const { sendTransaction, sendUserOperation, state } = useXterioTransaction(erc20, 'transfer')
 
   const [signedMsg, setSignedMsg] = useState('')
 
@@ -94,7 +94,11 @@ function App() {
     //方式1: sendTransaction，useXterioTransaction 必须传contract跟functionName
     const toAddr = '0xF4Ae736B14a7B5FDb803172B242074D6DFe655bb'
     const amount = '0x0de0b6b3a7640000'
-    await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
+    try {
+      await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
+    } catch (err) {
+      console.log('ddd', err)
+    }
   }
 
   const test2 = async () => {
@@ -109,7 +113,11 @@ function App() {
       to: contractAddress,
       data: erc20.interface.encodeFunctionData('transfer', [toAddr, amount])
     }
-    await sendUserOperation?.(tx)
+    try {
+      await sendUserOperation?.(tx)
+    } catch (err) {
+      console.log('ddd', err)
+    }
   }
 
   return (
@@ -129,10 +137,10 @@ function App() {
       <div className="card">
         <div>pn aa wallet address: {aaAddress}</div>
         <div>pn aa wallet connected status: {isConnect ? 'true' : 'false'}</div>
-        <button onClick={connectWallet}>AA钱包连接</button>
-        <button onClick={disconnectWallet}>AA钱包断开连接</button>
-        <button onClick={obtainWallet}>AA钱包领取</button>
-        <button onClick={openWallet}>打开AA钱包</button>
+        <button onClick={() => connectWallet()}>AA钱包连接</button>
+        <button onClick={() => disconnectWallet()}>AA钱包断开连接</button>
+        <button onClick={() => obtainWallet()}>AA钱包领取</button>
+        <button onClick={() => openWallet()}>打开AA钱包</button>
       </div>
       <div>xterio wallet transaction</div>
       <div className="card">
@@ -145,6 +153,7 @@ function App() {
         >
           签名message
         </button>
+        <div>转账进度：{state.status}</div>
         <button onClick={test1}>转账</button>
         <button onClick={test2}>转账2</button>
       </div>

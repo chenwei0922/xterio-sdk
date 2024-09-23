@@ -26,11 +26,11 @@ import {
 } from '@particle-network/authkit/chains'
 
 import PNCustomStyle from 'src/common/config/PNCustomStyle.json'
-import { EnvBaseURLConst } from 'src/common/utils/const'
 import aaOptions from 'src/common/config/erc4337'
 import { log } from 'src/common/utils'
 import type { IPnWalletState } from 'src/interfaces/types'
 import { xterioBnb, xterioBnbTestnet, xterioEth } from './xterioBnb'
+import { IUseConfigState } from './useConfig'
 
 const supportChains: [Chain, ...Chain[]] = [
   mainnet,
@@ -47,7 +47,7 @@ const supportChains: [Chain, ...Chain[]] = [
   bscTestnet
 ]
 
-export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState => {
+export const usePnWallet = (env: IUseConfigState, init_address?: string): IPnWalletState => {
   const { chainInfo, address, provider, signMessage, signTypedData, switchChain } = useEthereum()
   const { connect, connected, disconnect } = useConnect()
   const { erc4337, setERC4337 } = useCustomize()
@@ -56,8 +56,6 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
 
   const [pnAAWalletAddress, setPnAAWalletAddress] = useState<string | undefined>(undefined)
   const [smartAccount, setSmartAccount] = useState<SmartAccount>()
-
-  const env = useMemo(() => EnvBaseURLConst[_env || Env.Dev], [_env])
 
   const aaNetworkConfig = useMemo(() => {
     if (!erc4337) {
@@ -211,8 +209,7 @@ export const usePnWallet = (init_address?: string, _env?: Env): IPnWalletState =
   }
 }
 
-export const getAuthCoreModalOptions = (env?: Env): AuthCoreModalOptions => {
-  const _env = EnvBaseURLConst[env || Env.Dev]
+export const getAuthCoreModalOptions = (_env: IUseConfigState): AuthCoreModalOptions => {
   return {
     projectId: _env.PN_PROJECT_ID,
     clientKey: _env.PN_CLIENT_KEY,

@@ -1,7 +1,8 @@
 export const XTERIO_EVENTS = {
   LOGIN: 'xter_auth_login_success',
   ACCOUNT: 'xter_auth_response_userinfo',
-  REQ_ACCOUNT: 'xter_auth_request_userinfo'
+  REQ_ACCOUNT: 'xter_auth_request_userinfo',
+  Expired: 'xter_auth_req_expired'
 }
 export const XTERIO_CONST = {
   LOGIN_TYPE: 'xter_auth_login_type',

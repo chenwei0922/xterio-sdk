@@ -67,7 +67,7 @@ function App() {
       <div className="card">
         <div>pn aa wallet address: {aaAddress}</div>
         <div>pn aa wallet connected status: {isConnect ? 'true' : 'false'}</div>
-        <button onClick={connectWallet}>AA钱包连接</button>
+        <button onClick={() => connectWallet()}>AA钱包连接</button>
         <button onClick={disconnectWallet}>AA钱包断开连接</button>
         <button onClick={obtainWallet}>AA钱包领取</button>
         <button onClick={openWallet}>打开AA钱包</button>

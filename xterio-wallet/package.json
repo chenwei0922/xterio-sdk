@@ -58,6 +58,7 @@
     "@particle-network/aa": "2.0.1",
     "@particle-network/auth-core": "2.0.2",
     "@particle-network/authkit": "2.0.2",
+    "@particle-network/thresh-sig": "^0.7.8",
     "@xterio-sdk/auth": "workspace:^",
     "ethers": "^5.7.2",
     "react": "^18.3.1",
