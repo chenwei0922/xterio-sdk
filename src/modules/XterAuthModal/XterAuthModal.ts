@@ -11,18 +11,30 @@ import { XterAuthModalSignUpCode } from './XterAuthModaSignUpCode'
 import { ModalExtraData } from './interfaces'
 import { XterAuthModaPwdSuccess } from './XterAuthModaPwdSuccess'
 import { generateSVGIcon } from 'ui/svg-icon'
+import { Env } from 'interfaces/loginInfo'
+import { HCaptchaScriptURL } from './constant'
+import { disableCaptchaVerify } from './utils/config'
+
+type InitParams = {
+  apiUrl: string
+  env?: Env
+}
 export class XterAuthModal {
   private static _instance: XterAuthModal
-  public apiUrl: string
-  private redirectUri?: string
   public modalContainer?: HTMLElement
   private modalOverlay?: HTMLElement
   private currentState: BaseModalState
 
+  public apiUrl: string
+  public env: Env
   public store
 
-  constructor(apiUrl: string) {
+  constructor({ apiUrl, env }: InitParams) {
     this.apiUrl = apiUrl
+    this.env = env || Env.Dev
+
+    this.initHCaptcha()
+
     this.currentState = new XterAuthModalSignIn(this)
 
     this.store = new XterAuthModalStore()
@@ -30,15 +42,24 @@ export class XterAuthModal {
 
   public static get instance(): XterAuthModal {
     if (!XterAuthModal._instance) {
-      throw new Error('AuthSDK is not initialized. Call AuthSDK.init(apiUrl, redirectUri) first.')
+      throw new Error('Xterio Auth SDK is not initialized. Call XterioAuth.init({apiUrl, env}) first.')
     }
     return XterAuthModal._instance
   }
 
-  public static init(apiUrl: string): void {
+  public static init({ apiUrl, env }: InitParams): void {
     if (!XterAuthModal._instance) {
-      XterAuthModal._instance = new XterAuthModal(apiUrl)
+      XterAuthModal._instance = new XterAuthModal({ apiUrl, env })
     }
+  }
+
+  private initHCaptcha() {
+    if (disableCaptchaVerify) return
+    const script = document.createElement('script')
+    script.src = HCaptchaScriptURL
+    script.async = true
+    script.defer = true
+    document.head.appendChild(script)
   }
 
   public open(): void {
