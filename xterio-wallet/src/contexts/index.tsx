@@ -3,7 +3,6 @@ import {
   IUserInfo,
   LoginType,
   XterEventEmiter,
-  XTERIO_CONST,
   XTERIO_EVENTS,
   XterioAuth,
   XterioAuthTokensManager
