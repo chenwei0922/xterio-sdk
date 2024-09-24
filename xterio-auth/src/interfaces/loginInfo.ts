@@ -8,6 +8,7 @@ export interface ISSoTokensParams {
   mode: 'default' | 'email'
   grant_type: string
   logout?: '0' | '1'
+  logLevel?: number
 }
 export interface IRes<T> {
   data: T

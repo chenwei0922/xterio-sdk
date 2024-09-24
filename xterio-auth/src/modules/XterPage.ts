@@ -1,6 +1,6 @@
 import { OpenPageMode, PageOptionParam, PageType } from 'interfaces/loginInfo'
 import { XterioAuthInfo, XterioAuthTokensManager } from './XterAuthInfo'
-import { log } from 'utils/logger'
+import { XLog } from 'utils/logger'
 import qs from 'query-string'
 import { getIframe } from 'utils/dom'
 import { XterioAuth } from './XterAuth'
@@ -61,7 +61,7 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     uri += `&_otac=${otac}`
   }
 
-  log('open xerio page uri:', uri)
+  XLog.debug('open xerio page uri:', uri)
   if (_type === OpenPageMode.iframeUri) {
     return uri
   }
