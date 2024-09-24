@@ -1,7 +1,7 @@
 {
   "name": "@xterio-sdk/wallet",
   "private": false,
-  "version": "0.0.7-patch-1",
+  "version": "0.0.8",
   "description": "xterio-wallet",
   "author": "xterio platform",
   "license": "ISC",
