@@ -1,5 +1,5 @@
-import { getPackageVersion, log } from 'src/common/utils'
 import { postFetcher, XterioAuthService } from '@xterio-sdk/auth'
+import { getPackageVersion, XLog } from 'src/common/utils/logger'
 
 interface IBindPNWalletBody {
   address: string
@@ -19,7 +19,7 @@ export class XterioWalletService extends XterioAuthService {
     wallet_name,
     wallet_version
   }: IBindPNWalletBody): Promise<{ error: boolean }> {
-    log('bind aa wallet')
+    XLog.debug('bind aa wallet')
     const res = await postFetcher(
       `/account/v1/wallet/aa`,
       {
@@ -36,11 +36,11 @@ export class XterioWalletService extends XterioAuthService {
       }
     )
       .then(() => {
-        log('bind aa wallet success.')
+        XLog.info('bind aa wallet success.')
         return { error: false }
       })
       .catch(() => {
-        log('bind aa wallet failed.')
+        XLog.error('bind aa wallet failed.')
         return { error: true }
       })
 

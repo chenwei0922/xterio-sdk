@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Env, XterioAuthTokensManager } from '@xterio-sdk/auth'
+import { XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { SmartAccount } from '@particle-network/aa'
 import { AuthType } from '@particle-network/auth-core'
 import {
@@ -27,10 +27,10 @@ import {
 
 import PNCustomStyle from 'src/common/config/PNCustomStyle.json'
 import aaOptions from 'src/common/config/erc4337'
-import { log } from 'src/common/utils'
 import type { IPnWalletState } from 'src/interfaces/types'
 import { xterioBnb, xterioBnbTestnet, xterioEth } from './xterioBnb'
 import { IUseConfigState } from './useConfig'
+import { XLog } from 'src/common/utils/logger'
 
 const supportChains: [Chain, ...Chain[]] = [
   mainnet,
@@ -94,11 +94,11 @@ export const usePnWallet = (env: IUseConfigState, init_address?: string): IPnWal
         thirdpartyCode: jwt || XterioAuthTokensManager.idToken || ''
       })
         .then((userInfo) => {
-          log('connect pn eoa success')
+          XLog.info('connect pn eoa success')
           return userInfo
         })
         .catch((error: Error) => {
-          log('connect pn eoa error', error, targetChain, chains)
+          XLog.error('connect pn eoa error', error, targetChain, chains)
           return undefined
         })
       return res
@@ -121,11 +121,11 @@ export const usePnWallet = (env: IUseConfigState, init_address?: string): IPnWal
         })
           .then((_aaAddress: string) => {
             setPnAAWalletAddress(_aaAddress)
-            log('connect pn aa success')
+            XLog.info('connect pn aa success')
             return _aaAddress
           })
           .catch((error: any) => {
-            log('connect pn aa error', error)
+            XLog.error('connect pn aa error', error)
           })
         return { aaAddress, eoaAddress: _eoaAddress || address || init_address || '', ...erc4337Config }
       } else {
@@ -139,12 +139,12 @@ export const usePnWallet = (env: IUseConfigState, init_address?: string): IPnWal
   const connectPnEoAAndAA = useCallback(
     async (jwt?: string, _chainId?: number) => {
       if (connected) {
-        log('connected')
+        XLog.info('connected')
         return
       }
-      log('connect pn eoa')
+      XLog.debug('connect pn eoa')
       const _userInfo = await connectPnEoA(jwt, _chainId)
-      log('connect pn aa')
+      XLog.debug('connect pn aa')
       const _eoaAddress = _userInfo?.wallets.find((w) => w.chain_name === 'evm_chain')?.public_address
       await connectPnAA(_chainId, _eoaAddress)
     },
@@ -160,7 +160,7 @@ export const usePnWallet = (env: IUseConfigState, init_address?: string): IPnWal
         })
       }
     } catch (error) {
-      log('getWalletIFrame error', error)
+      XLog.error('getWalletIFrame error', error)
     }
     return null
   }, [connected, getWalletDom])

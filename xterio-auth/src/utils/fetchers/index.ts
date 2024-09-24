@@ -1,7 +1,7 @@
 import qs from 'query-string'
 import { IResponse } from './interfaces'
-import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from 'modules/XterAuthInfo'
-import { getPackageVersion, randomNonceStr } from 'utils/logger'
+import { XterioAuthInfo } from 'modules/XterAuthInfo'
+import { getPackageVersion, randomNonceStr, XLog } from 'utils/logger'
 import { XterioCache } from 'modules/XterCache'
 import { XterEventEmiter } from 'modules/XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
@@ -15,6 +15,7 @@ async function resolveResp<T>(resp: Response): Promise<T> {
     } else if (resp.status === 429) {
       // TOAST.noti('error', 'Operating too frequently, please try again later.')
     }
+    XLog.error('status', resp.status, 'statusText', resp.statusText, 'err_code', res.err_code, 'err_msg', res.err_msg)
     return Promise.reject(res)
     // throw new Error(`[${res.err_code}]: ${res.err_msg}`)
   }

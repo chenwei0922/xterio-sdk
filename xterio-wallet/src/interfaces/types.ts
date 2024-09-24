@@ -14,6 +14,7 @@ export interface IXterioWalletContextProps extends Partial<ISSoTokensParams> {
   showOpenWalletIcon?: boolean
   pn_app_id?: string
   transactionMode?: SendTransactionMode
+  logLevel?: number //日志级别
 }
 
 export type PnUserInfoType = import('@particle-network/auth-core').UserInfo | undefined

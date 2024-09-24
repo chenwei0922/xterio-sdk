@@ -1,6 +1,6 @@
 import { errors, ethers } from 'ethers'
 import { useCallback, useState } from 'react'
-import { log, sleep } from 'src/common/utils'
+import { sleep } from 'src/common/utils'
 import type {
   ContractFunctionNames,
   Falsy,
@@ -15,6 +15,7 @@ import type {
 } from 'src/interfaces/dappType'
 import { AAWrapProvider, SendTransactionMode, type Transaction } from '@particle-network/aa'
 import { useXterioWalletContext } from '.'
+import { XLog } from 'src/common/utils/logger'
 
 export interface IPnTransactionState<T extends TypedContract, FN extends ContractFunctionNames<T>> {
   sendTransaction(
@@ -50,7 +51,7 @@ const usePromiseTransaction = () => {
         try {
           receipt = await transaction.wait()
         } catch (waitError) {
-          log('Error waiting for transaction receipt:', waitError)
+          XLog.error('Error waiting for transaction receipt:', waitError)
           setState({ status: 'Exception', errorMessage: 'Failed to wait for transaction receipt.' })
           return undefined
         }
@@ -61,7 +62,7 @@ const usePromiseTransaction = () => {
         const errorCode = isNaN(parsedErrorCode) ? undefined : parsedErrorCode
         const errorHash = e?.error?.data?.originalError?.data ?? e?.error?.data
         const errorMessage = e.error?.data?.message ?? e.error?.message ?? e.reason ?? e.data?.message ?? e.message
-        log('promiseTransaction err', e)
+        XLog.error('promiseTransaction err', e)
         if (transaction) {
           const droppedAndReplaced = isDroppedAndReplaced(e)
 
@@ -107,7 +108,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       try {
         tx = await provider.getTransaction(txHash)
       } catch (e) {
-        log('pn AA getTransaction exception:', e)
+        XLog.error('pn AA getTransaction exception:', e)
       }
       if (tx) {
         return tx
@@ -135,7 +136,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       }
       const mode = envConfig?.transactionMode || SendTransactionMode.UserSelect
       const pnAAWrapProvider = new ethers.providers.Web3Provider(new AAWrapProvider(pnAA, mode) as any)
-      log('sendTransactionMode=', mode)
+      XLog.debug('sendTransactionMode=', mode)
 
       if (!pnAAWrapProvider) {
         throw new Error(`pnAAWrapProvider not ready.`)
@@ -149,7 +150,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       const feeQuotes = await pnAA.getFeeQuotes(tx)
       // use gasless if available
       const { userOp, userOpHash } = feeQuotes.verifyingPaymasterGasless || feeQuotes.verifyingPaymasterNative
-      log(
+      XLog.debug(
         'feeQuotes.verifyingPaymasterGasless=',
         feeQuotes.verifyingPaymasterGasless,
         'feeQuotes.verifyingPaymasterNative=',
@@ -157,7 +158,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       )
 
       const txHash = await pnAA.sendUserOperation({ userOp, userOpHash })
-      log('pn AA sendUserOperation txhash ====', txHash)
+      XLog.info('pn AA sendUserOperation txhash ====', txHash)
       const txPromise = getTxPromise(pnAAWrapProvider, txHash)
       const receipt = await promiseTransaction(txPromise)
       if (receipt?.logs) {
@@ -167,7 +168,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
               ? [...accumulatedLogs, contract.interface.parseLog(l)]
               : accumulatedLogs
           } catch (e) {
-            log('pn AA receipt logs exception:', e)
+            XLog.error('pn AA receipt logs exception:', e)
             return accumulatedLogs
           }
         }, [] as LogDescription[])
@@ -199,7 +200,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       }
       const mode = envConfig?.transactionMode || SendTransactionMode.UserSelect
       const pnAAWrapProvider = new ethers.providers.Web3Provider(new AAWrapProvider(pnAA, mode) as any)
-      log('sendTransactionMode=', mode)
+      XLog.debug('sendTransactionMode=', mode)
 
       if (!pnAAWrapProvider) {
         throw new Error(`pnAAWrapProvider not ready.`)
@@ -207,7 +208,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       const feeQuotes = await pnAA.getFeeQuotes(tx)
       // use gasless if available
       const { userOp, userOpHash } = feeQuotes.verifyingPaymasterGasless || feeQuotes.verifyingPaymasterNative
-      log(
+      XLog.debug(
         'feeQuotes.verifyingPaymasterGasless=',
         feeQuotes.verifyingPaymasterGasless,
         'feeQuotes.verifyingPaymasterNative=',
@@ -215,7 +216,7 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       )
 
       const txHash = await pnAA.sendUserOperation({ userOp, userOpHash })
-      log('pn AA sendUserOperation txhash ====', txHash)
+      XLog.info('pn AA sendUserOperation txhash ====', txHash)
       const txPromise = getTxPromise(pnAAWrapProvider, txHash)
       const receipt = await promiseTransaction(txPromise)
       return receipt
