@@ -32,10 +32,14 @@ const config: IXterioWalletContextProps = {
   client_secret: '',
   redirect_uri:'',
   env: Env.Dev,
-  //是否在wallet内部初始化auth，default: true
+  //whether init auth lib in wallet, the default is true
   enableAuthInit = true,
-  //是否显示快捷按钮wallet，default: false
+  //whether show the toggle wallet icon, the default is false
   showOpenWalletIcon = false,
+  //pn app id
+  pn_app_id: '',
+  transactionMode: '', //UserSelect = 0,Gasless = 1,UserPaidNative = 2
+  logLevel: 1, //the log level, default enable all console
 }
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
