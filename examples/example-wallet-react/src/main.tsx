@@ -24,13 +24,15 @@ const devConfig = {
   redirect_uri: 'http://localhost:3000/',
   client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
   client_secret: 'ABC23',
-  app_id: 'apiautotest'
+  app_id: 'apiautotest',
+  pn_app_id: '40ad8524-f844-496d-8de2-50a8a322d6ba'
 }
 const stageConfig = {
   redirect_uri: location.href.replace(/[?&]code=[^&]+/, ''),
   client_id: '3094298453404953',
   client_secret: 'mzmhYqcqDGdymblv5gb7s9OWcnYpH1ha',
-  app_id: '6c684e202700'
+  app_id: '6c684e202700',
+  pn_app_id: '9cd6a325-3082-4e98-8803-82a66cd9e86f'
 }
 let _env: Env = __EXAMPLE_ENV__ || Env.Dev
 const variable = GET_QUERY_STRING('env')
@@ -42,7 +44,7 @@ if (variable === 'dev') {
 const config = _env === Env.Staging ? stageConfig : devConfig
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
-  <XterioWalletProvider {...config} env={_env}>
+  <XterioWalletProvider {...config} env={_env} showOpenWalletIcon enableAuthInit>
     <App />
   </XterioWalletProvider>
   // </StrictMode>

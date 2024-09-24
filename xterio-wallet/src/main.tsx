@@ -23,7 +23,7 @@ const config: IXterioWalletContextProps = {
   showOpenWalletIcon: true,
   pn_app_id: '40ad8524-f844-496d-8de2-50a8a322d6ba',
   transactionMode: SendTransactionMode.Gasless,
-  logLevel: 3
+  logLevel: 1
 }
 createRoot(document.getElementById('root')!).render(
   // <StrictMode>
