@@ -200,6 +200,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   useEffect(() => {
     if (mounted) return
     setMounted(true)
+    setLogLevel(rest?.logLevel || 1)
     XLog.debug('xterio wallet initial')
     if (enableAuthInit) {
       XLog.debug('auth initial in wallet')
@@ -254,13 +255,11 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
 }
 
 export const XterioWalletProvider: React.FC<PropsWithChildren<IXterioWalletContextProps>> = (props) => {
-  const { env, pn_app_id, logLevel = 1 } = props
+  const { env, pn_app_id } = props
   if (!pn_app_id) {
     throw new Error('You must set pn_app_id')
   }
-  useEffect(() => {
-    setLogLevel(logLevel)
-  }, [logLevel])
+
   const envConfig = useConfig(env, pn_app_id)
   return (
     <AuthCoreContextProvider options={getAuthCoreModalOptions(envConfig)}>
