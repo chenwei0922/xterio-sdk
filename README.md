@@ -63,7 +63,21 @@ const unsubscribe = XterEventEmiter.subscribe<IUserInfo>((info) => {
 #### `init(config, env?:Env)`
 Initialize Function
 ```ts
-XterioAuth.init({app_id:'', client_id:'', client_secret:'' redirect_uri:'' }, Env.Dev)
+XterioAuth.init({
+  app_id:'',
+  client_id:'',
+  client_secret:'',
+  redirect_uri:'',
+  //sso login mode, the value of 'default'|'email'
+  //the default value is 'default'
+  mode:'default',
+  //sso login whether logout when login, the value of '1'|'0'
+  //the default value is '1'
+  logout:'1',
+  //the log level, close all console(>=5)，open all log(<=1)
+  //the default value is 1
+  logLevel: 1
+}, Env.Dev)
 ```
 
 #### `login(mode?: LoginType)`
