@@ -3,31 +3,12 @@ import { Env, LoginType } from 'interfaces/loginInfo'
 import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from './XterAuthInfo'
 import { XterEventEmiter } from './XterEventEmitter'
 import { XterioAuthService } from './AuthService'
-import { log, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
+import { EnvVariableConfig, setLogLevel, XLog, XTERIO_CONST, XTERIO_EVENTS } from 'utils'
 import { XterAuthModal } from './XterAuthModal/XterAuthModal'
 import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
 import { openPage } from './XterPage'
-
-type EnvItemType = {
-  API_BASE: string
-  PAGE_BASE: string
-}
-const EnvBaseURLConst: Record<Env, EnvItemType> = {
-  [Env.Dev]: {
-    API_BASE: 'https://api.playvrs.net',
-    PAGE_BASE: 'https://d39wr9n5mj2b6n.cloudfront.net'
-  },
-  [Env.Staging]: {
-    API_BASE: 'https://api.xterio.net',
-    PAGE_BASE: 'https://d3vi0apu54mmeo.cloudfront.net'
-  },
-  [Env.Production]: {
-    API_BASE: 'https://api.xter.io',
-    PAGE_BASE: 'https://www.xter.io'
-  }
-}
 
 export class XterioAuth {
   static get isLogin() {
@@ -40,12 +21,12 @@ export class XterioAuth {
     const id_token = XterioAuthTokensManager.idToken
 
     if (!id_token) {
-      log('invalid token 1')
+      XLog.error('invalid token: idtoken null')
       return false
     }
     const payload = id_token.split('.')?.[1]
     if (!payload) {
-      log('invalid token 2')
+      XLog.error('invalid token: idtoken error')
       return false
     }
 
@@ -54,7 +35,7 @@ export class XterioAuth {
       const isExpire = !aud || Date.now() > (exp - 60) * 1000
       return !isExpire
     } catch (error) {
-      log('invalid token 3', error)
+      XLog.error('invalid token: idtoken error')
       return false
     }
   }
@@ -73,7 +54,7 @@ export class XterioAuth {
     }
 
     const isvalid = XterioAuth.isVaildIdToken
-    log('check the tokens valid status:', isvalid)
+    XLog.info('check the tokens valid status:', isvalid)
     if (!isvalid) {
       this.clearData()
     } else if (_flag === 'init') {
@@ -85,13 +66,13 @@ export class XterioAuth {
 
   private static async checkCode() {
     const _type = XterioCache.loginType
-    log('check the authorize status', _type)
+    XLog.debug('check the authorize status', _type)
 
     if (_type !== LoginType.Default && _type !== LoginType.Email) return
 
     const uri = XterioAuthInfo.config?.redirect_uri
     if (!uri || !location.href.startsWith(uri)) {
-      log('not check, different redirect_uri')
+      XLog.error('not check, different redirect_uri')
       return
     }
 
@@ -103,7 +84,7 @@ export class XterioAuth {
     if (uri) {
       history.pushState(null, '', uri)
     }
-    log('going to login ...')
+    XLog.debug('going to login ...')
     const res = await XterioAuthService.login(code as string)
     if (res?.uuid) {
       XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
@@ -121,10 +102,12 @@ export class XterioAuth {
       client_secret = '',
       redirect_uri = '',
       mode = 'default',
-      logout = '1'
+      logout = '1',
+      logLevel = 1
     } = config
+    setLogLevel(logLevel)
     const _env = env ?? Env.Dev
-    const _baseURL = EnvBaseURLConst[_env].API_BASE
+    const _baseURL = EnvVariableConfig[_env].API_BASE
     const _config: ISSoTokensParams = {
       app_id,
       client_id,
@@ -140,7 +123,7 @@ export class XterioAuth {
     XterioAuthInfo.client_id = client_id
     XterioAuthInfo.env = _env
     XterioAuthInfo.baseURL = _baseURL
-    XterioAuthInfo.pageURL = EnvBaseURLConst[_env].PAGE_BASE
+    XterioAuthInfo.pageURL = EnvVariableConfig[_env].PAGE_BASE
     const { response_type, scope } = _config
     XterioAuthInfo.authorizeUrl =
       _baseURL +
@@ -150,7 +133,7 @@ export class XterioAuth {
 
     XterEventEmiter.clear()
     XterEventEmiter.subscribe((info: IUserInfo) => {
-      log('the userinfo callback count=', XterioAuthInfo.onAccount.length)
+      XLog.debug('the userinfo callback count=', XterioAuthInfo.onAccount.length)
       XterioAuthInfo.onAccount.map((f) => f(info))
     })
     XterEventEmiter.subscribe(() => {
@@ -161,7 +144,7 @@ export class XterioAuth {
     // init XterAuthLoginModal
     // must init before async function
     XterAuthModal.init({ apiUrl: _baseURL, env: _env })
-    log(XterAuthModal.instance)
+    XLog.debug(XterAuthModal.instance)
 
     await this.checkToken()
     window.addEventListener('load', async (event: Event) => {
@@ -175,13 +158,13 @@ export class XterioAuth {
     XterioAuthUserInfoManager.removeUserInfo()
   }
   static logout() {
-    log('logout success')
+    XLog.debug('logout success')
     this.clearData()
     XterAuthModal?.instance?.store?.logout()
   }
   static async login(mode?: LoginType) {
     if (!XterioAuthInfo.config) {
-      log('xterio auth sdk initial failed')
+      XLog.error('xterio auth sdk initial failed')
       return
     }
     if (mode && mode !== LoginType.Mini) {
@@ -195,13 +178,13 @@ export class XterioAuth {
 
     if (XterioAuth.isLogin) {
       //logined, callback the account info
-      log('already logined.')
+      XLog.debug('already logined.')
       XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, XterioAuthUserInfoManager.userInfo)
       return
     }
     if (XterioAuth.isVaildIdToken) {
       //idtoken not expired
-      log('get userinfo')
+      XLog.debug('get userinfo')
       return XterioAuthService.getUserInfo()
     }
 
@@ -213,7 +196,7 @@ export class XterioAuth {
     XterioCache.loginType = mode || LoginType.Default
 
     //go to authorize
-    log('going to authorize ...')
+    XLog.debug('going to authorize ...')
     location.href = XterioAuthInfo.authorizeUrl
   }
   static getUserInfo(callback: (res: IUserInfo) => void) {

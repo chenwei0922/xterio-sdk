@@ -1,4 +1,4 @@
-import { log, XTERIO_EVENTS } from 'utils'
+import { XLog, XTERIO_EVENTS } from 'utils'
 
 type Func = (...args: any) => void | unknown
 
@@ -36,17 +36,17 @@ export class XterEventEmiter {
 
   static subscribe<T>(callback: (p: T) => void, _event?: string) {
     const _key = _event || XTERIO_EVENTS.ACCOUNT
-    log('subscribe event', _key)
+    XLog.debug('subscribe event', _key)
     this.on(_key, callback)
     //return unsubscribe func
     return () => {
-      log('unsubscribe this event', _key)
+      XLog.debug('unsubscribe this event', _key)
       this.off(_key, callback)
     }
   }
   static unsubscribe(_event?: string) {
     const _key = _event || XTERIO_EVENTS.ACCOUNT
-    log('unsubscribe all event', _key)
+    XLog.debug('unsubscribe all event', _key)
     this.remove(_key)
   }
   static clear() {
