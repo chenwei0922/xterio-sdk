@@ -32,9 +32,9 @@ interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'sign
   aaAddress: string
   isConnect: boolean
   openWallet(): void
-  connectWallet(chainId?: number): void
-  disconnectWallet(): void
-  obtainWallet(): void
+  connectWallet(chainId?: number): Promise<void>
+  disconnectWallet(): Promise<void>
+  obtainWallet(): Promise<void>
   pnAA?: SmartAccount
   envConfig?: IUseConfigState
 }
@@ -90,6 +90,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     XLog.debug('have no aa address, go to obtain')
     let pnUserInfo = _p
     if (!isPnLoginedRef.current) {
+      XLog.debug('go to connnect pn eoa')
       pnUserInfo = await connectPnEoA()
     }
     const { token = '', uuid = '' } = pnUserInfo || {}
@@ -216,13 +217,14 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       setUserInfo(undefined)
       setIsLogin(false)
       setAaAddress('')
+      disconnectWallet()
     }, XTERIO_EVENTS.Expired)
     return () => {
       if (mounted) {
         unsubscribe?.()
       }
     }
-  }, [enableAuthInit, env, initLogic, mounted, rest])
+  }, [disconnectWallet, enableAuthInit, env, initLogic, mounted, rest])
 
   return (
     <WalletContext.Provider
