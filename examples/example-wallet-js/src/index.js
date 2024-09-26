@@ -1,13 +1,14 @@
 const redirect_uri = 'http://localhost:3000/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
-const app_id = ''
+const app_id = 'apiautotest'
 const config = {
   app_id,
   client_id,
   client_secret,
   redirect_uri,
-  env: 'Dev'
+  env: 'Dev',
+  pn_app_id: '40ad8524-f844-496d-8de2-50a8a322d6ba'
 }
 const A = () => {
   return (

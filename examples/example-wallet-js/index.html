@@ -5,13 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <!-- <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
   <link href="./lib/auth/umd/style.css" />
-  <link href="./lib/wallet/umd/style.css" />
   <script src="./lib/auth/umd/index.min.js"></script>
-  <script src="./lib/wallet/umd/index.min.js"></script>
+  <link href="./lib/wallet/umd/style.css" />
+  <script src="./lib/wallet/umd/index.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
 </head>
 
 <body>
@@ -44,7 +45,11 @@
       <button id="open">打开AA钱包</button>
     </div>
   </div>
+  <div id="root"></div>
 </body>
-<script type="text/babel" src="./src/index.js"></script>
+<script type="module" src="./src/module.js"></script>
+<!-- <script type="text/babel" src="./src/index.js"></script> -->
+<script type="text/babel" src="./src/test.js"></script>
+<!-- <script type="text/babel" src="./src/test.js"></script> -->
 
 </html>
