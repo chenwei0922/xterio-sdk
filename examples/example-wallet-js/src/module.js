@@ -25,7 +25,7 @@ window.XterioAuth = XterioAuth
 
 // import * as XterioWallet from 'https://esm.sh/xterio-wallet@0.0.8-patch?bundle'
 
-import * as XterioWallet from 'https://esm.sh/xterio-wallet@0.0.2-patch-8?bundle&deps=axios,react@18.3.1,react-dom@18.3.1&dev'
+import * as XterioWallet from 'https://esm.sh/xterio-wallet@0.0.2-patch-8?deps=axios,react@18.3.1,react-dom@18.3.1&dev'
 window.XterioWallet = XterioWallet
 
 // console.log('[1]XterioWallet=', XterioWallet)

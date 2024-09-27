@@ -72,7 +72,7 @@ export default defineConfig(({ command, mode }) => {
       rollupOptions: {
         //viem仅用了defineChain,@particle-network/auth-core仅用了类型, ethers仅用于getTransaction
         // external: [/package\.json/, /react\/*/, /react-dom\/*/, /@xterio-sdk\/auth\/*/, /ethers\/*/, /@particle-network\/*/, /viem\/*/],
-        external: [/@xterio-sdk\/auth\/*/, /react\/*/, /react-dom\/*/, /@particle-network\/*/],
+        external: [/@xterio-sdk\/auth\/*/, 'react', 'react-dom/client', /@particle-network\/*/],
         input: ['./src/index.ts'],
         output: [
           // {
@@ -97,6 +97,11 @@ export default defineConfig(({ command, mode }) => {
             preserveModulesRoot: './src',
             exports: undefined,
             dir: './dist/es',
+            globals: {
+              react: 'React',
+              'react-dom': 'ReactDOM',
+              'react-dom/client': 'ReactDOMClient',
+            }
           },
           {
             format: 'commonjs',
