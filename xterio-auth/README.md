@@ -26,7 +26,7 @@ unsubscribe() //unsubscribe
 
 //or
 
-XterEventEmiter.unsubscribe()//unsubscribe
+XterEventEmiter.unsubscribe()//unsubscribe all account event
 
 //3. SignIn
 XterioAuth.login()
@@ -95,9 +95,15 @@ XterioAuth.logout()
 ```
 
 #### `getIdToken()`
-check whether the idToken is valid. If the idToken is invalid, empty string is returned, else the idToken.
+check whether the idToken is valid. If the idToken is invalid, empty string is returned, else the non-empty str.
 ```ts
-await XterioAuth.getIdToken() //string
+XterioAuth.getIdToken() //Promise<string>
+```
+
+#### `isLogin()`
+depend user is login to xterio
+```ts
+XterioAuth.isLogin() //Promise<boolean>
 ```
 
 #### `getUserInfo(p:Function)`
@@ -130,7 +136,7 @@ await XterioAuth.openPage(PageType.nft, OpenPageMode.iframeUri, {
 ```
 
 ### 4.2 Property
-#### `isLogin`
+#### `isLogin` (`deprecated`)
 whether to log in
 ```ts
 XterioAuth.isLogin //boolean

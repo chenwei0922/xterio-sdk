@@ -11,9 +11,6 @@ import { decode } from 'js-base64'
 import { openPage } from './XterPage'
 
 export class XterioAuth {
-  static get isLogin() {
-    return !!XterioAuthUserInfoManager.userInfo?.uuid
-  }
   static get userinfo() {
     return XterioAuthUserInfoManager.userInfo
   }
@@ -92,7 +89,12 @@ export class XterioAuth {
   }
 
   static async getIdToken() {
+    /// idtoken not expired or refreshed if the promise return non-empty string
     return await this.checkToken('getIdToken')
+  }
+  static async isLogin() {
+    const _token = await this.getIdToken()
+    return !!_token
   }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {
@@ -138,7 +140,7 @@ export class XterioAuth {
     })
     XterEventEmiter.subscribe(() => {
       //req expired logic
-      this.clearData()
+      this.logout()
     }, XTERIO_EVENTS.Expired)
 
     // init XterAuthLoginModal
@@ -161,6 +163,7 @@ export class XterioAuth {
     XLog.debug('logout success')
     this.clearData()
     XterAuthModal?.instance?.store?.logout()
+    XterEventEmiter.emit(XTERIO_EVENTS.LOGOUT)
   }
   static async login(mode?: LoginType) {
     if (!XterioAuthInfo.config) {
@@ -176,14 +179,8 @@ export class XterioAuth {
         qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     }
 
-    if (XterioAuth.isLogin) {
-      //logined, callback the account info
-      XLog.debug('already logined.')
-      XterEventEmiter.emit(XTERIO_EVENTS.ACCOUNT, XterioAuthUserInfoManager.userInfo)
-      return
-    }
-    if (XterioAuth.isVaildIdToken) {
-      //idtoken not expired
+    const _islogin = await XterioAuth.isLogin()
+    if (_islogin) {
       XLog.debug('get userinfo')
       return XterioAuthService.getUserInfo()
     }
