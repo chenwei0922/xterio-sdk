@@ -39,7 +39,7 @@ async function init() {
       await run(`pnpm run build:wallet`, pathRoot)
     }
     //tip: change package.json content
-    WalletJsonData.dependencies['@xterio-sdk/auth'] = '^' + authVersion
+    WalletJsonData.peerDependencies['@xterio-sdk/auth'] = '^' + authVersion.split('.').slice(0, 2).join('.')
     writeJSONSync(pathWalletJson, WalletJsonData, { encoding: 'utf-8', spaces: 2 })
     await run('npm publish', pathWallet)
     await run(`bash release.sh wallet ${walletVersion}`, pathSh)
@@ -53,7 +53,7 @@ const commitVersionFile = async (_f: string, _v: string) => {
   await run(`git push origin main && git push new-origin main`)
 }
 const reset = () => {
-  WalletJsonData.dependencies['@xterio-sdk/auth'] = 'workspace:^'
+  WalletJsonData.peerDependencies['@xterio-sdk/auth'] = 'workspace:^'
   writeJSONSync(pathWalletJson, WalletJsonData, { encoding: 'utf-8', spaces: 2 })
 }
 
