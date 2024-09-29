@@ -112,7 +112,7 @@ $error-color: #f53f3f;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 0.15s;
     &_filled {
-      top: 0.5rem;
+      top: 6px;
       font-size: 12px;
     }
   }
@@ -156,8 +156,8 @@ $error-color: #f53f3f;
   height: 100%;
   padding-right: 1rem;
   background-color: transparent;
-  height: 16px;
-  margin-top: 26px;
+  height: 18px;
+  margin-top: 20px;
   outline: none;
   caret-color: #9598b9;
   border: none;
