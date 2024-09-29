@@ -28,7 +28,17 @@ const getOtac = async () => {
 }
 
 export const openPage = async (page: PageType, mode?: OpenPageMode, options?: PageOptionParam) => {
-  const { active = 'ingame', keyword, collection, features } = options || {}
+  const { active = 'ingame', keyword, collection, features, platform } = options || {}
+  const isMobile = platform === 'mobile'
+  let _p: Record<string, any> = {
+    hide_wallet_entrance: true,
+    hide_account_entrance: true,
+    hide_menu_entrance: true,
+    hide_sign_out: true,
+    hide_footer: true,
+    disable_logo_click: true
+  }
+
   const _type = mode || OpenPageMode.alert
   const app_id = XterioAuthInfo.config?.app_id || ''
   if (!app_id) {
@@ -37,12 +47,14 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
   const basePage = XterioAuthInfo.pageURL
   let uri = ''
   if (page === PageType.asset) {
+    _p = { ..._p, hide_game_select: true, hide_game_tokens: true }
     uri = `${basePage}/asset?source=1&app_id=${app_id}&active=${active}`
   } else if (page === PageType.account) {
     uri = `${basePage}/settings?source=1`
   } else if (page === PageType.wallet) {
     uri = `${basePage}/settings?source=1&tab=wallet`
   } else if (page === PageType.nft) {
+    _p = { ..._p, hide_game_filter: true }
     let query: Record<string, unknown> = { source: 1, app_id }
     if (collection) {
       query = { ...query, collection }
@@ -56,6 +68,9 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     uri = `${basePage}/marketplace?${qs.stringify(query)}`
   }
 
+  if (isMobile) {
+    uri += `&${qs.stringify(_p)}`
+  }
   const otac = await getOtac()
   if (otac) {
     uri += `&_otac=${otac}`
