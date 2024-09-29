@@ -45,10 +45,10 @@ export class XterioAuth {
     if (_tokens) {
       XterioAuthTokensManager.setTokens(_tokens)
     }
-    const id_token = XterioAuthTokensManager.idToken
     const refresh_token = XterioAuthTokensManager.refreshToken
-    if (!id_token && refresh_token) {
+    if (!XterioAuth.isVaildIdToken && refresh_token) {
       //req tokens by refresh
+      XLog.info('refresh tokens')
       const res = await XterioAuthService.refreshTokenService(refresh_token)
       XterioAuthTokensManager.setTokens({ refresh_token, id_token: res.id_token, access_token: res.access_token })
     }
@@ -56,6 +56,7 @@ export class XterioAuth {
     const isvalid = XterioAuth.isVaildIdToken
     XLog.info('check the tokens valid status:', isvalid)
     if (!isvalid) {
+      XLog.info('clear cache data')
       this.clearData()
     } else if (_flag === 'init') {
       //get userinfo
