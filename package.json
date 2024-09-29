@@ -15,6 +15,7 @@
     "build:tg-mini-app": "turbo tg-mini-app#build --filter=tg-mini-app --filter=@xterio-sdk/auth",
     "build:auth": "tsx sh/build.ts auth",
     "build:wallet": "tsx sh/build.ts wallet",
+    "build:react-webgl-cli": "turbo build --filter=xterio-react-webgl-cli",
     "dev:auth": "cd xterio-auth && npm run dev",
     "dev:wallet": "cd xterio-wallet && npm run dev",
     "dev:tg-mini-app": "turbo watch dev-watch --filter=tg-mini-app --filter=@xterio-sdk/auth",
@@ -25,6 +26,7 @@
     "example:wallet": "cd examples/example-wallet-react && npm run dev",
     "publish:auth": "tsx sh/publish.ts auth",
     "publish:wallet": "tsx sh/publish.ts wallet",
+    "publish:react-webgl-cli": "tsx sh/publish.ts react-webgl-cli",
     "deploy": "tsx sh/deploy.ts"
   },
   "keywords": [],
