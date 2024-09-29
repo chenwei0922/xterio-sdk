@@ -124,8 +124,14 @@ export enum PageType {
   wallet = 'wallet'
 }
 export interface PageOptionParam {
+  /** asset page */
   active?: 'ingame' | 'onchain'
+  /** nft page */
   keyword?: string
+  /** nft page */
   collection?: string
+  /** nft page */
   features?: { k: string; initValues: (number | string)[]; type?: string }[]
+  /** platform os type */
+  platform?: 'pc' | 'mobile'
 }
