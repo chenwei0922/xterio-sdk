@@ -1,6 +1,8 @@
 import type { Env, ISSoTokensParams, ITokenRes, IUserInfo } from 'interfaces/loginInfo'
 import { LoginType } from 'interfaces/loginInfo'
 import { XterioCache } from './XterCache'
+import { XterEventEmiter } from './XterEventEmitter'
+import { XTERIO_EVENTS } from 'utils'
 
 export class XterioAuthInfo {
   /** client id */
@@ -34,6 +36,8 @@ export class XterioAuthTokensManager {
     const { id_token = '', access_token = '', refresh_token = '' } = value || {}
     XterioAuthInfo.tokens = { id_token, access_token, refresh_token }
     XterioCache.tokens = value
+    //变更tokens，刷新islogin
+    XterEventEmiter.emit(XTERIO_EVENTS.REFRESH_IS_LOGIN)
   }
   static removeTokens() {
     XterioAuthInfo.tokens = undefined

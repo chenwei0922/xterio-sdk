@@ -28,7 +28,8 @@ export const XTERIO_EVENTS = {
   ACCOUNT: 'xter_auth_response_userinfo',
   REQ_ACCOUNT: 'xter_auth_request_userinfo',
   Expired: 'xter_auth_req_expired',
-  LOGOUT: 'xter_auth_logout'
+  LOGOUT: 'xter_auth_logout',
+  REFRESH_IS_LOGIN: 'xter_auth_refresh_is_login'
 }
 export const XTERIO_CONST = {
   LOGIN_TYPE: 'xter_auth_login_type',

@@ -9,20 +9,16 @@ import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
 import { openPage } from './XterPage'
-import { XTimeOut } from 'utils/timer'
+import { LoadingState, XTimeOut } from 'utils/timer'
 
 export class XterioAuth {
-  private static _timer?: XTimeOut
   static get userinfo() {
     return XterioAuthUserInfoManager.userInfo
   }
   private static setTokenTimer(duration: number) {
     // const duration = 10000
     if (duration < 0) return
-    if (!this._timer) {
-      this._timer = new XTimeOut()
-    }
-    this._timer.addTimeout(() => {
+    XTimeOut.getInstance().addTimeout(() => {
       const refreshToken = XterioAuthTokensManager.refreshToken
       this.isLogin = false
       XLog.info('the token timer, reset isLogin:', false)
@@ -63,6 +59,9 @@ export class XterioAuth {
   static get isLogin() {
     return this._islogin
   }
+  static resetIsLogin() {
+    this.isLogin = this.isVaildIdToken
+  }
 
   private static async checkToken(_flag: string = 'init') {
     const _tokens = XterioCache.tokens
@@ -79,7 +78,7 @@ export class XterioAuth {
       //again check
       isvalid = XterioAuth.isVaildIdToken
     }
-    this.isLogin = isvalid
+    // this.isLogin = isvalid
     XLog.info('check the tokens valid status:', isvalid)
     if (!isvalid) {
       XLog.info('clear cache data')
@@ -160,21 +159,26 @@ export class XterioAuth {
     XterioAuthInfo.config = _config
 
     XLog.debug('auth initial')
-    this._timer = new XTimeOut()
 
-    XterEventEmiter.clear()
+    // XterEventEmiter.clear()
+    XterEventEmiter.subscribe(() => {
+      this.resetIsLogin()
+    }, XTERIO_EVENTS.REFRESH_IS_LOGIN)
+
     XterEventEmiter.subscribe((info: IUserInfo) => {
       XLog.debug('the userinfo callback count=', XterioAuthInfo.onAccount.length)
       XterioAuthInfo.onAccount.map((f) => f(info))
     })
-    XterEventEmiter.subscribe(() => {
+
+    XterEventEmiter.subscribe(async () => {
       //req expired logic,
-      //TODO:
-      XLog.debug('req 401, refresh token')
-      XterioCache.deleteTokens(XTERIO_CONST.ID_TOKEN)
-      XterioAuthTokensManager.setTokens(XterioCache.tokens)
-      this.checkToken()
-      XterEventEmiter.emit(XTERIO_EVENTS.LOGOUT)
+      LoadingState.getInstance().execute(async () => {
+        XLog.debug('req 401, refresh token')
+        XterEventEmiter.emit(XTERIO_EVENTS.LOGOUT)
+        XterioCache.deleteTokens(XTERIO_CONST.ID_TOKEN)
+        XterioAuthTokensManager.setTokens(XterioCache.tokens)
+        await this.checkToken()
+      })
     }, XTERIO_EVENTS.Expired)
 
     // init XterAuthLoginModal

@@ -1,12 +1,5 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useRef, useState } from 'react'
-import {
-  IUserInfo,
-  LoginType,
-  XterEventEmiter,
-  XTERIO_EVENTS,
-  XterioAuth,
-  XterioAuthTokensManager
-} from '@xterio-sdk/auth'
+import { IUserInfo, XterEventEmiter, XTERIO_EVENTS, XterioAuth, XterioAuthTokensManager } from '@xterio-sdk/auth'
 import { AuthCoreContextProvider, getAuthCoreModalOptions, usePnWallet } from './pnWallet'
 import { PnWalletModal } from 'src/templates/PnWalletModal'
 import { createRoot } from 'react-dom/client'
@@ -25,10 +18,7 @@ const initState = {
   obtainWallet: () => {}
 }
 interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData' | 'switchChain'> {
-  userinfo: IUserInfo | undefined
-  isLogin: boolean
-  login(mode?: LoginType): Promise<void>
-  logout(): Promise<void>
+  isLoaded: boolean
   aaAddress: string
   isConnect: boolean
   openWallet(): void
@@ -54,8 +44,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
 
   const [mounted, setMounted] = useState<boolean>()
   const [aaAddress, setAaAddress] = useState('')
-  const [userinfo, setUserInfo] = useState<IUserInfo | undefined>(XterioAuth.userinfo)
-  const [isLogin, setIsLogin] = useState<boolean>(XterioAuth.isLogin)
+  const [isLoaded, setIsLoaded] = useState(false)
 
   const {
     getWalletIFrame,
@@ -79,7 +68,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   }, [isPnLogin])
 
   const obtainWallet = useCallback(async () => {
-    if (!isLogin) {
+    if (!XterioAuth.isLogin) {
       XLog.info('please login first')
       return
     }
@@ -120,7 +109,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     } else {
       XLog.info('Failed to create the Xterio Wallet.')
     }
-  }, [_p, aaAddress, connectPnAA, connectPnEoA, isLogin])
+  }, [_p, aaAddress, connectPnAA, connectPnEoA])
 
   const connectWallet = useCallback(
     async (chainId?: number) => {
@@ -170,27 +159,12 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     setWalletHtmlRoot(div)
   }, [getWalletIFrame, walletHtmlRoot])
 
-  const login = useCallback(async (mode?: LoginType) => {
-    await XterioAuth.login(mode)
-  }, [])
-
-  const logout = useCallback(async () => {
-    await disconnectWallet()
-    await XterioAuth.logout()
-    setUserInfo(undefined)
-    setIsLogin(false)
-    setAaAddress('')
-  }, [disconnectWallet])
-
   const initLogic = useCallback(
     async (info?: IUserInfo) => {
       const _addr = info?.wallet?.find((i) => i.source === 2)?.address || ''
-      const _islogin = !!info?.uuid
-      setUserInfo(info)
-      setIsLogin(_islogin)
       setAaAddress(_addr)
 
-      if (_islogin && _addr && !isPnLoginedRef.current) {
+      if (XterioAuth.isLogin && _addr && !isPnLoginedRef.current) {
         XLog.debug('init logic, reconnect wallet')
         await connectWallet()
       }
@@ -214,11 +188,10 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     const unsubscribe = XterEventEmiter.subscribe(() => {
       //request token expired, clear state data
       XLog.info('emiter req expired')
-      setUserInfo(undefined)
-      setIsLogin(false)
       setAaAddress('')
       disconnectWallet()
-    }, XTERIO_EVENTS.Expired)
+    }, XTERIO_EVENTS.LOGOUT)
+    setIsLoaded(true)
     return () => {
       if (mounted) {
         unsubscribe?.()
@@ -229,10 +202,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   return (
     <WalletContext.Provider
       value={{
-        isLogin,
-        userinfo,
-        login,
-        logout,
+        isLoaded,
         aaAddress,
         isConnect: !!isPnLogin,
         obtainWallet,
