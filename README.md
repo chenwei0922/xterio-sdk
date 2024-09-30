@@ -46,3 +46,5 @@ tg-mini-app
 
 example-wallet-react
 `pnpm run example:wallet`
+
+## deploy
