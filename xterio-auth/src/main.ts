@@ -41,7 +41,9 @@ const changePage = () => {
     el.innerText = currentPageName
   }
 }
-
+addClick('isLogin', () => {
+  alert(XterioAuth.isLogin)
+})
 addClick('login', () => {
   XterioAuth.login()
 })

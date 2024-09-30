@@ -9,10 +9,28 @@ import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
 import { openPage } from './XterPage'
+import { XTimeOut } from 'utils/timer'
 
 export class XterioAuth {
+  private static _timer?: XTimeOut
   static get userinfo() {
     return XterioAuthUserInfoManager.userInfo
+  }
+  private static setTokenTimer(duration: number) {
+    // const duration = 10000
+    if (duration < 0) return
+    if (!this._timer) {
+      this._timer = new XTimeOut()
+    }
+    this._timer.addTimeout(() => {
+      const refreshToken = XterioAuthTokensManager.refreshToken
+      this.isLogin = false
+      XLog.info('the token timer, reset isLogin:', false)
+      if (refreshToken) {
+        XLog.info('the token timer, refresh token again')
+        this.checkToken('tokenTimer')
+      }
+    }, duration)
   }
   private static get isVaildIdToken() {
     const id_token = XterioAuthTokensManager.idToken
@@ -29,6 +47,7 @@ export class XterioAuth {
 
     try {
       const { aud, exp = 0, sub } = JSON.parse(decode(payload)) as Payload
+      this.setTokenTimer((exp - 60) * 1000 - Date.now())
       const isExpire = !aud || Date.now() > (exp - 60) * 1000
       return !isExpire
     } catch (error) {
@@ -37,20 +56,30 @@ export class XterioAuth {
     }
   }
 
+  private static _islogin: boolean = this.isVaildIdToken
+  private static set isLogin(f: boolean) {
+    this._islogin = f
+  }
+  static get isLogin() {
+    return this._islogin
+  }
+
   private static async checkToken(_flag: string = 'init') {
     const _tokens = XterioCache.tokens
     if (_tokens) {
       XterioAuthTokensManager.setTokens(_tokens)
     }
     const refresh_token = XterioAuthTokensManager.refreshToken
-    if (!XterioAuth.isVaildIdToken && refresh_token) {
-      //req tokens by refresh
+    let isvalid = XterioAuth.isVaildIdToken
+    if (!isvalid && refresh_token) {
+      // token invalid, req tokens by refresh
       XLog.info('refresh tokens')
       const res = await XterioAuthService.refreshTokenService(refresh_token)
       XterioAuthTokensManager.setTokens({ refresh_token, id_token: res.id_token, access_token: res.access_token })
+      //again check
+      isvalid = XterioAuth.isVaildIdToken
     }
-
-    const isvalid = XterioAuth.isVaildIdToken
+    this.isLogin = isvalid
     XLog.info('check the tokens valid status:', isvalid)
     if (!isvalid) {
       XLog.info('clear cache data')
@@ -93,10 +122,6 @@ export class XterioAuth {
     /// idtoken not expired or refreshed if the promise return non-empty string
     return await this.checkToken('getIdToken')
   }
-  static async isLogin() {
-    const _token = await this.getIdToken()
-    return !!_token
-  }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {
     const {
@@ -134,14 +159,22 @@ export class XterioAuth {
       qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     XterioAuthInfo.config = _config
 
+    XLog.debug('auth initial')
+    this._timer = new XTimeOut()
+
     XterEventEmiter.clear()
     XterEventEmiter.subscribe((info: IUserInfo) => {
       XLog.debug('the userinfo callback count=', XterioAuthInfo.onAccount.length)
       XterioAuthInfo.onAccount.map((f) => f(info))
     })
     XterEventEmiter.subscribe(() => {
-      //req expired logic
-      this.logout()
+      //req expired logic,
+      //TODO:
+      XLog.debug('req 401, refresh token')
+      XterioCache.deleteTokens(XTERIO_CONST.ID_TOKEN)
+      XterioAuthTokensManager.setTokens(XterioCache.tokens)
+      this.checkToken()
+      XterEventEmiter.emit(XTERIO_EVENTS.LOGOUT)
     }, XTERIO_EVENTS.Expired)
 
     // init XterAuthLoginModal
@@ -155,6 +188,7 @@ export class XterioAuth {
     })
   }
   private static clearData() {
+    this.isLogin = false
     XterioCache.deleteTokens()
     XterioCache.deleteUserInfo()
     XterioAuthTokensManager.removeTokens()
@@ -179,9 +213,7 @@ export class XterioAuth {
         `/account/v1/oauth2/authorize?` +
         qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     }
-
-    const _islogin = await XterioAuth.isLogin()
-    if (_islogin) {
+    if (this.isLogin) {
       XLog.debug('get userinfo')
       return XterioAuthService.getUserInfo()
     }
