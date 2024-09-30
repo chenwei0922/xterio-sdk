@@ -1,0 +1,37 @@
+{
+  "name": "create-xterio-reactwebgl",
+  "version": "0.0.7",
+  "type": "module",
+  "license": "MIT",
+  "author": "Xterio Frontend Team",
+  "bin": {
+    "create-xterio-reactwebgl": "index.js"
+  },
+  "files": [
+    "index.js",
+    "template-*",
+    "template-xterio-react-webgl",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "debug": "tsx src/index.ts"
+  },
+  "engines": {
+    "node": ">=16.19.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.2",
+    "@types/minimist": "^1.2.2",
+    "@types/prompts": "^2.4.4",
+    "cross-spawn": "^7.0.3",
+    "kolorist": "^1.7.0",
+    "minimist": "^1.2.8",
+    "prompts": "^2.4.2",
+    "tsx": "^4.19.1",
+    "unbuild": "^1.2.1"
+  }
+}
