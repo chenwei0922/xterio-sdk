@@ -14,7 +14,7 @@ export class XterioCache {
     const { access_token = '', id_token = '', refresh_token = '' } = value
     Cookies.set(XTERIO_CONST.ACCESS_TOKEN, access_token, { expires: 1 })
     Cookies.set(XTERIO_CONST.ID_TOKEN, id_token, { expires: 1 })
-    Cookies.set(XTERIO_CONST.REFRESH_TOKEN, refresh_token)
+    Cookies.set(XTERIO_CONST.REFRESH_TOKEN, refresh_token, { expires: 180 })
   }
   static get tokens(): ITokenRes | undefined {
     const _t: ITokenRes = {
