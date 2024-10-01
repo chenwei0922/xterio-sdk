@@ -161,7 +161,7 @@ export class XterioAuth {
   static logout() {
     XLog.debug('logout success')
     this.clearData()
-    XterAuthModal?.instance?.store?.logout()
+    XterAuthModal?.instance?.store?.removeUserState()
   }
   static async login(mode?: LoginType) {
     if (!XterioAuthInfo.config) {
