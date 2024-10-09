@@ -1,5 +1,6 @@
 import { MainLayout } from 'src/components'
 import Airdrop from '../pages/Airdrop'
+import Okx from '../pages/Okx'
 import Home from '../pages/Home'
 import { RouteConfigProps } from './routes.types'
 
@@ -23,6 +24,12 @@ export const routes: RouteConfigProps[] = [
         title: 'Airdrop',
         component: Airdrop,
         path: '/airdrop'
+      },
+      {
+        name: 'Okx',
+        title: 'Okx',
+        component: Okx,
+        path: '/Okx'
       }
     ]
   }

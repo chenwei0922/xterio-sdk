@@ -115,7 +115,7 @@ const Airdrop = observer(() => {
           }}
         >
           <div className="flex flex-1 items-center overflow-hidden">
-            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Connect your OKX wallet'}</h3>
+            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Connect your okx ton wallet'}</h3>
           </div>
           <div className="ml-4 flex flex-shrink-0">
             <SvgIcon iconName="icon_arrow_right" size={14} />
@@ -131,7 +131,7 @@ const Airdrop = observer(() => {
           }}
         >
           <div className="flex flex-1 items-center overflow-hidden">
-            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Restore OKX wallet connection'}</h3>
+            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Restore okx ton wallet connection'}</h3>
           </div>
           <div className="ml-4 flex flex-shrink-0">
             <SvgIcon iconName="icon_arrow_right" size={14} />
@@ -147,7 +147,7 @@ const Airdrop = observer(() => {
           }}
         >
           <div className="flex flex-1 items-center overflow-hidden">
-            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Disconnect your OKX wallet'}</h3>
+            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Disconnect your okx ton wallet'}</h3>
           </div>
           <div className="ml-4 flex flex-shrink-0">
             <SvgIcon iconName="icon_arrow_right" size={14} />
@@ -156,7 +156,7 @@ const Airdrop = observer(() => {
 
         {isOkxConnected && okxWalletAddress && (
           <div className="mt-4 mx-auto text-sm font-semibold text-wrap">
-            {'Connected OKX Wallet Address: ' + okxWalletAddress}
+            {'Connected okx ton wallet Address: ' + okxWalletAddress}
           </div>
         )}
       </div>
