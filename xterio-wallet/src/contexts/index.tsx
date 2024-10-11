@@ -116,10 +116,6 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
         XLog.info('please login first')
         return
       }
-      if (isPnLoginedRef.current) {
-        XLog.info('connected')
-        return
-      }
       await connectPnEoAAndAA(XterioAuthTokensManager.idToken, chainId)
     },
     [connectPnEoAAndAA]
@@ -165,13 +161,22 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
     async (info?: IUserInfo) => {
       const _addr = info?.wallet?.find((i) => i.source === 2)?.address || ''
       setAaAddress(_addr)
+      const _uuid = info?.uuid
+      const pn_jwt_id = _p?.jwt_id
 
-      if (XterioAuth.isLogin && _addr && !isPnLoginedRef.current) {
-        XLog.debug('init logic, reconnect wallet')
-        await connectWallet()
+      if (XterioAuth.isLogin && _addr) {
+        XLog.debug('init logic', isPnLoginedRef.current, _uuid, pn_jwt_id)
+        if (!isPnLoginedRef.current) {
+          XLog.debug('init logic, reconnect wallet')
+          await connectWallet()
+        } else if (_uuid && pn_jwt_id && !pn_jwt_id.endsWith(_uuid)) {
+          XLog.debug('init logic, aa address not equal, disconnect and reconnect')
+          await disconnectWallet()
+          await connectWallet()
+        }
       }
     },
-    [connectWallet]
+    [_p?.jwt_id, connectWallet, disconnectWallet]
   )
 
   useEffect(() => {
