@@ -15,6 +15,7 @@ import {
 
 function App() {
   const [userinfo, setUserinfo] = useState<string>('')
+  //这种形式记录不够准确，比如登录态中途变更时，该页面无法及时获悉。所以对于需要判断登录的操作，直接调用XterioAuth.isLogin即可
   const [isLogin, setIsLogin] = useState(XterioAuth.isLogin)
   const [currentPage, setCurrentPage] = useState(PageType.asset)
 
@@ -70,6 +71,7 @@ function App() {
       <div className="card">
         <p>是否登录: {isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo}</p>
+        <button onClick={() => alert(XterioAuth.isLogin)}>检查登录态</button>
         <button onClick={() => login()}>默认登录</button>
         <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
         <button onClick={() => login(LoginType.Mini)}>TG 登录</button>

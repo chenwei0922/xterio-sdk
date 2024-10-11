@@ -18,7 +18,6 @@ const initState = {
   obtainWallet: () => {}
 }
 interface IWalletContextState extends Pick<IPnWalletState, 'signMessage' | 'signTypedData' | 'switchChain'> {
-  isLoaded: boolean
   aaAddress: string
   isConnect: boolean
   openWallet(): void
@@ -44,7 +43,6 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
 
   const [mounted, setMounted] = useState<boolean>()
   const [aaAddress, setAaAddress] = useState('')
-  const [isLoaded, setIsLoaded] = useState(false)
 
   const {
     getWalletIFrame,
@@ -173,6 +171,7 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   )
 
   useEffect(() => {
+    //init
     if (mounted) return
     setMounted(true)
     setLogLevel(rest?.logLevel || 1)
@@ -185,16 +184,20 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       XLog.info('emiter auth userinfo=', info)
       initLogic(info)
     })
-    const unsubscribe = XterEventEmiter.subscribe(() => {
+
+    //add listens
+    XLog.debug('add listens')
+    const unsubscribe_logout = XterEventEmiter.subscribe(() => {
       //request token expired, clear state data
-      XLog.info('emiter req expired')
+      XLog.info('emiter logout')
       setAaAddress('')
       disconnectWallet()
     }, XTERIO_EVENTS.LOGOUT)
-    setIsLoaded(true)
+
     return () => {
       if (mounted) {
-        unsubscribe?.()
+        XLog.debug('remove listens')
+        unsubscribe_logout?.()
       }
     }
   }, [disconnectWallet, enableAuthInit, env, initLogic, mounted, rest])
@@ -202,7 +205,6 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   return (
     <WalletContext.Provider
       value={{
-        isLoaded,
         aaAddress,
         isConnect: !!isPnLogin,
         obtainWallet,

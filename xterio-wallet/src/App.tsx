@@ -112,17 +112,17 @@ function App() {
   const [userinfo, setUserInfo] = useState({})
   useEffect(() => {
     console.log('[xtest] ---- add listener')
-    const unsubscribeInfo = XterEventEmiter.subscribe((res: IUserInfo) => {
+    const unsubscribe_Info = XterEventEmiter.subscribe((res: IUserInfo) => {
       setUserInfo(res)
     }, XTERIO_EVENTS.ACCOUNT)
 
-    const unsubscribe = XterEventEmiter.subscribe(() => {
+    const unsubscribe_logout = XterEventEmiter.subscribe(() => {
       setUserInfo({})
     }, XTERIO_EVENTS.LOGOUT)
     return () => {
       console.log('[xtest] ---- remove listener')
-      unsubscribeInfo?.()
-      unsubscribe?.()
+      unsubscribe_Info?.()
+      unsubscribe_logout?.()
     }
   }, [])
 
@@ -133,6 +133,7 @@ function App() {
       <div className="card">
         <p>是否登录: {XterioAuth.isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
+        <button onClick={() => alert(XterioAuth.isLogin)}>检查登录态</button>
         <button onClick={() => XterioAuth.login()}>默认登录</button>
         <button onClick={() => XterioAuth.login(LoginType.Email)}>邮箱登录</button>
         <button onClick={() => XterioAuth.login(LoginType.Mini)}>TG 登录</button>
