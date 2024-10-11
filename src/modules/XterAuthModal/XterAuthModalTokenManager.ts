@@ -30,6 +30,5 @@ export class XterAuthModalTokenManager {
     this.accessToken = undefined
     this.refreshToken = undefined
     this.idToken = undefined
-    XterioCache.deleteTokens()
   }
 }

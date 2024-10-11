@@ -27,6 +27,15 @@ export default defineConfig(({ command, mode }) => {
   const minify = mode === 'production'
 
   return {
+    css: {
+      preprocessorOptions: {
+        //pro: Deprecation Warning: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0
+        //fix: https://stackoverflow.com/questions/68147471/how-to-set-sassoptions-in-vite/78997875#78997875
+        scss: {
+          api: 'modern-compiler'
+        }
+      }
+    },
     //插件配置
     plugins: [
       tsconfigPaths(),
