@@ -1,7 +1,7 @@
 {
   "name": "@xterio-sdk/wallet",
   "private": false,
-  "version": "0.0.8-patch",
+  "version": "0.0.9",
   "description": "xterio-wallet",
   "author": "xterio platform",
   "license": "ISC",
@@ -52,18 +52,19 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "@xterio-sdk/auth": "workspace:^"
   },
   "dependencies": {
     "@particle-network/aa": "2.0.1",
     "@particle-network/auth-core": "2.0.2",
     "@particle-network/authkit": "2.0.2",
     "@particle-network/thresh-sig": "^0.7.8",
-    "@xterio-sdk/auth": "workspace:^",
     "ethers": "^5.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "viem": "^2.21.2"
+    "viem": "^2.21.2",
+    "@xterio-sdk/auth": "workspace:^"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",

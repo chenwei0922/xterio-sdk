@@ -103,7 +103,7 @@ export class XterAuthModalStore extends ModalObservable {
   private async refreshUserInfo() {
     XterEventEmiter.subscribe((res: IUserInfo) => {
       this.userState.userInfo = res
-      this.userState.isLogin = XterioAuth.isLogin
+      this.userState.isLogin = !!res.uuid
     })
     /*
     const { refreshToken, idToken } = this.tokenManager
@@ -122,16 +122,19 @@ export class XterAuthModalStore extends ModalObservable {
     }
     */
     //tip: 此处刷新token逻辑已放到 XterioAuth中处理了
-    if (!this.tokenManager.idToken) {
-      this.logout()
-    }
+    //tip: （这里不能Logout， 因为XterAuthModal.init在主逻辑检查的前面了， 这里logout会把cookie给清除掉)
+    // if (!this.tokenManager.idToken) {
+    //   this.logout()
+    // }
   }
 
-  // 用户登出方法
-  public logout(): void {
+  public removeUserState() {
     this.userState.isLogin = false
     this.userState.userInfo = null
-
     this.tokenManager.removeTokens()
+  }
+  // 用户登出方法
+  public logout(): void {
+    XterioAuth.logout()
   }
 }

@@ -39,7 +39,9 @@ async function init() {
       await run(`pnpm run build:wallet`, pathRoot)
     }
     //tip: change package.json content
-    WalletJsonData.dependencies['@xterio-sdk/auth'] = '^' + authVersion
+    //remove dep, add peer
+    WalletJsonData.peerDependencies['@xterio-sdk/auth'] = '^' + authVersion.split('.').slice(0, 2).join('.')
+    delete WalletJsonData.dependencies['@xterio-sdk/auth']
     writeJSONSync(pathWalletJson, WalletJsonData, { encoding: 'utf-8', spaces: 2 })
     await run('npm publish', pathWallet)
     await run(`bash release.sh wallet ${walletVersion}`, pathSh)
@@ -48,11 +50,12 @@ async function init() {
 }
 const commitVersionFile = async (_f: string, _v: string) => {
   const path = _f === 'auth' ? pathAuth : pathWallet
-  await run(`git push origin main && git push new-origin main`)
+  await run(`git push origin main`)
   await run(`git add package.json && git commit -m "feat: npm pkg(${_f}) publish(${_v})"`, path)
-  await run(`git push origin main && git push new-origin main`)
+  await run(`git push origin main`)
 }
 const reset = () => {
+  WalletJsonData.peerDependencies['@xterio-sdk/auth'] = 'workspace:^'
   WalletJsonData.dependencies['@xterio-sdk/auth'] = 'workspace:^'
   writeJSONSync(pathWalletJson, WalletJsonData, { encoding: 'utf-8', spaces: 2 })
 }

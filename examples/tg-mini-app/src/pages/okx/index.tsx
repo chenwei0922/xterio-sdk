@@ -1,0 +1,159 @@
+import { useBoolean } from 'ahooks'
+import { observer } from 'mobx-react-lite'
+import { SvgIcon } from 'src/components/ui'
+import { useEffect, useState } from 'react'
+import { OKXUniversalProvider } from '@okxconnect/universal-provider'
+import { formatEther } from 'ethers/lib/utils'
+
+const Okx = observer(() => {
+  const [okxUniversalProvider, setOkxUniversalProvider] = useState<OKXUniversalProvider>()
+
+  const [chainId, setChainId] = useState<string>()
+  const [address, setAddress] = useState<string>()
+  const [balance, setBalance] = useState<string>()
+
+  const defaultChain = 'eip155:1'
+
+  useEffect(() => {
+    const initProvider = async () => {
+      const provider = await OKXUniversalProvider.init({
+        dappMetaData: {
+          name: 'xter',
+          icon: 'https://resources.xter.io/ft/aod/roar.png'
+        }
+      })
+      setOkxUniversalProvider(provider)
+    }
+    initProvider()
+  }, [])
+
+  const handleConnect = async () => {
+    if (okxUniversalProvider) {
+      var session = await okxUniversalProvider.connect({
+        namespaces: {
+          eip155: {
+            chains: ['eip155:1', 'eip155:137'],
+            rpcMap: {
+              // Ethereum Mainnet
+              1: 'https://ethereum-rpc.publicnode.com',
+              137: 'https://polygon-bor.publicnode.com'
+            },
+            defaultChain: '1'
+          }
+        },
+        optionalNamespaces: {
+          eip155: {
+            chains: ['eip155:112358'],
+            rpcMap: {
+              // Xterio Chain (BNB)
+              112358: 'https://xterio-bnb.alt.technology'
+            },
+            defaultChain: '112358'
+          }
+        },
+        sessionConfig: {
+          redirect: 'tg://resolve'
+        }
+      })
+      setChainId('1')
+      alert(JSON.stringify(session))
+    }
+  }
+
+  const getDefaultChainAddress = async () => {
+    if (okxUniversalProvider) {
+      // okxUniversalProvider.setDefaultChain('eip155:112358', 'https://xterio-bnb.alt.technology')
+      const ethRequestAccountsResult = await okxUniversalProvider.request({ method: 'eth_requestAccounts' })
+      setAddress(ethRequestAccountsResult as any)
+      const chainIdResult = await okxUniversalProvider.request({ method: 'eth_chainId' })
+      setChainId(chainIdResult as any)
+    }
+  }
+
+  const switchChain = async () => {
+    if (okxUniversalProvider) {
+      const data = { method: 'wallet_switchEthereumChain', params: { chainId: '112358' } }
+      const switchResult = await okxUniversalProvider.request(data, defaultChain)
+      alert(switchResult ?? 'switchResult is undefined')
+      setChainId('112358')
+    }
+  }
+
+  const addEthereumChain = async () => {
+    if (okxUniversalProvider) {
+      const data = {
+        method: 'wallet_addEthereumChain',
+        params: {
+          blockExplorerUrls: ['https://bnb.xterscan.io'],
+          chainId: '112358',
+          chainName: 'Xter BNB',
+          nativeCurrency: { name: 'XTER BNB', symbol: 'XBNB', decimals: 18 },
+          rpcUrls: ['https://xterio-bnb.alt.technology']
+        }
+      }
+      const addEthereumChainResult = await okxUniversalProvider.request(data, defaultChain)
+      alert(addEthereumChainResult)
+    }
+  }
+
+  const getBalance = async () => {
+    if (okxUniversalProvider) {
+      if (address) {
+        okxUniversalProvider.setDefaultChain('eip155:112358', 'https://xterio-bnb.alt.technology')
+
+        const data = { method: 'eth_getBalance', params: ['0x5eac656ceb0330b8f10f616da6cdeddd212682b5', 'latest'] }
+        // const data = { method: 'eth_getBalance', params: [address, 'latest'] }
+        const getBalanceResult = await okxUniversalProvider.request(data)
+        // const getBalanceResult = await okxUniversalProvider.request(data, `eip155:${chainId}`)
+        alert(formatEther(BigInt(getBalanceResult as string).toString()))
+        setBalance(getBalanceResult as any)
+      } else {
+        alert('no address')
+      }
+    }
+  }
+
+  return (
+    <div>
+      <div>
+        <h3>链ID: {chainId}</h3>
+        <h3>地址: {address}</h3>
+        <h3>余额: {formatEther(BigInt(balance as string).toString())}</h3>
+      </div>
+
+      <div className="relative flex h-[260px] flex-col items-center justify-start">
+        <div
+          className="mt-4 flex h-12 w-full cursor-pointer items-center justify-between px-4 pb-3 pt-2 hover:opacity-80"
+          onClick={handleConnect}
+          style={{
+            backgroundSize: '100% 100%',
+            backgroundRepeat: 'no-repeat'
+          }}
+        >
+          <div className="flex flex-1 items-center overflow-hidden">
+            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Connect your okx evm wallet'}</h3>
+          </div>
+          <div className="ml-4 flex flex-shrink-0">
+            <SvgIcon iconName="icon_arrow_right" size={14} />
+          </div>
+        </div>
+
+        {/* 添加每个方法对应的点击 div */}
+        <div onClick={getDefaultChainAddress} className="mt-4 cursor-pointer">
+          <h3>获取默认链的地址信息</h3>
+        </div>
+        <div onClick={switchChain} className="mt-4 cursor-pointer">
+          <h3>切换链</h3>
+        </div>
+        <div onClick={addEthereumChain} className="mt-4 cursor-pointer">
+          <h3>添加链</h3>
+        </div>
+        <div onClick={getBalance} className="mt-4 cursor-pointer">
+          <h3>获取余额</h3>
+        </div>
+      </div>
+    </div>
+  )
+})
+
+export default Okx

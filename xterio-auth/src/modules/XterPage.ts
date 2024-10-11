@@ -1,5 +1,5 @@
 import { OpenPageMode, PageOptionParam, PageType } from 'interfaces/loginInfo'
-import { XterioAuthInfo, XterioAuthTokensManager } from './XterAuthInfo'
+import { XterioAuthInfo } from './XterAuthInfo'
 import { XLog } from 'utils/logger'
 import qs from 'query-string'
 import { getIframe } from 'utils/dom'
@@ -7,8 +7,7 @@ import { XterioAuth } from './XterAuth'
 import { XterioAuthService } from './AuthService'
 
 const getOtac = async () => {
-  const idToken = await XterioAuth.getIdToken()
-  if (idToken) {
+  if (XterioAuth.isLogin) {
     // User is logged in or the login token is expiring soon
     if (!XterioAuthInfo?.otac) {
       const otac = await XterioAuthService.getOtacByTokens()

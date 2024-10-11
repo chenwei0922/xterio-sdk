@@ -4,3 +4,4 @@ packages:
   - 'examples/*'
   - 'xterio-auth'
   - 'xterio-wallet'
+  - 'xterio-react-webgl-cli'
