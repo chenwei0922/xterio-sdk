@@ -112,6 +112,10 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
   const connectWallet = useCallback(
     async (chainId?: number) => {
       XLog.debug('connect wallet')
+      if (!XterioAuth.isLogin) {
+        XLog.info('please login first')
+        return
+      }
       if (isPnLoginedRef.current) {
         XLog.info('connected')
         return

@@ -65,10 +65,6 @@ import { LoginType } from '@xterio-sdk/auth'
 
 function App() {
   const {
-    userinfo,
-    isLogin,
-    login,
-    logout,
     aaAddress,
     isConnect,
     disconnectWallet,
@@ -105,17 +101,35 @@ function App() {
     await sendUserOperation?.(tx)
   }
 
+  const [userinfo, setUserInfo] = useState({})
+  useEffect(() => {
+    console.log('[xtest] ---- add listener')
+    const unsubscribe_Info = XterEventEmiter.subscribe((res: IUserInfo) => {
+      setUserInfo(res)
+    }, XTERIO_EVENTS.ACCOUNT)
+
+    const unsubscribe_logout = XterEventEmiter.subscribe(() => {
+      setUserInfo({})
+    }, XTERIO_EVENTS.LOGOUT)
+    return () => {
+      console.log('[xtest] ---- remove listener')
+      unsubscribe_Info?.()
+      unsubscribe_logout?.()
+    }
+  }, [])
+
   return (
     <>
       <h1>Xterio SDK</h1>
       <div>xterio auth</div>
       <div className="card">
-        <p>isLogin: {isLogin ? 'true' : 'false'}</p>
+        <p>isLogin: {XterioAuth.isLogin ? 'true' : 'false'}</p>
         <p>userinfo: {userinfo ? JSON.stringify(userinfo) : ''}</p>
-        <button onClick={() => login()}>default login</button>
-        <button onClick={() => login(LoginType.Email)}>email login</button>
-        <button onClick={() => login(LoginType.Mini)}>TT login</button>
-        <button onClick={logout}>quit login</button>
+        <button onClick={() => alert(XterioAuth.isLogin)}>check isLogin</button>
+        <button onClick={() => XterioAuth.login()}>default login</button>
+        <button onClick={() => XterioAuth.login(LoginType.Email)}>email login</button>
+        <button onClick={() => XterioAuth.login(LoginType.Mini)}>TT login</button>
+        <button onClick={()=> XterioAuth.logout()}>quit login</button>
       </div>
 
       <div>xterio wallet</div>
