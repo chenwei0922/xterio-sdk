@@ -100,12 +100,6 @@ check whether the idToken is valid. If the idToken is invalid, empty string is r
 XterioAuth.getIdToken() //Promise<string>
 ```
 
-#### `isLogin()`
-depend user is login to xterio
-```ts
-XterioAuth.isLogin() //Promise<boolean>
-```
-
 #### `getUserInfo(p:Function)`
 get userinfo with callback
 ```ts
@@ -136,7 +130,7 @@ await XterioAuth.openPage(PageType.nft, OpenPageMode.iframeUri, {
 ```
 
 ### 4.2 Property
-#### `isLogin` (`deprecated`)
+#### `isLogin`
 whether to log in
 ```ts
 XterioAuth.isLogin //boolean
