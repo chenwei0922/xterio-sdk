@@ -77,8 +77,8 @@ export class XterioAuth {
       //again check
       isvalid = this.isVaildIdToken
     }
-    this.setIsLogin(isvalid)
     XLog.info('check token and the idToken isvalid=', isvalid)
+    this.setIsLogin(isvalid)
     if (!isvalid) {
       XLog.info('clear cache data')
       this.clearData()
