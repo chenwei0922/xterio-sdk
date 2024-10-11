@@ -3,10 +3,18 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { IUserInfo, LoginType, OpenPageMode, PageType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
+import {
+  IUserInfo,
+  LoginType,
+  OpenPageMode,
+  PageType,
+  XterEventEmiter,
+  XTERIO_EVENTS,
+  XterioAuth
+} from '@xterio-sdk/auth'
 
 function App() {
-  const [userinfo, setUserinfo] = useState('')
+  const [userinfo, setUserinfo] = useState<string>('')
   const [isLogin, setIsLogin] = useState(XterioAuth.isLogin)
   const [currentPage, setCurrentPage] = useState(PageType.asset)
 
@@ -17,8 +25,17 @@ function App() {
       setUserinfo(JSON.stringify(res))
       setIsLogin(XterioAuth.isLogin)
     })
+
+    //退出登录刷新本地islogin跟userinfo状态
+    const logout_unsub = XterEventEmiter.subscribe(() => {
+      console.log('logout auth, and deal page state data')
+      setIsLogin(XterioAuth.isLogin)
+      setUserinfo(JSON.stringify(XterioAuth.userinfo))
+    }, XTERIO_EVENTS.LOGOUT)
+
     return () => {
       unsubscribe?.()
+      logout_unsub?.()
     }
   }, [])
 
@@ -27,8 +44,6 @@ function App() {
   }
   const logout = () => {
     XterioAuth.logout()
-    setUserinfo('')
-    setIsLogin(XterioAuth.isLogin)
   }
   const openPage = async (_t: OpenPageMode) => {
     const res = await XterioAuth.openPage(currentPage, _t)

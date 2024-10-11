@@ -1,5 +1,5 @@
 import { OpenPageMode, PageType } from 'interfaces/loginInfo'
-import { Env, IUserInfo, LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from './index'
+import { Env, IUserInfo, LoginType, XterioAuth } from './index'
 import './styles/main.scss'
 
 const p = document.getElementById('userinfo')
