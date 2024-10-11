@@ -62,7 +62,7 @@ addClick('login_mini', () => {
 })
 addClick('getIdToken', async () => {
   const id_token = await XterioAuth.getIdToken()
-  console.log('id_token=', id_token)
+  alert(id_token)
 })
 addClick('openAsset', () => {
   XterioAuth.openPage(currentPageName)

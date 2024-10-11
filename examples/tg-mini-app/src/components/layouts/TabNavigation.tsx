@@ -4,7 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTelegram } from 'src/hooks'
 const NavigationItems = [
   { name: 'HOME', path: '/' },
-  { name: 'CONNECT', path: '/airdrop' }
+  { name: 'TON CONNECT', path: '/airdrop' },
+  { name: 'OKX EVM', path: '/okx' }
 ]
 
 export const TabNavigation = () => {
@@ -33,8 +34,8 @@ export const TabNavigation = () => {
   }, [pathname])
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-15 px-3 pb-2 pt-2">
-      <div className="z-1 relative flex items-end justify-center gap-3">
+    <div className="fixed bottom-0 left-0 right-0 h-15 px-3 pb-2 pt-2 mx-auto">
+      <div className="z-1 relative flex items-end justify-center gap-3 mx-auto">
         {NavigationItems.map((item) => {
           const _isActive = isActive(item.path)
           return (
@@ -42,7 +43,7 @@ export const TabNavigation = () => {
               key={item.name}
               to={item.path}
               className={classNames(
-                'text-cente flex min-w-32 origin-bottom flex-col items-center justify-center rounded-lg bg-blue-700 px-3 py-3 text-white',
+                'text-cente flex min-w-24 origin-bottom flex-col items-center justify-center rounded-lg bg-blue-700 px-3 py-3 text-white',
                 {
                   '!bg-red-500': _isActive
                 }
