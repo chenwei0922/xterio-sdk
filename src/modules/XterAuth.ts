@@ -22,6 +22,7 @@ export class XterioAuth {
       //idToken expired logic
       const refreshToken = XterioAuthTokensManager.refreshToken
       this.setIsLogin(false)
+      XterioCache.deleteTokens(XTERIO_CONST.ID_TOKEN)
       XLog.info('the token timer, reset isLogin:', false)
       if (refreshToken) {
         XLog.info('the token timer, refresh token again')
