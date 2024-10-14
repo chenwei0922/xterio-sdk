@@ -240,6 +240,7 @@ export interface PageOptionParam {
   alertConfig?: {
     placement: 'left' | 'right' | 'center' //default: 'right'
     style: Partial<CSSStyleDeclaration> //default: { width: '400px', height: '100%' }
+    showCloseIcon?: boolean
   }
 }
 ```
