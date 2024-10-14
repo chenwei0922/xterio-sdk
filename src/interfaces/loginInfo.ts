@@ -155,5 +155,6 @@ export interface PageOptionParam {
   alertConfig?: {
     placement: 'left' | 'right' | 'center'
     style: Partial<CSSStyleDeclaration>
+    showCloseIcon?: boolean
   }
 }
