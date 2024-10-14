@@ -76,7 +76,10 @@ addClick('openAsset-dom', async () => {
   alert(dom)
 })
 addClick('openAsset-uri', async () => {
-  const uri = await XterioAuth.openPage(currentPageName, OpenPageMode.iframeUri)
+  const uri = await XterioAuth.openPage(currentPageName, OpenPageMode.iframeUri, {
+    hide_account_entrance: true,
+    hide_footer: true
+  })
   console.log('uri=', uri)
   alert(uri)
 })

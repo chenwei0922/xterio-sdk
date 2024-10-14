@@ -2,11 +2,20 @@ import { OpenPageMode, PageOptionParam, PageType } from 'interfaces/loginInfo'
 import { XterioAuthInfo } from './XterAuthInfo'
 import { XLog } from 'utils/logger'
 import qs from 'query-string'
-import { getIframe } from 'utils/dom'
+import { addCssText, convertStyleToArray, getDiv, getIframe } from 'utils/dom'
 import { XterioAuth } from './XterAuth'
 import { XterioAuthService } from './AuthService'
+import { iconContentMap } from 'ui/svg-icon'
 
 const getOtac = async () => {
+  //tip: otac invalid when used once
+  if (XterioAuth.isLogin) {
+    const otac = await XterioAuthService.getOtacByTokens()
+    return otac || ''
+  }
+  return ''
+
+  /*
   if (XterioAuth.isLogin) {
     // User is logged in or the login token is expiring soon
     if (!XterioAuthInfo?.otac) {
@@ -24,20 +33,11 @@ const getOtac = async () => {
     }
   }
   return XterioAuthInfo?.otac || ''
+  */
 }
 
 export const openPage = async (page: PageType, mode?: OpenPageMode, options?: PageOptionParam) => {
-  const { active = 'ingame', keyword, collection, features, platform } = options || {}
-  const isMobile = platform === 'mobile'
-  let _p: Record<string, any> = {
-    hide_wallet_entrance: true,
-    hide_account_entrance: true,
-    hide_menu_entrance: true,
-    hide_sign_out: true,
-    hide_footer: true,
-    disable_logo_click: true
-  }
-
+  const { active = 'ingame', keyword, collection, features, alertConfig, ...rest } = options || {}
   const _type = mode || OpenPageMode.alert
   const app_id = XterioAuthInfo.config?.app_id || ''
   if (!app_id) {
@@ -46,14 +46,12 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
   const basePage = XterioAuthInfo.pageURL
   let uri = ''
   if (page === PageType.asset) {
-    _p = { ..._p, hide_game_select: true, hide_game_tokens: true }
     uri = `${basePage}/asset?source=1&app_id=${app_id}&active=${active}`
   } else if (page === PageType.account) {
     uri = `${basePage}/settings?source=1`
   } else if (page === PageType.wallet) {
     uri = `${basePage}/settings?source=1&tab=wallet`
   } else if (page === PageType.nft) {
-    _p = { ..._p, hide_game_filter: true }
     let query: Record<string, unknown> = { source: 1, app_id }
     if (collection) {
       query = { ...query, collection }
@@ -67,8 +65,8 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     uri = `${basePage}/marketplace?${qs.stringify(query)}`
   }
 
-  if (isMobile) {
-    uri += `&${qs.stringify(_p)}`
+  if (rest) {
+    uri += `&${qs.stringify(rest)}`
   }
   const otac = await getOtac()
   if (otac) {
@@ -80,13 +78,37 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     return uri
   }
   if (_type === OpenPageMode.iframeDom) {
-    return getIframe(uri).querySelector('iframe')
+    const { iframe } = getIframe(uri)
+    return iframe
   }
   if (_type === OpenPageMode.alert) {
-    document.body.appendChild(getIframe(uri))
+    const { iframeDiv, shadow } = getIframe(uri)
+    updateElementStyle(iframeDiv, alertConfig)
+    const { element: closeDiv, remove: unsubscribe } = getDiv('close-icon pointer', () => {
+      shadow.remove()
+      unsubscribe?.()
+    })
+    addCssText(closeDiv, `position:absolute;top:16px;left:16px;`)
+    closeDiv.innerHTML = iconContentMap['icon-close-iframe']
+    iframeDiv.appendChild(closeDiv)
+    document.body.appendChild(shadow)
     return
   }
   if (_type === OpenPageMode.page) {
     location.href = uri
   }
+}
+
+const updateElementStyle = (ele: HTMLElement, config: PageOptionParam['alertConfig']) => {
+  const { placement = 'right', style = { width: '100%', height: '100%' } } = config || {}
+  const _styArr = []
+  //style中优先级 > placement
+  _styArr.push('margin-top', `calc((100% - ${style.height}) / 2)`)
+  if (placement === 'right') {
+    _styArr.push('margin-left', `calc(100% - ${style.width})`)
+  } else if (placement === 'center') {
+    _styArr.push('margin-left', `calc((100% - ${style.width}) / 2)`)
+  }
+  _styArr.push(...convertStyleToArray(style))
+  addCssText(ele, ..._styArr)
 }
