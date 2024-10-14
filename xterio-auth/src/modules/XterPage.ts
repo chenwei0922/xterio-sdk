@@ -81,9 +81,19 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     const { iframe } = getIframe(uri)
     return iframe
   }
+  if (_type === OpenPageMode.page) {
+    location.href = uri
+  }
   if (_type === OpenPageMode.alert) {
-    const { iframeDiv, shadow } = getIframe(uri)
-    updateElementStyle(iframeDiv, alertConfig)
+    alertIframeLogic(uri, alertConfig)
+    return
+  }
+}
+
+const alertIframeLogic = (uri: string, config: PageOptionParam['alertConfig']) => {
+  const { placement = 'right', style = { width: '100%', height: '100%' }, showCloseIcon = true } = config || {}
+  const { iframeDiv, shadow } = getIframe(uri)
+  if (showCloseIcon) {
     const { element: closeDiv, remove: unsubscribe } = getDiv('close-icon pointer', () => {
       shadow.remove()
       unsubscribe?.()
@@ -91,18 +101,10 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     addCssText(closeDiv, `position:absolute;top:16px;left:16px;`)
     closeDiv.innerHTML = iconContentMap['icon-close-iframe']
     iframeDiv.appendChild(closeDiv)
-    document.body.appendChild(shadow)
-    return
   }
-  if (_type === OpenPageMode.page) {
-    location.href = uri
-  }
-}
-
-const updateElementStyle = (ele: HTMLElement, config: PageOptionParam['alertConfig']) => {
-  const { placement = 'right', style = { width: '100%', height: '100%' } } = config || {}
+  document.body.appendChild(shadow)
+  //update style, style > placement
   const _styArr = []
-  //style中优先级 > placement
   _styArr.push('margin-top', `calc((100% - ${style.height}) / 2)`)
   if (placement === 'right') {
     _styArr.push('margin-left', `calc(100% - ${style.width})`)
@@ -110,5 +112,5 @@ const updateElementStyle = (ele: HTMLElement, config: PageOptionParam['alertConf
     _styArr.push('margin-left', `calc((100% - ${style.width}) / 2)`)
   }
   _styArr.push(...convertStyleToArray(style))
-  addCssText(ele, ..._styArr)
+  addCssText(iframeDiv, ..._styArr)
 }
