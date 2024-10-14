@@ -123,6 +123,7 @@ export enum PageType {
   account = 'account',
   wallet = 'wallet'
 }
+
 export interface PageOptionParam {
   /** asset page */
   active?: 'ingame' | 'onchain'
@@ -132,6 +133,27 @@ export interface PageOptionParam {
   collection?: string
   /** nft page */
   features?: { k: string; initValues: (number | string)[]; type?: string }[]
-  /** platform os type */
-  platform?: 'pc' | 'mobile'
+  /** whether hide wallet entry */
+  hide_wallet_entrance?: boolean
+  /** whether hide account */
+  hide_account_entrance?: boolean
+  /** whether hide top nav menu */
+  hide_menu_entrance?: boolean
+  /** whether hide logout btn */
+  hide_sign_out?: boolean
+  /** whether hide footer */
+  hide_footer?: boolean
+  /** whether disable logo click event */
+  disable_logo_click?: boolean
+  /** whether hide game select, only asset page */
+  hide_game_select?: boolean
+  /** whether hide game tokens, only asset page */
+  hide_game_tokens?: boolean
+  /** whether hide game filter, only nft page */
+  hide_game_filter?: boolean
+  /** set alert configs */
+  alertConfig?: {
+    placement: 'left' | 'right' | 'center'
+    style: Partial<CSSStyleDeclaration>
+  }
 }
