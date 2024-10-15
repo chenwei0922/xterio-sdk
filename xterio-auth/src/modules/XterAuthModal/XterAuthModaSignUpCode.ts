@@ -1,3 +1,4 @@
+import { XterioAuthService } from 'modules/AuthService'
 import { BaseModalState } from './BaseModalState'
 import { EAuthState } from './enums'
 import { ModalExtraData } from './interfaces'
@@ -47,6 +48,18 @@ export class XterAuthModalSignUpCode extends BaseModalState {
       showClearIcon: true,
       onChange: (value) => {
         this.handleCodeChange(value)
+      },
+
+      addonAfterSendButton: {
+        defaultStartCountdown: this.extraData.alreadySendCode,
+        onClick: () => {
+          if (!this.extraData?.email) {
+            this.form.findFormItem(ContinueFormItemsName.Code)?.setError('Email is required')
+            return
+          }
+          XterioAuthService.sendSignUpCodeService(this.extraData?.email)
+        },
+        onCountdownEnd: () => {}
       }
     })
 

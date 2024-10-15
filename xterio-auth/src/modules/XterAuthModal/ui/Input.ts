@@ -17,6 +17,7 @@ export interface InputProps {
   addonAfterSendButton?: {
     onClick: () => void
     onCountdownEnd: () => void
+    defaultStartCountdown?: boolean
   }
   onChange?: (value: string) => void
   onFocus?: (value: string) => void
@@ -94,26 +95,33 @@ export class Input {
     if (this.props.addonAfterSendButton) {
       const { onClick, onCountdownEnd } = this.props.addonAfterSendButton
       const addBtn = document.createElement('button')
-      addBtn.className = 'xa-input-addon-btn'
-      addBtn.textContent = 'SEND'
-      addBtn.addEventListener('click', (e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        addBtn.disabled = true
-
-        let countdown = 60
+      let countdown = 60
+      function sendCountdown() {
         const timer = setInterval(() => {
           countdown--
           if (countdown === 0) {
             addBtn.disabled = false
             addBtn.textContent = 'SEND'
             clearInterval(timer)
+            countdown = 60
             onCountdownEnd?.()
-          } else {
+          } else if (countdown > 0) {
             addBtn.disabled = true
             addBtn.textContent = `${countdown - 1}s`
           }
         }, 1000)
+      }
+
+      if (this.props.addonAfterSendButton.defaultStartCountdown) {
+        sendCountdown()
+      }
+      addBtn.className = 'xa-input-addon-btn'
+      addBtn.textContent = 'SEND'
+      addBtn.addEventListener('click', (e) => {
+        e.stopPropagation()
+        e.preventDefault()
+        addBtn.disabled = true
+        sendCountdown()
         addBtn.textContent = `${countdown}s`
         onClick?.()
       })
