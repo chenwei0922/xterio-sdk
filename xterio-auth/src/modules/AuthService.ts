@@ -222,6 +222,18 @@ export class XterioAuthService {
     return res?.error ? res : { ...res, error: false }
   }
 
+  static sendSignUpCodeService = async (username: string): Promise<{ error: boolean; err_code?: number }> => {
+    const res = await postFetcher<object, { username: string }>('/account/v1/register/code/resend', {
+      username
+    }).catch((e) => {
+      return {
+        ...e,
+        error: true
+      }
+    })
+    return res?.error ? { ...res, error: true } : { ...res, error: false }
+  }
+
   static async getOtacByTokens() {
     const id_token = XterioAuthTokensManager.idToken
     const refresh_token = XterioAuthTokensManager.refreshToken
