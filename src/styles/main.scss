@@ -28,11 +28,7 @@
      z-index: 1000;
    }
 
-   &-modal-container-iframe {
-     height: 100%;
-     width: 100%;
-     max-width: 400px;
-     margin: auto;
+    &-modal-container-iframe {
      z-index: 1010;
      position: relative;
    }

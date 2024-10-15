@@ -26,7 +26,7 @@ unsubscribe() //unsubscribe
 
 //or
 
-XterEventEmiter.unsubscribe()//unsubscribe
+XterEventEmiter.unsubscribe()//unsubscribe all account event
 
 //3. SignIn
 XterioAuth.login()
@@ -95,9 +95,9 @@ XterioAuth.logout()
 ```
 
 #### `getIdToken()`
-check whether the idToken is valid. If the idToken is invalid, empty string is returned, else the idToken.
+check whether the idToken is valid. If the idToken is invalid, empty string is returned, else the non-empty str.
 ```ts
-await XterioAuth.getIdToken() //string
+XterioAuth.getIdToken() //Promise<string>
 ```
 
 #### `getUserInfo(p:Function)`
@@ -206,5 +206,44 @@ export enum PageType {
   wallet = 'wallet'
 }
 ```
+
+###  `PageOptionParam`
+```ts
+export interface PageOptionParam {
+  /** asset page */
+  active?: 'ingame' | 'onchain'
+  /** nft page */
+  keyword?: string
+  /** nft page */
+  collection?: string
+  /** nft page */
+  features?: { k: string; initValues: (number | string)[]; type?: string }[]
+  /** whether hide wallet entry */
+  hide_wallet_entrance?: boolean
+  /** whether hide account */
+  hide_account_entrance?: boolean
+  /** whether hide top nav menu */
+  hide_menu_entrance?: boolean
+  /** whether hide logout btn */
+  hide_sign_out?: boolean
+  /** whether hide footer */
+  hide_footer?: boolean
+  /** whether disable logo click event */
+  disable_logo_click?: boolean
+  /** whether hide game select, only asset page */
+  hide_game_select?: boolean
+  /** whether hide game tokens, only asset page */
+  hide_game_tokens?: boolean
+  /** whether hide game filter, only nft page */
+  hide_game_filter?: boolean
+  /** set alert configs */
+  alertConfig?: {
+    placement: 'left' | 'right' | 'center' //default: 'right'
+    style: Partial<CSSStyleDeclaration> //default: { width: '400px', height: '100%' }
+    showCloseIcon?: boolean
+  }
+}
+```
+
 
 

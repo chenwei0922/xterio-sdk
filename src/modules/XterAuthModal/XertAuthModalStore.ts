@@ -103,7 +103,7 @@ export class XterAuthModalStore extends ModalObservable {
   private async refreshUserInfo() {
     XterEventEmiter.subscribe((res: IUserInfo) => {
       this.userState.userInfo = res
-      this.userState.isLogin = XterioAuth.isLogin
+      this.userState.isLogin = !!res.uuid
     })
     /*
     const { refreshToken, idToken } = this.tokenManager
