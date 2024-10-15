@@ -164,6 +164,10 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
       const _uuid = info?.uuid
       const pn_jwt_id = _p?.jwt_id
 
+      //1.当前用户无aa地址，上次登录用户有地址且pn已连接，断开连接
+      //2.当前用户有aa地址
+      //2.1 pn未连接，去连
+      //2.2 pn已连接，与上次登录用户不一致，断开重连
       if (XterioAuth.isLogin && _addr) {
         XLog.debug('init logic', isPnLoginedRef.current, _uuid, pn_jwt_id)
         if (!isPnLoginedRef.current) {
@@ -174,6 +178,9 @@ const WalletContextProvider: React.FC<PropsWithChildren<IXterioWalletContextProp
           await disconnectWallet()
           await connectWallet()
         }
+      } else if (XterioAuth.isLogin && !_addr && isPnLoginedRef.current) {
+        XLog.debug('init logic', isPnLoginedRef.current, 'aa address is null only disconnect')
+        await disconnectWallet()
       }
     },
     [_p?.jwt_id, connectWallet, disconnectWallet]
