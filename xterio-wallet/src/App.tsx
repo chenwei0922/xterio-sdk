@@ -84,9 +84,10 @@ function App() {
     const toAddr = '0xF4Ae736B14a7B5FDb803172B242074D6DFe655bb'
     const amount = '0x0de0b6b3a7640000'
     try {
-      await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
-    } catch (err) {
-      console.log('ddd', err)
+      await sendTransaction?.(toAddr, amount, { gasLimit: '0x90de' })
+      // await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
+    } catch (err: any) {
+      console.log('ddd', err, err?.message)
     }
   }
 
@@ -125,6 +126,18 @@ function App() {
       unsubscribe_logout?.()
     }
   }, [])
+
+  useEffect(() => {
+    const status = state.status
+    console.log('status=', status)
+    if (status === 'Mining' || status === 'PendingSignature') {
+      console.log('trade ing')
+    } else if (status === 'Success') {
+      console.log('trade success')
+    } else if (status === 'Exception' || status === 'Fail') {
+      console.log('trade failed')
+    }
+  }, [state.status])
 
   return (
     <>

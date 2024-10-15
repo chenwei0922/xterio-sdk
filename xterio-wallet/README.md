@@ -208,14 +208,14 @@ aa wallet connection status
 #### `state`
 transaction status
 
-#### `sendTransaction({gasLimit,txValue}, ...args)`
+#### `sendTransaction(...args:any[], tx?:Transaction)`
 send a transaction
 
 ```ts
-await sendTransaction?.({ gasLimit: '', txValue:'' }, toAddr, amount)
+await sendTransaction?.(toAddr, amount, {value:'', gasLimit:''})
 ```
 
-#### `sendUserOperation(transaction|transaction[])`
+#### `sendUserOperation(tx: Transaction|Transaction[])`
 send a transaction
 
 ```ts
