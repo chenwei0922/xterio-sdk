@@ -15,6 +15,7 @@ import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } fr
 import { XterEventEmiter } from './XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
 import { getFetcher, postFetcher } from 'utils/fetchers'
+import { XterioAuth } from './XterAuth'
 
 export class XterioAuthService {
   /**
@@ -34,6 +35,7 @@ export class XterioAuthService {
       .then((res) => {
         XLog.info('login success.')
         XterioAuthTokensManager.setTokens(res)
+        XterioAuth.setIsLogin(true)
         return res
       })
       .catch((err) => {
@@ -114,6 +116,7 @@ export class XterioAuthService {
     XLog.info('ttl login', res?.error ? 'failed' : 'success')
     if (!res?.error) {
       XterioAuthTokensManager.setTokens(res)
+      XterioAuth.setIsLogin(true)
     }
     return res?.error ? { ...res, error: true } : { ...res, error: false }
   }
@@ -181,6 +184,7 @@ export class XterioAuthService {
     })
     if (!res?.error) {
       XterioAuthTokensManager.setTokens(res)
+      XterioAuth.setIsLogin(true)
     }
     return res?.error ? res : { ...res, error: false }
   }

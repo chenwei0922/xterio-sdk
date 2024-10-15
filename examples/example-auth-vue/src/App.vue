@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { IUserInfo, LoginType, OpenPageMode, PageType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, OpenPageMode, PageType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from '@xterio-sdk/auth'
 
 defineProps<{ msg: string }>()
 
 const userinfo = ref('')
 const isLogin = ref(XterioAuth.isLogin)
-const unsubscribe = ref()
 const currentPage = ref(PageType.asset)
+const unsubscribe = ref()
+const logout_unsub = ref()
 
 onMounted(() => {
   unsubscribe.value = XterEventEmiter.subscribe((res: IUserInfo) => {
@@ -15,9 +16,15 @@ onMounted(() => {
     userinfo.value = JSON.stringify(res)
     isLogin.value = XterioAuth.isLogin
   })
+  logout_unsub.value = XterEventEmiter.subscribe(() => {
+    console.log('logout auth, and deal page state data')
+    userinfo.value = JSON.stringify(XterioAuth.userinfo)
+    isLogin.value = XterioAuth.isLogin
+  }, XTERIO_EVENTS.LOGOUT)
 })
 onUnmounted(() => {
   unsubscribe.value?.()
+  logout_unsub.value?.()
 })
 
 const login = (mode?: LoginType) => {
@@ -25,8 +32,6 @@ const login = (mode?: LoginType) => {
 }
 const logout = () => {
   XterioAuth.logout()
-  userinfo.value = ''
-  isLogin.value = XterioAuth.isLogin
 }
 const openPage = async (_t: OpenPageMode) => {
   const res = await XterioAuth.openPage(currentPage.value, _t)

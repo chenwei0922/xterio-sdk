@@ -5,12 +5,17 @@ import { GlobalProvider } from './contexts/GlobalContext'
 import { useTelegram } from './hooks'
 import { RenderRouter } from './routes'
 import { useStores } from './stores'
+import VConsole from 'vconsole'
 
 const App = observer(() => {
   const VITE_TEL_APP_URL = import.meta.env.VITE_TEL_APP_URL
   const { webApp, user } = useTelegram()
 
   const { userStore } = useStores()
+
+  if (typeof navigator !== 'undefined' && /mobile|android|iphone|ipad|phone/i.test(navigator.userAgent.toLowerCase())) {
+    new VConsole()
+  }
 
   return (
     <>

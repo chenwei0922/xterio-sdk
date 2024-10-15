@@ -3,10 +3,19 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
-import { IUserInfo, LoginType, OpenPageMode, PageType, XterEventEmiter, XterioAuth } from '@xterio-sdk/auth'
+import {
+  IUserInfo,
+  LoginType,
+  OpenPageMode,
+  PageType,
+  XterEventEmiter,
+  XTERIO_EVENTS,
+  XterioAuth
+} from '@xterio-sdk/auth'
 
 function App() {
-  const [userinfo, setUserinfo] = useState('')
+  const [userinfo, setUserinfo] = useState<string>('')
+  //这种形式记录不够准确，比如登录态中途变更时，该页面无法及时获悉。所以对于需要判断登录的操作，直接调用XterioAuth.isLogin即可
   const [isLogin, setIsLogin] = useState(XterioAuth.isLogin)
   const [currentPage, setCurrentPage] = useState(PageType.asset)
 
@@ -17,8 +26,17 @@ function App() {
       setUserinfo(JSON.stringify(res))
       setIsLogin(XterioAuth.isLogin)
     })
+
+    //退出登录刷新本地islogin跟userinfo状态
+    const logout_unsub = XterEventEmiter.subscribe(() => {
+      console.log('logout auth, and deal page state data')
+      setIsLogin(XterioAuth.isLogin)
+      setUserinfo(JSON.stringify(XterioAuth.userinfo))
+    }, XTERIO_EVENTS.LOGOUT)
+
     return () => {
       unsubscribe?.()
+      logout_unsub?.()
     }
   }, [])
 
@@ -27,8 +45,6 @@ function App() {
   }
   const logout = () => {
     XterioAuth.logout()
-    setUserinfo('')
-    setIsLogin(XterioAuth.isLogin)
   }
   const openPage = async (_t: OpenPageMode) => {
     const res = await XterioAuth.openPage(currentPage, _t)
@@ -55,6 +71,7 @@ function App() {
       <div className="card">
         <p>是否登录: {isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo}</p>
+        <button onClick={() => alert(XterioAuth.isLogin)}>检查登录态</button>
         <button onClick={() => login()}>默认登录</button>
         <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
         <button onClick={() => login(LoginType.Mini)}>TG 登录</button>

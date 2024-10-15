@@ -6,7 +6,6 @@ import type {
   Falsy,
   LogDescription,
   Params,
-  TransactionOptions,
   TransactionReceipt,
   TransactionResponse,
   TransactionState,
@@ -18,10 +17,11 @@ import { useXterioWalletContext } from '.'
 import { XLog } from 'src/common/utils/logger'
 
 export interface IPnTransactionState<T extends TypedContract, FN extends ContractFunctionNames<T>> {
-  sendTransaction(
-    { gasLimit, txValue }: Partial<Pick<TransactionOptions, 'gasLimit' | 'txValue'>>,
-    ...args: Params<T, FN>
-  ): Promise<TransactionReceipt | undefined>
+  // sendTransaction(
+  //   { gasLimit, txValue }: Partial<Pick<TransactionOptions, 'gasLimit' | 'txValue'>>,
+  //   ...args: Params<T, FN>
+  // ): Promise<TransactionReceipt | undefined>
+  sendTransaction(...args: [...Params<T, FN>, Transaction?]): Promise<TransactionReceipt | undefined>
   sendUserOperation(tx: Transaction | Transaction[]): Promise<TransactionReceipt | undefined>
   state: TransactionStatus
   resetState(): void
@@ -119,16 +119,16 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
   }, [])
 
   const send = useCallback(
-    async (...args: Params<T, FN>) => {
+    async (...args: [...Params<T, FN>, Transaction?]) => {
       if (!contract || !functionName) {
         throw new Error(`contract null or undefined`)
       }
       const numberOfArgs = contract.interface.getFunction(functionName).inputs.length
-      const hasOpts = args.length > numberOfArgs
       if (args.length !== numberOfArgs && args.length !== numberOfArgs + 1) {
         throw new Error(`Invalid number of arguments for function "${functionName}".`)
       }
-      const opts = hasOpts ? args[args.length - 1] : undefined
+      const hasOpts = args.length > numberOfArgs
+      const opts = hasOpts ? (args[args.length - 1] as Transaction) : undefined
       const modifiedArgs = hasOpts ? args.slice(0, args.length - 1) : args
 
       if (!pnAA) {
@@ -143,8 +143,9 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
       }
       const tx = {
         to: contract.address,
-        value: opts?.value,
-        data: contract.interface.encodeFunctionData(functionName, modifiedArgs)
+        data: contract.interface.encodeFunctionData(functionName, modifiedArgs),
+        // value: opts?.value,
+        ...opts
       }
 
       const feeQuotes = await pnAA.getFeeQuotes(tx)
@@ -179,17 +180,17 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
     [contract, envConfig?.transactionMode, functionName, getTxPromise, pnAA, promiseTransaction]
   )
 
-  const customSend = useCallback(
-    async (
-      { gasLimit, txValue }: Partial<Pick<TransactionOptions, 'gasLimit' | 'txValue'>>,
-      ...args: Params<T, FN>
-    ): Promise<TransactionReceipt | undefined> => {
-      // disable feeData
-      const txArgs = [...args, { gasLimit, value: txValue }] as Params<T, FN>
-      return send(...txArgs)
-    },
-    [send]
-  )
+  // const customSend = useCallback(
+  //   async (
+  //     { txValue }: Partial<Pick<TransactionOptions, 'txValue'>>,
+  //     ...args: Params<T, FN>
+  //   ): Promise<TransactionReceipt | undefined> => {
+  //     // disable feeData
+  //     const txArgs = [...args, { value: txValue }] as Params<T, FN>
+  //     return send(...txArgs)
+  //   },
+  //   [send]
+  // )
 
   const sendUserOperation = useCallback(
     async (tx: Transaction | Transaction[]) => {
@@ -224,5 +225,5 @@ export const useXterioTransaction = <T extends TypedContract, FN extends Contrac
     [envConfig?.transactionMode, getTxPromise, pnAA, promiseTransaction]
   )
 
-  return { sendTransaction: customSend, sendUserOperation, state, resetState, events }
+  return { sendTransaction: send, sendUserOperation, state, resetState, events }
 }

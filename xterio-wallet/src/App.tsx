@@ -1,9 +1,9 @@
 import './App.css'
 import { useXterioTransaction, useXterioWalletContext } from './index'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Contract, ContractInterface, ethers } from 'ethers'
 import { ERC20_ABI } from './common/abi'
-import { LoginType } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from '@xterio-sdk/auth'
 
 /**
  * 区分区块链网络的名称，平台前后端统一定义的枚举类型
@@ -69,19 +69,8 @@ export const getContract = (network: NETWORK_NAME, contractAddress: string, abi:
 }
 
 function App() {
-  const {
-    userinfo,
-    isLogin,
-    login,
-    logout,
-    aaAddress,
-    isConnect,
-    disconnectWallet,
-    openWallet,
-    obtainWallet,
-    connectWallet,
-    signMessage
-  } = useXterioWalletContext()
+  const { aaAddress, isConnect, disconnectWallet, openWallet, obtainWallet, connectWallet, signMessage } =
+    useXterioWalletContext()
 
   const contractAddress = '0x12065F0d03cd1Bd280565069164F9E803c2DA988'
   const abi = ERC20_ABI
@@ -95,9 +84,10 @@ function App() {
     const toAddr = '0xF4Ae736B14a7B5FDb803172B242074D6DFe655bb'
     const amount = '0x0de0b6b3a7640000'
     try {
-      await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
-    } catch (err) {
-      console.log('ddd', err)
+      await sendTransaction?.(toAddr, amount, { gasLimit: '0x90de' })
+      // await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
+    } catch (err: any) {
+      console.log('ddd', err, err?.message)
     }
   }
 
@@ -120,17 +110,47 @@ function App() {
     }
   }
 
+  const [userinfo, setUserInfo] = useState({})
+  useEffect(() => {
+    console.log('[xtest] ---- add listener')
+    const unsubscribe_Info = XterEventEmiter.subscribe((res: IUserInfo) => {
+      setUserInfo(res)
+    }, XTERIO_EVENTS.ACCOUNT)
+
+    const unsubscribe_logout = XterEventEmiter.subscribe(() => {
+      setUserInfo({})
+    }, XTERIO_EVENTS.LOGOUT)
+    return () => {
+      console.log('[xtest] ---- remove listener')
+      unsubscribe_Info?.()
+      unsubscribe_logout?.()
+    }
+  }, [])
+
+  useEffect(() => {
+    const status = state.status
+    console.log('status=', status)
+    if (status === 'Mining' || status === 'PendingSignature') {
+      console.log('trade ing')
+    } else if (status === 'Success') {
+      console.log('trade success')
+    } else if (status === 'Exception' || status === 'Fail') {
+      console.log('trade failed')
+    }
+  }, [state.status])
+
   return (
     <>
       <h1>Xterio SDK</h1>
       <div>xterio auth sdk</div>
       <div className="card">
-        <p>是否登录: {isLogin ? 'true' : 'false'}</p>
+        <p>是否登录: {XterioAuth.isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
-        <button onClick={() => login()}>默认登录</button>
-        <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
-        <button onClick={() => login(LoginType.Mini)}>TG 登录</button>
-        <button onClick={logout}>退出登录</button>
+        <button onClick={() => alert(XterioAuth.isLogin)}>检查登录态</button>
+        <button onClick={() => XterioAuth.login()}>默认登录</button>
+        <button onClick={() => XterioAuth.login(LoginType.Email)}>邮箱登录</button>
+        <button onClick={() => XterioAuth.login(LoginType.Mini)}>TG 登录</button>
+        <button onClick={() => XterioAuth.logout()}>退出登录</button>
       </div>
 
       <div>xterio wallet sdk</div>

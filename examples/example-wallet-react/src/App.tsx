@@ -1,25 +1,14 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { ERC20_ABI } from './abi'
 import { getContract, NETWORK_NAME } from './common'
 
 import { useXterioWalletContext, useXterioTransaction } from '@xterio-sdk/wallet'
-import { LoginType } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from '@xterio-sdk/auth'
 
 function App() {
-  const {
-    userinfo,
-    isLogin,
-    login,
-    logout,
-    aaAddress,
-    isConnect,
-    disconnectWallet,
-    openWallet,
-    obtainWallet,
-    connectWallet,
-    signMessage
-  } = useXterioWalletContext()
+  const { aaAddress, isConnect, disconnectWallet, openWallet, obtainWallet, connectWallet, signMessage } =
+    useXterioWalletContext()
 
   const contractAddress = '0x12065F0d03cd1Bd280565069164F9E803c2DA988'
   const abi = ERC20_ABI
@@ -50,17 +39,35 @@ function App() {
     await sendUserOperation?.(tx)
   }
 
+  const [userinfo, setUserInfo] = useState({})
+  useEffect(() => {
+    console.log('[xtest] ---- add listener')
+    const unsubscribe_Info = XterEventEmiter.subscribe((res: IUserInfo) => {
+      setUserInfo(res)
+    }, XTERIO_EVENTS.ACCOUNT)
+
+    const unsubscribe_logout = XterEventEmiter.subscribe(() => {
+      setUserInfo({})
+    }, XTERIO_EVENTS.LOGOUT)
+    return () => {
+      console.log('[xtest] ---- remove listener')
+      unsubscribe_Info?.()
+      unsubscribe_logout?.()
+    }
+  }, [])
+
   return (
     <>
       <h1>Xterio SDK</h1>
       <div>xterio auth sdk</div>
       <div className="card">
-        <p>是否登录: {isLogin ? 'true' : 'false'}</p>
+        <p>是否登录: {XterioAuth.isLogin ? 'true' : 'false'}</p>
         <p>用户信息: {userinfo ? JSON.stringify(userinfo) : ''}</p>
-        <button onClick={() => login()}>默认登录</button>
-        <button onClick={() => login(LoginType.Email)}>邮箱登录</button>
-        <button onClick={() => login(LoginType.Mini)}>TG 登录</button>
-        <button onClick={logout}>退出登录</button>
+        <button onClick={() => alert(XterioAuth.isLogin)}>检查登录态</button>
+        <button onClick={() => XterioAuth.login()}>默认登录</button>
+        <button onClick={() => XterioAuth.login(LoginType.Email)}>邮箱登录</button>
+        <button onClick={() => XterioAuth.login(LoginType.Mini)}>TG 登录</button>
+        <button onClick={() => XterioAuth.logout()}>退出登录</button>
       </div>
 
       <div>xterio wallet sdk</div>
@@ -68,9 +75,9 @@ function App() {
         <div>pn aa wallet address: {aaAddress}</div>
         <div>pn aa wallet connected status: {isConnect ? 'true' : 'false'}</div>
         <button onClick={() => connectWallet()}>AA钱包连接</button>
-        <button onClick={disconnectWallet}>AA钱包断开连接</button>
-        <button onClick={obtainWallet}>AA钱包领取</button>
-        <button onClick={openWallet}>打开AA钱包</button>
+        <button onClick={() => disconnectWallet()}>AA钱包断开连接</button>
+        <button onClick={() => obtainWallet()}>AA钱包领取</button>
+        <button onClick={() => openWallet()}>打开AA钱包</button>
       </div>
       <div>xterio wallet transaction</div>
       <div className="card">
@@ -87,6 +94,8 @@ function App() {
         <button onClick={test1}>转账(Sepo)</button>
         <button onClick={test2}>转账2(Sepo)</button>
       </div>
+
+      <div>okx wallet sdk</div>
     </>
   )
 }

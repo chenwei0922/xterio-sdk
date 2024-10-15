@@ -16,7 +16,7 @@ export class XterioCache {
     Cookies.set(XTERIO_CONST.ID_TOKEN, id_token, { expires: 1 })
     Cookies.set(XTERIO_CONST.REFRESH_TOKEN, refresh_token, { expires: 180 })
   }
-  static get tokens(): ITokenRes | undefined {
+  static get tokens(): ITokenRes {
     const _t: ITokenRes = {
       access_token: Cookies.get(XTERIO_CONST.ACCESS_TOKEN) || '',
       id_token: Cookies.get(XTERIO_CONST.ID_TOKEN) || '',
@@ -24,10 +24,14 @@ export class XterioCache {
     }
     return _t
   }
-  static deleteTokens() {
-    Cookies.remove(XTERIO_CONST.ACCESS_TOKEN)
-    Cookies.remove(XTERIO_CONST.REFRESH_TOKEN)
-    Cookies.remove(XTERIO_CONST.ID_TOKEN)
+  static deleteTokens(key?: string) {
+    if (key) {
+      Cookies.remove(key)
+    } else {
+      Cookies.remove(XTERIO_CONST.ACCESS_TOKEN)
+      Cookies.remove(XTERIO_CONST.REFRESH_TOKEN)
+      Cookies.remove(XTERIO_CONST.ID_TOKEN)
+    }
   }
 
   static set userInfo(value: IUserInfo) {
