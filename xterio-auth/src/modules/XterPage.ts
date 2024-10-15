@@ -1,14 +1,22 @@
 import { OpenPageMode, PageOptionParam, PageType } from 'interfaces/loginInfo'
-import { XterioAuthInfo, XterioAuthTokensManager } from './XterAuthInfo'
+import { XterioAuthInfo } from './XterAuthInfo'
 import { XLog } from 'utils/logger'
 import qs from 'query-string'
-import { getIframe } from 'utils/dom'
+import { addCssText, convertStyleToArray, getDiv, getIframe } from 'utils/dom'
 import { XterioAuth } from './XterAuth'
 import { XterioAuthService } from './AuthService'
+import { iconContentMap } from 'ui/svg-icon'
 
 const getOtac = async () => {
-  const idToken = await XterioAuth.getIdToken()
-  if (idToken) {
+  //tip: otac invalid when used once
+  if (XterioAuth.isLogin) {
+    const otac = await XterioAuthService.getOtacByTokens()
+    return otac || ''
+  }
+  return ''
+
+  /*
+  if (XterioAuth.isLogin) {
     // User is logged in or the login token is expiring soon
     if (!XterioAuthInfo?.otac) {
       const otac = await XterioAuthService.getOtacByTokens()
@@ -25,10 +33,11 @@ const getOtac = async () => {
     }
   }
   return XterioAuthInfo?.otac || ''
+  */
 }
 
 export const openPage = async (page: PageType, mode?: OpenPageMode, options?: PageOptionParam) => {
-  const { active = 'ingame', keyword, collection, features } = options || {}
+  const { active = 'ingame', keyword, collection, features, alertConfig, ...rest } = options || {}
   const _type = mode || OpenPageMode.alert
   const app_id = XterioAuthInfo.config?.app_id || ''
   if (!app_id) {
@@ -56,6 +65,9 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     uri = `${basePage}/marketplace?${qs.stringify(query)}`
   }
 
+  if (rest) {
+    uri += `&${qs.stringify(rest)}`
+  }
   const otac = await getOtac()
   if (otac) {
     uri += `&_otac=${otac}`
@@ -66,13 +78,39 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     return uri
   }
   if (_type === OpenPageMode.iframeDom) {
-    return getIframe(uri).querySelector('iframe')
-  }
-  if (_type === OpenPageMode.alert) {
-    document.body.appendChild(getIframe(uri))
-    return
+    const { iframe } = getIframe(uri)
+    return iframe
   }
   if (_type === OpenPageMode.page) {
     location.href = uri
   }
+  if (_type === OpenPageMode.alert) {
+    alertIframeLogic(uri, alertConfig)
+    return
+  }
+}
+
+const alertIframeLogic = (uri: string, config: PageOptionParam['alertConfig']) => {
+  const { placement = 'right', style = { width: '100%', height: '100%' }, showCloseIcon = true } = config || {}
+  const { iframeDiv, shadow } = getIframe(uri)
+  if (showCloseIcon) {
+    const { element: closeDiv, remove: unsubscribe } = getDiv('close-icon pointer', () => {
+      shadow.remove()
+      unsubscribe?.()
+    })
+    addCssText(closeDiv, `position:absolute;top:16px;left:16px;`)
+    closeDiv.innerHTML = iconContentMap['icon-close-iframe']
+    iframeDiv.appendChild(closeDiv)
+  }
+  document.body.appendChild(shadow)
+  //update style, style > placement
+  const _styArr = []
+  _styArr.push('margin-top', `calc((100% - ${style.height}) / 2)`)
+  if (placement === 'right') {
+    _styArr.push('margin-left', `calc(100% - ${style.width})`)
+  } else if (placement === 'center') {
+    _styArr.push('margin-left', `calc((100% - ${style.width}) / 2)`)
+  }
+  _styArr.push(...convertStyleToArray(style))
+  addCssText(iframeDiv, ..._styArr)
 }

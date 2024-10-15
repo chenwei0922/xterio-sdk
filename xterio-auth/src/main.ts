@@ -1,5 +1,5 @@
 import { OpenPageMode, PageType } from 'interfaces/loginInfo'
-import { Env, IUserInfo, LoginType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from './index'
+import { Env, IUserInfo, LoginType, XterioAuth } from './index'
 import './styles/main.scss'
 
 const p = document.getElementById('userinfo')
@@ -41,7 +41,9 @@ const changePage = () => {
     el.innerText = currentPageName
   }
 }
-
+addClick('isLogin', () => {
+  alert(XterioAuth.isLogin)
+})
 addClick('login', () => {
   XterioAuth.login()
 })
@@ -60,7 +62,7 @@ addClick('login_mini', () => {
 })
 addClick('getIdToken', async () => {
   const id_token = await XterioAuth.getIdToken()
-  console.log('id_token=', id_token)
+  alert(id_token)
 })
 addClick('openAsset', () => {
   XterioAuth.openPage(currentPageName)
@@ -74,7 +76,10 @@ addClick('openAsset-dom', async () => {
   alert(dom)
 })
 addClick('openAsset-uri', async () => {
-  const uri = await XterioAuth.openPage(currentPageName, OpenPageMode.iframeUri)
+  const uri = await XterioAuth.openPage(currentPageName, OpenPageMode.iframeUri, {
+    hide_account_entrance: true,
+    hide_footer: true
+  })
   console.log('uri=', uri)
   alert(uri)
 })
