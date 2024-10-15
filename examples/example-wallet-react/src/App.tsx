@@ -87,6 +87,8 @@ function App() {
         <button onClick={test1}>转账(Sepo)</button>
         <button onClick={test2}>转账2(Sepo)</button>
       </div>
+
+      <div>okx wallet sdk</div>
     </>
   )
 }

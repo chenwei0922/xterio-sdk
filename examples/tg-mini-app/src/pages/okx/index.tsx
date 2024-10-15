@@ -4,112 +4,84 @@ import { SvgIcon } from 'src/components/ui'
 import { useEffect, useState } from 'react'
 import { OKXUniversalProvider } from '@okxconnect/universal-provider'
 import { formatEther } from 'ethers/lib/utils'
+import { useOkx } from 'src/contexts/okx'
 
 const Okx = observer(() => {
-  const [okxUniversalProvider, setOkxUniversalProvider] = useState<OKXUniversalProvider>()
+  const {
+    okxGetAddress,
+    okxGetChainId,
+    okxConnect,
+    okxDisconnect,
+    okxSetDefaultChainToXterBNB,
+    okxSetDefaultChainToXterBNBTest,
+    okxSendTransaction,
+    okxAddXterBNBChain,
+    okxAddXterBNBChainTest,
+    okxGetBalance // 假设存在这个方法
+  } = useOkx()
 
   const [chainId, setChainId] = useState<string>()
   const [address, setAddress] = useState<string>()
   const [balance, setBalance] = useState<string>()
 
-  const defaultChain = 'eip155:1'
+  const handleGetAddress = async () => {
+    const address = await okxGetAddress()
+    alert(address)
+    setAddress(address)
+  }
 
-  useEffect(() => {
-    const initProvider = async () => {
-      const provider = await OKXUniversalProvider.init({
-        dappMetaData: {
-          name: 'xter',
-          icon: 'https://resources.xter.io/ft/aod/roar.png'
-        }
-      })
-      setOkxUniversalProvider(provider)
-    }
-    initProvider()
-  }, [])
+  const handleGetChainId = async () => {
+    const chainId = await okxGetChainId()
+    alert(chainId)
+    setChainId(chainId)
+  }
 
   const handleConnect = async () => {
-    if (okxUniversalProvider) {
-      var session = await okxUniversalProvider.connect({
-        namespaces: {
-          eip155: {
-            chains: ['eip155:1', 'eip155:137'],
-            rpcMap: {
-              // Ethereum Mainnet
-              1: 'https://ethereum-rpc.publicnode.com',
-              137: 'https://polygon-bor.publicnode.com'
-            },
-            defaultChain: '1'
-          }
-        },
-        optionalNamespaces: {
-          eip155: {
-            chains: ['eip155:112358'],
-            rpcMap: {
-              // Xterio Chain (BNB)
-              112358: 'https://xterio-bnb.alt.technology'
-            },
-            defaultChain: '112358'
-          }
-        },
-        sessionConfig: {
-          redirect: 'tg://resolve'
-        }
-      })
-      setChainId('1')
-      alert(JSON.stringify(session))
-    }
+    await okxConnect()
+    handleGetAddress()
+    handleGetChainId()
   }
 
-  const getDefaultChainAddress = async () => {
-    if (okxUniversalProvider) {
-      // okxUniversalProvider.setDefaultChain('eip155:112358', 'https://xterio-bnb.alt.technology')
-      const ethRequestAccountsResult = await okxUniversalProvider.request({ method: 'eth_requestAccounts' })
-      setAddress(ethRequestAccountsResult as any)
-      const chainIdResult = await okxUniversalProvider.request({ method: 'eth_chainId' })
-      setChainId(chainIdResult as any)
-    }
+  const handleConnectAndAddXterBNBChain = async () => {
+    await okxConnect()
+    // setTimeout(() => {
+    //   alert('5s timeout')
+    // }, 5000)
+    // await okxAddXterBNBChain()
   }
 
-  const switchChain = async () => {
-    if (okxUniversalProvider) {
-      const data = { method: 'wallet_switchEthereumChain', params: { chainId: '112358' } }
-      const switchResult = await okxUniversalProvider.request(data, defaultChain)
-      alert(switchResult ?? 'switchResult is undefined')
-      setChainId('112358')
-    }
+  const handleDisconnect = async () => {
+    await okxDisconnect()
+    setAddress(undefined)
+    setChainId(undefined)
+    setBalance(undefined)
   }
 
-  const addEthereumChain = async () => {
-    if (okxUniversalProvider) {
-      const data = {
-        method: 'wallet_addEthereumChain',
-        params: {
-          blockExplorerUrls: ['https://bnb.xterscan.io'],
-          chainId: '112358',
-          chainName: 'Xter BNB',
-          nativeCurrency: { name: 'XTER BNB', symbol: 'XBNB', decimals: 18 },
-          rpcUrls: ['https://xterio-bnb.alt.technology']
-        }
-      }
-      const addEthereumChainResult = await okxUniversalProvider.request(data, defaultChain)
-      alert(addEthereumChainResult)
-    }
+  const handleSetDefaultChainToXterBNB = async () => {
+    await okxSetDefaultChainToXterBNB()
   }
 
-  const getBalance = async () => {
-    if (okxUniversalProvider) {
-      if (address) {
-        okxUniversalProvider.setDefaultChain('eip155:112358', 'https://xterio-bnb.alt.technology')
+  const handleSetDefaultChainToXterBNBTest = async () => {
+    await okxSetDefaultChainToXterBNBTest()
+  }
 
-        const data = { method: 'eth_getBalance', params: ['0x5eac656ceb0330b8f10f616da6cdeddd212682b5', 'latest'] }
-        // const data = { method: 'eth_getBalance', params: [address, 'latest'] }
-        const getBalanceResult = await okxUniversalProvider.request(data)
-        // const getBalanceResult = await okxUniversalProvider.request(data, `eip155:${chainId}`)
-        alert(formatEther(BigInt(getBalanceResult as string).toString()))
-        setBalance(getBalanceResult as any)
-      } else {
-        alert('no address')
-      }
+  const handleSendTransaction = async () => {
+    // await okxSendTransaction()
+  }
+
+  const handleAddXterBNBChain = async () => {
+    await okxAddXterBNBChain()
+  }
+
+  const handleAddXterBNBChainTest = async () => {
+    await okxAddXterBNBChainTest()
+  }
+
+  const handleFetchBalance = async () => {
+    if (address) {
+      const currentBalance = await okxGetBalance(address) // 需要实现这个方法
+      alert(formatEther(BigInt(currentBalance as string).toString()))
+      setBalance(formatEther(BigInt(currentBalance as string).toString())) // 格式化余额
     }
   }
 
@@ -118,39 +90,40 @@ const Okx = observer(() => {
       <div>
         <h3>链ID: {chainId}</h3>
         <h3>地址: {address}</h3>
-        <h3>余额: {formatEther(BigInt(balance as string).toString())}</h3>
+        <h3>余额: {balance}</h3>
       </div>
-
-      <div className="relative flex h-[260px] flex-col items-center justify-start">
-        <div
-          className="mt-4 flex h-12 w-full cursor-pointer items-center justify-between px-4 pb-3 pt-2 hover:opacity-80"
-          onClick={handleConnect}
-          style={{
-            backgroundSize: '100% 100%',
-            backgroundRepeat: 'no-repeat'
-          }}
-        >
-          <div className="flex flex-1 items-center overflow-hidden">
-            <h3 className="max-w-[250px] truncate text-sm font-semibold">{'Connect your okx evm wallet'}</h3>
-          </div>
-          <div className="ml-4 flex flex-shrink-0">
-            <SvgIcon iconName="icon_arrow_right" size={14} />
-          </div>
-        </div>
-
-        {/* 添加每个方法对应的点击 div */}
-        <div onClick={getDefaultChainAddress} className="mt-4 cursor-pointer">
-          <h3>获取默认链的地址信息</h3>
-        </div>
-        <div onClick={switchChain} className="mt-4 cursor-pointer">
-          <h3>切换链</h3>
-        </div>
-        <div onClick={addEthereumChain} className="mt-4 cursor-pointer">
-          <h3>添加链</h3>
-        </div>
-        <div onClick={getBalance} className="mt-4 cursor-pointer">
-          <h3>获取余额</h3>
-        </div>
+      <div className="mt-4 cursor-pointer" onClick={handleConnectAndAddXterBNBChain}>
+        <h3>连接钱包并添加 XterBNB 链</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleConnect}>
+        <h3>连接钱包</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleGetAddress}>
+        <h3>获取地址</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleGetChainId}>
+        <h3>获取链ID</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleDisconnect}>
+        <h3>断开连接</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleSetDefaultChainToXterBNB}>
+        <h3>设置默认链为 XterBNB</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleSetDefaultChainToXterBNBTest}>
+        <h3>设置默认链为 XterBNB 测试</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleSendTransaction}>
+        <h3>发送交易</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleAddXterBNBChain}>
+        <h3>添加 XterBNB 链</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleAddXterBNBChainTest}>
+        <h3>添加 XterBNB 测试链</h3>
+      </div>
+      <div className="mt-4 cursor-pointer" onClick={handleFetchBalance}>
+        <h3>获取余额</h3>
       </div>
     </div>
   )
