@@ -296,7 +296,7 @@ export class XterAuthModalSignUp extends BaseModalState {
       return
     }
 
-    this.modal.switchModalState(EAuthState.SignupCode, { email: userName, password })
+    this.modal.switchModalState(EAuthState.SignupCode, { email: userName, password, alreadySendCode: true })
   }
 
   private append(container: HTMLElement, element: HTMLElement) {
