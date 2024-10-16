@@ -8,6 +8,7 @@ import { validateEmail, validatePassword } from './utils'
 import { XterModalFormItem } from './XterAuthModalFormItem'
 import { EnvVariableConfig } from 'utils'
 import { disableCaptchaVerify } from './utils/config'
+import { XterioAuthService } from 'modules/AuthService'
 
 enum FomrItemsName {
   Email = 'email',
@@ -186,6 +187,7 @@ export class XterAuthModalSignIn extends BaseModalState {
       // 11112: 'Verification code expired.',
       // 11113: 'User does not exist.',
       // 11401: 'Invalid or expired signature.',
+      // 11003: 'User is not confirmed',
       // unknown: 'Unknown error, please try again later.'
       switch (err_code) {
         case 11001:
@@ -199,6 +201,11 @@ export class XterAuthModalSignIn extends BaseModalState {
           break
         case 11004:
           this.form.findFormItem(FomrItemsName.Password)?.setError('Too many attempts to login')
+          break
+        case 11003:
+          //已注册但是未进行邮箱验证需要先验证
+          XterioAuthService.sendSignUpCodeService(userName)
+          this.modal.switchModalState(EAuthState.SignupCode, { email: userName, password, alreadySendCode: true })
           break
         default:
           this.form.findFormItem(FomrItemsName.Password)?.setError('Unknown error, please try again later')

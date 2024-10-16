@@ -87,6 +87,7 @@ export class XterAuthModal {
   public close(): void {
     this.modalContainer?.remove()
     this.modalOverlay?.remove()
+    this.switchModalState(EAuthState.Login)
   }
 
   private renderCommonElement(_container: HTMLElement) {
