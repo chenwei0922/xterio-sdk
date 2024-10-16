@@ -1,8 +1,6 @@
 import type { Env, ISSoTokensParams, ITokenRes, IUserInfo } from 'interfaces/loginInfo'
 import { LoginType } from 'interfaces/loginInfo'
 import { XterioCache } from './XterCache'
-import { XterEventEmiter } from './XterEventEmitter'
-import { XTERIO_EVENTS } from 'utils'
 
 export class XterioAuthInfo {
   /** client id */
