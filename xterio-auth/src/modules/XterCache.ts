@@ -1,6 +1,5 @@
 import type { ITokenRes, IUserInfo } from 'interfaces/loginInfo'
 import { XTERIO_CONST } from 'utils'
-import Cookies from 'js-cookie'
 
 export class XterioCache {
   static set loginType(_type: string) {
@@ -12,25 +11,25 @@ export class XterioCache {
   }
   static set tokens(value: Partial<ITokenRes>) {
     const { access_token = '', id_token = '', refresh_token = '' } = value
-    Cookies.set(XTERIO_CONST.ACCESS_TOKEN, access_token, { expires: 1 })
-    Cookies.set(XTERIO_CONST.ID_TOKEN, id_token, { expires: 1 })
-    Cookies.set(XTERIO_CONST.REFRESH_TOKEN, refresh_token, { expires: 180 })
+    localStorage.setItem(XTERIO_CONST.ACCESS_TOKEN, access_token)
+    localStorage.setItem(XTERIO_CONST.ID_TOKEN, id_token)
+    localStorage.setItem(XTERIO_CONST.REFRESH_TOKEN, refresh_token)
   }
   static get tokens(): ITokenRes {
     const _t: ITokenRes = {
-      access_token: Cookies.get(XTERIO_CONST.ACCESS_TOKEN) || '',
-      id_token: Cookies.get(XTERIO_CONST.ID_TOKEN) || '',
-      refresh_token: Cookies.get(XTERIO_CONST.REFRESH_TOKEN) || ''
+      access_token: localStorage.getItem(XTERIO_CONST.ACCESS_TOKEN) || '',
+      id_token: localStorage.getItem(XTERIO_CONST.ID_TOKEN) || '',
+      refresh_token: localStorage.getItem(XTERIO_CONST.REFRESH_TOKEN) || ''
     }
     return _t
   }
   static deleteTokens(key?: string) {
     if (key) {
-      Cookies.remove(key)
+      localStorage.removeItem(key)
     } else {
-      Cookies.remove(XTERIO_CONST.ACCESS_TOKEN)
-      Cookies.remove(XTERIO_CONST.REFRESH_TOKEN)
-      Cookies.remove(XTERIO_CONST.ID_TOKEN)
+      localStorage.removeItem(XTERIO_CONST.ACCESS_TOKEN)
+      localStorage.removeItem(XTERIO_CONST.REFRESH_TOKEN)
+      localStorage.removeItem(XTERIO_CONST.ID_TOKEN)
     }
   }
 
