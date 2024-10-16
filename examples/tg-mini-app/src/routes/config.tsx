@@ -29,7 +29,7 @@ export const routes: RouteConfigProps[] = [
         name: 'Okx',
         title: 'Okx',
         component: Okx,
-        path: '/Okx'
+        path: '/okx'
       }
     ]
   }

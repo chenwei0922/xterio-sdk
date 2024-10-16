@@ -21,7 +21,7 @@ function App() {
     //方式1: sendTransaction，useXterioTransaction 必须传contract跟functionName
     const toAddr = '0xF4Ae736B14a7B5FDb803172B242074D6DFe655bb'
     const amount = '0x0de0b6b3a7640000'
-    await sendTransaction?.({ gasLimit: '0x90de' }, toAddr, amount)
+    await sendTransaction?.(toAddr, amount, { gasLimit: '0x90de' })
   }
 
   const test2 = async () => {

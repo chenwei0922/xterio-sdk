@@ -4,7 +4,7 @@ import { formatEther } from "ethers/lib/utils";
 import { Transaction } from "ethers/lib/ethers";
 
 export interface IOkx {
-  okxConnect: () => Promise<void>;
+  okxConnect: () => Promise<string | undefined>;
   okxDisconnect(): Promise<void>;
   okxSetDefaultChainToXterBNB: () => void;
   okxSetDefaultChainToXterBNBTest: () => void;
@@ -36,40 +36,6 @@ export const useOkx = (): IOkx => {
     };
     initProvider();
   }, []);
-
-  useEffect(() => {
-    const displayUriHandler = (uri: string) => {
-      console.log(uri);
-      alert(uri);
-    };
-
-    const sessionUpdateHandler = (session: any) => {
-      console.log(JSON.stringify(session));
-      alert(JSON.stringify(session));
-    };
-
-    const sessionDeleteHandler = ({ topic }: { topic: string }) => {
-      console.log(topic);
-      alert(topic);
-    };
-
-    // 添加事件监听器
-    if (okxProvider) {
-      console.log('event added')
-      okxProvider.events.on("display_uri", displayUriHandler);
-      okxProvider.events.on("session_update", sessionUpdateHandler);
-      okxProvider.events.on("session_delete", sessionDeleteHandler);
-    }
-
-    // 清除事件监听器
-    return () => {
-      if (okxProvider) {
-        okxProvider.events.off("display_uri", displayUriHandler);
-        okxProvider.events.off("session_update", sessionUpdateHandler);
-        okxProvider.events.off("session_delete", sessionDeleteHandler);
-      }
-    };
-  }, [okxProvider]);
 
   const okxConnect = useCallback(async () => {
     console.log('okxConnect start');
@@ -103,6 +69,7 @@ export const useOkx = (): IOkx => {
       });
       console.log('session ==', JSON.stringify(session))
       // alert(JSON.stringify(session));
+      return JSON.stringify(session);
     } else {
       alert('okxProvider not init');
     }

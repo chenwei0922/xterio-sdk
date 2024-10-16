@@ -28,6 +28,7 @@ const Okx = observer(() => {
     const address = await okxGetAddress()
     alert(address)
     setAddress(address)
+    
   }
 
   const handleGetChainId = async () => {

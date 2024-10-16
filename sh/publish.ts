@@ -39,7 +39,7 @@ const publishAuth = async () => {
     return
   }
   // publish success
-  updateReleaseDoc(authVersion)
+  updateReleaseDoc(authVersion, pathAuth)
   await commitVersionFile('auth', authVersion)
   await run(`bash release.sh auth ${authVersion}`, pathSh)
   return authVersion
@@ -62,7 +62,7 @@ const publishWallet = async () => {
     return
   }
   // publish success
-  updateReleaseDoc(walletVersion)
+  updateReleaseDoc(walletVersion, pathWallet)
   await run(`bash release.sh wallet ${walletVersion}`, pathSh)
   changeWalletPackageJson('reset')
   await commitVersionFile('wallet', walletVersion)
@@ -88,8 +88,8 @@ const commitVersionFile = async (_f: string, _v: string) => {
   await run(`git push origin main`)
 }
 
-const updateReleaseDoc = async (v: string) => {
-  const docPath = resolve(pathAuth, 'RELEASE.md')
+const updateReleaseDoc = async (v: string, path: string) => {
+  const docPath = resolve(path, 'RELEASE.md')
   const data = readFileSync(docPath, 'utf-8')
   const pattern = new RegExp(`# ${v.replace(/\./g, '\\.')}(\\s|$)`)
   if (!pattern.test(data)) {

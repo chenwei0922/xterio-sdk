@@ -19,8 +19,9 @@ export const renderRoutes = (mainRoutes) => {
       return (
         <Route key={index} element={<Layout />}>
           {subRoutes
-            .filter((item) => !!item.component)
-            .map(({ component, path, name, isPublic }) => {
+            .filter((item: any) => !!item.component)
+            .map((it: any) => {
+              const { component, path, name, isPublic } = it || {}
               // const Component = lazy(component)
               const Component = component
               return (
