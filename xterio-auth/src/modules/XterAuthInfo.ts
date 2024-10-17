@@ -1,6 +1,7 @@
 import type { Env, ISSoTokensParams, ITokenRes, IUserInfo } from 'interfaces/loginInfo'
 import { LoginType } from 'interfaces/loginInfo'
 import { XterioCache } from './XterCache'
+import { XTERIO_CONST } from 'utils/const'
 
 export class XterioAuthInfo {
   /** client id */
@@ -37,6 +38,12 @@ export class XterioAuthTokensManager {
   }
   static removeTokens() {
     XterioAuthInfo.tokens = undefined
+    XterioCache.deleteTokens()
+  }
+  static removeIdToken() {
+    const { refresh_token = '', access_token = '' } = XterioAuthInfo.tokens || {}
+    XterioAuthInfo.tokens = { refresh_token, access_token, id_token: '' }
+    XterioCache.deleteTokens(XTERIO_CONST.ID_TOKEN)
   }
   static get idToken() {
     return XterioAuthInfo.tokens?.id_token || ''
@@ -56,6 +63,7 @@ export class XterioAuthUserInfoManager {
   }
   static removeUserInfo() {
     XterioAuthInfo.userInfo = undefined
+    XterioCache.deleteUserInfo()
   }
   static get userInfo() {
     return XterioAuthInfo.userInfo

@@ -1,8 +1,7 @@
 import qs from 'query-string'
 import { IResponse } from './interfaces'
-import { XterioAuthInfo } from 'modules/XterAuthInfo'
+import { XterioAuthInfo, XterioAuthTokensManager } from 'modules/XterAuthInfo'
 import { getPackageVersion, randomNonceStr, XLog } from 'utils/logger'
-import { XterioCache } from 'modules/XterCache'
 import { XterEventEmiter } from 'modules/XterEventEmitter'
 import { XTERIO_EVENTS } from 'utils/const'
 
@@ -64,7 +63,7 @@ const fetcher = async <T>({ method, path, params, headers, data, Authorization }
       'X-Timestamp': Date.now().toString(),
       'X-Language': 'en',
       'X-Nonce': randomNonceStr(),
-      Authorization: Authorization || XterioCache.tokens?.id_token || '',
+      Authorization: Authorization || XterioAuthTokensManager.idToken || '',
       ...headers
     }
   }
