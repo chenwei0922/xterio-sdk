@@ -1,4 +1,4 @@
-import type { Env, ISSoTokensParams, ITokenRes, IUserInfo } from 'interfaces/loginInfo'
+import type { Env, ISSoTokensParams, ITokenRes, IUserInfo, PageUriMapType } from 'interfaces/loginInfo'
 import { LoginType } from 'interfaces/loginInfo'
 import { XterioCache } from './XterCache'
 import { XTERIO_CONST } from 'utils/const'
@@ -28,6 +28,8 @@ export class XterioAuthInfo {
   static loginType?: LoginType
   /** otac(2m expired) */
   static otac?: string
+  /** page uri map */
+  static pageUriMap: PageUriMapType
 }
 
 export class XterioAuthTokensManager {

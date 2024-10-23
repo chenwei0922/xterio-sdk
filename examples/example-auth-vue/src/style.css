@@ -58,6 +58,14 @@ button:focus-visible {
   padding: 2em;
 }
 
+.row{
+  display: flex;
+  flex-direction: row;
+}
+.justify-center{
+  justify-content: center;
+}
+
 #app {
   max-width: 1280px;
   margin: 0 auto;

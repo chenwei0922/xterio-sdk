@@ -8,7 +8,7 @@ import { XterAuthModal } from './XterAuthModal/XterAuthModal'
 import qs from 'query-string'
 import { XterioCache } from './XterCache'
 import { decode } from 'js-base64'
-import { openPage } from './XterPage'
+import { getOtac, openPage } from './XterPage'
 import { LoadingState, XTimeOut } from 'utils/timer'
 
 export class XterioAuth {
@@ -151,6 +151,7 @@ export class XterioAuth {
       `/account/v1/oauth2/authorize?` +
       qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     XterioAuthInfo.config = _config
+    XterioAuthInfo.pageUriMap = await XterioAuthService.getPageUrlMap()
 
     XLog.debug('auth initial')
 
@@ -230,6 +231,7 @@ export class XterioAuth {
     }
   }
   static openPage = openPage
+  static getOtac = getOtac
 }
 
 /**

@@ -12,8 +12,13 @@
   "eslint.format.enable": true,
   "eslint.codeActionsOnSave.rules": null,
   "eslint.codeActionsOnSave.mode": "all",
-  "vs-code-prettier-eslint.prettierLast": true
+  "vs-code-prettier-eslint.prettierLast": true,
   // //关闭js/ts默认format，统一用eslint
   // "javascript.format.enable": false,
   // "typescript.format.enable": false
+  // 禁用 VSCode 默认的 HTML 格式化
+  "html.format.enable": false,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

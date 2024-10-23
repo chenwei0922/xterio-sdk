@@ -36,6 +36,13 @@
 .card {
   padding: 2em;
 }
+.row{
+  display: flex;
+  flex-direction: row;
+}
+.justify-center{
+  justify-content: center;
+}
 
 .read-the-docs {
   color: #888;

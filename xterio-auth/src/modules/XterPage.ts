@@ -7,7 +7,7 @@ import { XterioAuth } from './XterAuth'
 import { XterioAuthService } from './AuthService'
 import { iconContentMap } from 'ui/svg-icon'
 
-const getOtac = async () => {
+export const getOtac = async () => {
   //tip: otac invalid when used once
   if (XterioAuth.isLogin) {
     const otac = await XterioAuthService.getOtacByTokens()
@@ -37,22 +37,30 @@ const getOtac = async () => {
 }
 
 export const openPage = async (page: PageType, mode?: OpenPageMode, options?: PageOptionParam) => {
-  const { active = 'ingame', keyword, collection, features, alertConfig, ...rest } = options || {}
+  const { active = 'ingame', tab = 'account', keyword, collection, features, alertConfig, ...rest } = options || {}
   const _type = mode || OpenPageMode.alert
   const app_id = XterioAuthInfo.config?.app_id || ''
   if (!app_id) {
     throw new Error('You must set xterio-auth app_id')
   }
+  const {
+    asset: assetPath,
+    settings: settingPath,
+    marketplace: marketPath,
+    collection: collectionPath
+  } = XterioAuthInfo.pageUriMap || {}
   const basePage = XterioAuthInfo.pageURL
   let uri = ''
-  if (page === PageType.asset) {
-    uri = `${basePage}/asset?source=1&app_id=${app_id}&active=${active}`
-  } else if (page === PageType.account) {
-    uri = `${basePage}/settings?source=1`
-  } else if (page === PageType.wallet) {
-    uri = `${basePage}/settings?source=1&tab=wallet`
-  } else if (page === PageType.nft) {
-    let query: Record<string, unknown> = { source: 1, app_id }
+  let query: Record<string, unknown> = {}
+
+  if (page === PageType.asset && assetPath) {
+    query = { app_id, active }
+    uri = `${basePage}${assetPath}`
+  } else if (page === PageType.setting && settingPath) {
+    query = { tab }
+    uri = `${basePage}${settingPath}`
+  } else if (page === PageType.nft_market && marketPath) {
+    query = { app_id }
     if (collection) {
       query = { ...query, collection }
     }
@@ -62,15 +70,23 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     if (features) {
       query = { ...query, features: encodeURIComponent(JSON.stringify(features)) }
     }
-    uri = `${basePage}/marketplace?${qs.stringify(query)}`
+    uri = `${basePage}${marketPath}`
+  } else if (page === PageType.nft_collection && collection && collectionPath) {
+    if (features) {
+      query = { features: encodeURIComponent(JSON.stringify(features)) }
+    }
+    uri = `${basePage}${collectionPath}`.replace('{app_id}', app_id).replace('{collection_id}', collection)
   }
 
-  if (rest) {
-    uri += `&${qs.stringify(rest)}`
-  }
-  const otac = await getOtac()
-  if (otac) {
-    uri += `&_otac=${otac}`
+  if (uri) {
+    query = { ...query, ...rest }
+    const otac = await getOtac()
+    if (otac) {
+      query = { ...query, _otac: otac }
+    }
+    if (Object.keys(query)?.length) {
+      uri += (uri.includes('?') ? '&' : '?') + qs.stringify(query)
+    }
   }
 
   XLog.debug('open xerio page uri:', uri)

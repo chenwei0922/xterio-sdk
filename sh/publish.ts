@@ -41,8 +41,8 @@ const publishAuth = async () => {
   // publish success
   updateReleaseDoc(authVersion, pathAuth)
   await commitVersionFile('auth', authVersion)
-  await run(`bash release.sh auth ${authVersion}`, pathSh)
-  return authVersion
+  // await run(`bash release.sh auth ${authVersion}`, pathSh)
+  await run(`bash release_new.sh auth ${authVersion} ${lines}`, pathSh)
 }
 
 const publishWallet = async () => {
@@ -63,7 +63,8 @@ const publishWallet = async () => {
   }
   // publish success
   updateReleaseDoc(walletVersion, pathWallet)
-  await run(`bash release.sh wallet ${walletVersion}`, pathSh)
+  // await run(`bash release.sh wallet ${walletVersion}`, pathSh)
+  await run(`bash release_new.sh wallet ${walletVersion} ${lines}`, pathSh)
   changeWalletPackageJson('reset')
   await commitVersionFile('wallet', walletVersion)
 }

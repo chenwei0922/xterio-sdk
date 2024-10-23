@@ -19,7 +19,7 @@ export const EnvVariableConfig: Record<Env, EnvVariableType> = {
   [Env.Production]: {
     HCAPTCHA_SITE_KEY: '22e2664c-fb06-482c-992c-8b74946e763a',
     API_BASE: 'https://api.xter.io',
-    PAGE_BASE: 'https://www.xter.io'
+    PAGE_BASE: 'https://app.xter.io'
   }
 }
 
