@@ -8,7 +8,8 @@ import type {
   ILoginServiceResError,
   IRefreshServiceRes,
   IRefreshServiceBody,
-  IRegisterConfirmServiceBody
+  IRegisterConfirmServiceBody,
+  PageUriMapType
 } from 'interfaces/loginInfo'
 import { XLog } from 'utils'
 import { XterioAuthInfo, XterioAuthTokensManager, XterioAuthUserInfoManager } from './XterAuthInfo'
@@ -249,5 +250,17 @@ export class XterioAuthService {
       return { code: '' }
     })
     return res?.code || ''
+  }
+
+  static async getPageUrlMap() {
+    const res = await getFetcher<PageUriMapType>(`${XterioAuthInfo.pageURL}/api/pageUrlMap`).catch(() => {
+      return {
+        asset: '/asset',
+        settings: '/settings',
+        marketplace: '/marketplace',
+        collection: '/collection/{app_id}/{collection_id}'
+      }
+    })
+    return res
   }
 }

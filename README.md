@@ -60,8 +60,8 @@ const unsubscribe = XterEventEmiter.subscribe<IUserInfo>((info) => {
 ## 4. API Reference
 
 ### 4.1 Method
-#### `init(config, env?:Env)`
-Initialize Function
+#### `init(config: Partial<ISSoTokensParams>, env?:Env)`
+Initialize Function，View the detailed configuration of [ISSoTokensParams](#ISSoTokensParams)
 ```ts
 XterioAuth.init({
   app_id:'',
@@ -81,7 +81,7 @@ XterioAuth.init({
 ```
 
 #### `login(mode?: LoginType)`
-login xterio
+login xterio, View the detailed configuration of [LoginType](#LoginType)
 ```ts
 XterioAuth.login() //default: LoginType.Default
 XterioAuth.login(LoginType.Email)
@@ -100,6 +100,11 @@ check whether the idToken is valid. If the idToken is invalid, empty string is r
 XterioAuth.getIdToken() //Promise<string>
 ```
 
+### `getOtac()`
+```ts
+XterioAuth.getOtac() //Promise<string>
+```
+
 #### `getUserInfo(p:Function)`
 get userinfo with callback
 ```ts
@@ -109,21 +114,34 @@ XterioAuth.getUserInfo((info) => {
 })
 ```
 
-#### `openPage(page:PageType,mode?:OpenPageMode, options?:PageOptionParam)`
-default mode: `OpenPageMode.alert`
+#### `openPage(page:PageType, mode?:OpenPageMode, options?:PageOptionParam)`
+default mode: `OpenPageMode.alert`，View the detailed configuration of [PageOptionParam](#PageOptionParam) 、[PageType](#PageType)、[OpenPageMode](#OpenPageMode)
+
 ```ts
 //example1: page:asset, mode:alert
-XterioAuth.openPage(PageType.asset, OpenPageMode.alert, {active: 'ingame'})
+XterioAuth.openPage(PageType.asset, OpenPageMode.alert, {
+  active: 'ingame',
+  //...
+})
 
-//example2: page:account, mode:page
-XterioAuth.openPage(PageType.account, OpenPageMode.page)
+//example2: page:settings, mode:page
+XterioAuth.openPage(PageType.setting, OpenPageMode.page, {
+  tab: 'account',
+  hide_wallet_entrance: true
+  //...
+})
 
-//example3: page:wallet, mode:iframeDom
-await XterioAuth.openPage(PageType.wallet, OpenPageMode.iframeDom) //return: domNode
-
-//example4: page:nft, mode:iframeUri
-await XterioAuth.openPage(PageType.nft, OpenPageMode.iframeUri, {
+//example3: page:marketplace, mode:iframeDom
+await XterioAuth.openPage(PageType.nft_market, OpenPageMode.iframeDom, {
+  //...
   keyword: '',
+  collection: '',
+  features: [{ k: '', initValues: [], type: '' }]
+}) //return: domNode
+
+//example4: page:collection, mode:iframeUri
+await XterioAuth.openPage(PageType.nft_collection, OpenPageMode.iframeUri, {
+  //...
   collection: '',
   features: [{ k: '', initValues: [], type: '' }]
 }) //return: uri
@@ -169,7 +187,22 @@ XterEventEmiter.off(cb, 'event_name')
 clear all listeners
 
 ## 5. Interface/Type
-### `Env`
+### `ISSoTokensParams` <a id="ISSoTokensParams"></a>
+```ts
+export interface ISSoTokensParams {
+  app_id: string
+  client_id: string
+  client_secret: string
+  redirect_uri: string
+  response_type: string //value: 'code'
+  scope: string //value: 'all'
+  mode: 'default' | 'email' //default: 'default'
+  grant_type: string //value: 'authorization_code'
+  logout?: '0' | '1' //default: '1'
+  logLevel?: number //default: 1
+}
+```
+### `Env` <a id="Env"></a>
 ```ts
 export enum Env {
   Dev = 'Dev',
@@ -178,7 +211,7 @@ export enum Env {
 }
 ```
 
-### `LoginType`
+### `LoginType` <a id="LoginType"></a>
 ```ts
 export enum LoginType {
   Default = 'default',
@@ -187,7 +220,7 @@ export enum LoginType {
 }
 ```
 
-### `OpenPageMode`
+### `OpenPageMode` <a id="OpenPageMode"></a>
 ```ts
 export enum OpenPageMode {
   alert = 'alert', //open alert
@@ -197,49 +230,52 @@ export enum OpenPageMode {
 }
 ```
 
-### `PageType`
+### `PageType` <a id="PageType"></a>
 ```ts
 export enum PageType {
   asset = 'asset',
-  nft = 'nft',
-  account = 'account',
-  wallet = 'wallet'
+  nft_market = 'nft_marketplace',
+  nft_collection = 'nft_collection',
+  setting = 'setting'
 }
 ```
 
-###  `PageOptionParam`
+### `PageOptionParam` <a id="PageOptionParam"></a>
 ```ts
+export type BooleanOrBinary = boolean | 1 | 0
 export interface PageOptionParam {
-  /** asset page */
+  /** only settings page */
+  tab?: 'profile' | 'account' | 'wallet' | 'security'
+  /** only asset page */
   active?: 'ingame' | 'onchain'
-  /** nft page */
+  /** only nft market page */
   keyword?: string
-  /** nft page */
+  /** only nft page, required when nft_collection */
   collection?: string
-  /** nft page */
+  /** only nft page */
   features?: { k: string; initValues: (number | string)[]; type?: string }[]
   /** whether hide wallet entry */
-  hide_wallet_entrance?: boolean
+  hide_wallet_entrance?: BooleanOrBinary
   /** whether hide account */
-  hide_account_entrance?: boolean
+  hide_account_entrance?: BooleanOrBinary
   /** whether hide top nav menu */
-  hide_menu_entrance?: boolean
+  hide_menu_entrance?: BooleanOrBinary
   /** whether hide logout btn */
-  hide_sign_out?: boolean
+  hide_sign_out?: BooleanOrBinary
   /** whether hide footer */
-  hide_footer?: boolean
+  hide_footer?: BooleanOrBinary
   /** whether disable logo click event */
-  disable_logo_click?: boolean
+  disable_logo_click?: BooleanOrBinary
   /** whether hide game select, only asset page */
-  hide_game_select?: boolean
+  hide_game_select?: BooleanOrBinary
   /** whether hide game tokens, only asset page */
-  hide_game_tokens?: boolean
+  hide_game_tokens?: BooleanOrBinary
   /** whether hide game filter, only nft page */
-  hide_game_filter?: boolean
+  hide_game_filter?: BooleanOrBinary
   /** set alert configs */
   alertConfig?: {
-    placement: 'left' | 'right' | 'center' //default: 'right'
-    style: Partial<CSSStyleDeclaration> //default: { width: '400px', height: '100%' }
+    placement: 'left' | 'right' | 'center'
+    style: Partial<CSSStyleDeclaration>
     showCloseIcon?: boolean
   }
 }

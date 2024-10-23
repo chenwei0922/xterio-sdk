@@ -119,38 +119,47 @@ export enum OpenPageMode {
 }
 export enum PageType {
   asset = 'asset',
-  nft = 'nft',
-  account = 'account',
-  wallet = 'wallet'
+  nft_market = 'nft_marketplace',
+  nft_collection = 'nft_collection',
+  setting = 'setting'
+}
+export type BooleanOrBinary = boolean | 1 | 0
+export interface PageUriMapType {
+  asset: string
+  settings: string
+  marketplace: string
+  collection: string
 }
 
 export interface PageOptionParam {
-  /** asset page */
+  /** only settings page */
+  tab?: 'profile' | 'account' | 'wallet' | 'security'
+  /** only asset page */
   active?: 'ingame' | 'onchain'
-  /** nft page */
+  /** only nft market page */
   keyword?: string
-  /** nft page */
+  /** only nft page, required when nft_collection */
   collection?: string
-  /** nft page */
+  /** only nft page */
   features?: { k: string; initValues: (number | string)[]; type?: string }[]
   /** whether hide wallet entry */
-  hide_wallet_entrance?: boolean
+  hide_wallet_entrance?: BooleanOrBinary
   /** whether hide account */
-  hide_account_entrance?: boolean
+  hide_account_entrance?: BooleanOrBinary
   /** whether hide top nav menu */
-  hide_menu_entrance?: boolean
+  hide_menu_entrance?: BooleanOrBinary
   /** whether hide logout btn */
-  hide_sign_out?: boolean
+  hide_sign_out?: BooleanOrBinary
   /** whether hide footer */
-  hide_footer?: boolean
+  hide_footer?: BooleanOrBinary
   /** whether disable logo click event */
-  disable_logo_click?: boolean
+  disable_logo_click?: BooleanOrBinary
   /** whether hide game select, only asset page */
-  hide_game_select?: boolean
+  hide_game_select?: BooleanOrBinary
   /** whether hide game tokens, only asset page */
-  hide_game_tokens?: boolean
+  hide_game_tokens?: BooleanOrBinary
   /** whether hide game filter, only nft page */
-  hide_game_filter?: boolean
+  hide_game_filter?: BooleanOrBinary
   /** set alert configs */
   alertConfig?: {
     placement: 'left' | 'right' | 'center'

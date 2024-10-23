@@ -1,55 +1,147 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .card {
+        margin: 20px 0;
+        display: flex;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    .card {
-      display: flex;
-  
-      >div {
+      .btn {
+        background-color: red;
         margin-right: 10px;
         margin-bottom: 10px;
         cursor: pointer;
         width: 100px;
-      height: 40px;
-      background-color: red;
+        height: 40px;
       }
-    }
-    
-  </style>
-</head>
 
-<body>
-  <h1>Hello, Webpack!</h1>
-  <div class="card">
-  <div id="isLogin">是否登录</div>
-  <div id="login">默认登录</div>
-  <div id="login_email">邮箱登录</div>
-  <div id="login_mini">小程序登录</div>
-  <div id="logout">退出登录</div>
-  <div id="getIdToken">IdToken</div>
-  </div>
-  
-  <div>用户信息</div>
-  <p id="userinfo"></p>
-  <div class="card">
-    <p>设置要打开的页面:<span id="current-page" style="color: red;"></span></p>
-    <div id="page-asset">资产页</div>
-    <div id="page-account">账户页</div>
-    <div id="page-wallet">钱包页</div>
-    <div id="page-nft">nft页</div>
-  </div>
-  <div class="card">
-    <div id="openAsset">打开页面(弹框)</div>
-    <div id="openAsset-new">打开页面(新页)</div>
-    <div id="openAsset-dom">打开页面(dom)</div>
-    <div id="openAsset-uri">打开页面(uri)</div>
-  </div>
-  <script type="module" src="/src/main.ts"></script>
+      .list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        background-color: inherit;
+      }
 
-</body>
+      .col {
+        display: flex;
+        flex-direction: column;
+      }
 
+      .row {
+        display: flex;
+        flex-direction: row;
+      }
+
+      input {
+        cursor: pointer;
+      }
+
+      .hide {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Hello, Xterio Auth!</h1>
+    <div class="card">
+      <div id="isLogin" class="btn">是否登录</div>
+      <div id="login" class="btn">默认登录</div>
+      <div id="login_email" class="btn">邮箱登录</div>
+      <div id="login_mini" class="btn">小程序登录</div>
+      <div id="logout" class="btn">退出登录</div>
+      <div id="getIdToken" class="btn">IdToken</div>
+      <div id="getOtac" class="btn">OTAC</div>
+    </div>
+
+    <div>用户信息</div>
+    <p id="userinfo"></p>
+    <div class="card">
+      <p>设置要打开的页面:<span id="current-page" style="color: red"></span></p>
+      <div id="page-asset" class="btn">资产页</div>
+      <div id="page-setting" class="btn">账号钱包管理页</div>
+      <div id="page-nft-market" class="btn">nft市场页</div>
+      <div id="page-nft-collection" class="btn">nft落地页</div>
+    </div>
+    <div class="card col">
+      <p>全局划控制参数:</p>
+      <div class="list">
+        <div class="hide_wallet_entrance">
+          <input type="checkbox" />
+          <span>隐藏钱包入口</span>
+        </div>
+        <div class="hide_account_entrance">
+          <input type="checkbox" />
+          <span>隐藏账号入口</span>
+        </div>
+        <div class="hide_menu_entrance">
+          <input type="checkbox" />
+          <span>隐藏顶部导航栏(仅H5生效)</span>
+        </div>
+        <div class="hide_sign_out">
+          <input type="checkbox" />
+          <span>隐藏登出按钮</span>
+        </div>
+        <div class="hide_footer">
+          <input type="checkbox" />
+          <span>隐藏页脚</span>
+        </div>
+        <div class="disable_logo_click">
+          <input type="checkbox" />
+          <span>禁用左上角logo点击跳转首页</span>
+        </div>
+      </div>
+    </div>
+    <div class="card col">
+      <p>页面独有参数:</p>
+      <div class="config-asset row">
+        <div>定位到对应nft tab :</div>
+        <div>
+          <input type="radio" name="asset_active_tab_option" value="ingame" />
+          <label>ingame</label>
+          <input type="radio" name="asset_active_tab_option" value="onchain" />
+          <label>onchain</label>
+        </div>
+      </div>
+      <div class="config-asset hide_game_select">
+        <input type="checkbox" />
+        <span>隐藏游戏选择(资产页)</span>
+      </div>
+      <div class="config-asset hide_game_tokens">
+        <input type="checkbox" />
+        <span>隐藏token部分(资产页)</span>
+      </div>
+      <div class="config-nft-market hide_game_filter nft">
+        <input type="checkbox" />
+        <span>隐藏游戏filter(nft市场页)</span>
+      </div>
+      <div class="config-setting row">
+        <div>定位到对应tab页 :</div>
+        <div>
+          <input type="radio" name="setting_active_tab_option" value="profile" />
+          <label>profile</label>
+          <input type="radio" name="setting_active_tab_option" value="account" />
+          <label>account</label>
+          <input type="radio" name="setting_active_tab_option" value="wallet" />
+          <label>wallet</label>
+          <input type="radio" name="setting_active_tab_option" value="security" />
+          <label>security</label>
+        </div>
+      </div>
+      <div class="config-nft-market">tip: keyword & features 参考文档</div>
+      <div class="config-nft-collection">tip: features 参考文档，collection必传</div>
+    </div>
+    <div class="card">
+      <div id="openAsset" class="btn">打开页面(弹框)</div>
+      <div id="openAsset-new" class="btn">打开页面(新页)</div>
+      <div id="openAsset-dom" class="btn">打开页面(dom)</div>
+      <div id="openAsset-uri" class="btn">打开页面(uri)</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
