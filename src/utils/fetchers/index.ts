@@ -77,6 +77,9 @@ const fetcher = async <T>({ method, path, params, headers, data, Authorization }
   const req = new Request(url, requestOptions)
   try {
     const resp = await fetch(req)
+    if (resp.url === XterioAuthInfo.PageUriApi) {
+      return await resp.json()
+    }
     return method === 'PUT' ? (resp as T) : resolveResp<T>(resp)
   } catch {
     throw new Error('Network error')

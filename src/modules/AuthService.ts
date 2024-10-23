@@ -253,14 +253,20 @@ export class XterioAuthService {
   }
 
   static async getPageUrlMap() {
-    const res = await getFetcher<PageUriMapType>(`${XterioAuthInfo.pageURL}/api/pageUrlMap`).catch(() => {
+    const uri = XterioAuthInfo.PageUriApi
+    const res = await getFetcher<{ domain: string; pages: PageUriMapType }>(uri).catch((e) => {
+      XLog.error('getPageUrlMap', e)
       return {
-        asset: '/asset',
-        settings: '/settings',
-        marketplace: '/marketplace',
-        collection: '/collection/{app_id}/{collection_id}'
+        domain: '',
+        pages: {
+          asset: '/asset',
+          settings: '/settings',
+          marketplace: '/marketplace',
+          collection: '/collection/{app_id}/{collection_id}'
+        }
       }
     })
+    XLog.debug(uri, res)
     return res
   }
 }
