@@ -30,6 +30,8 @@ export class XterioAuthInfo {
   static otac?: string
   /** page uri map */
   static pageUriMap: PageUriMapType
+  /** s3 api for page uri map */
+  static PageUriApi: string
 }
 
 export class XterioAuthTokensManager {

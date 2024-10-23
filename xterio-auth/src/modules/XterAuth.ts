@@ -151,7 +151,10 @@ export class XterioAuth {
       `/account/v1/oauth2/authorize?` +
       qs.stringify({ client_id, redirect_uri, response_type, scope, mode, logout })
     XterioAuthInfo.config = _config
-    XterioAuthInfo.pageUriMap = await XterioAuthService.getPageUrlMap()
+    XterioAuthInfo.PageUriApi = EnvVariableConfig[_env].PAGES_URI_API
+    const data = await XterioAuthService.getPageUrlMap()
+    XterioAuthInfo.pageUriMap = data.pages
+    XterioAuthInfo.pageURL = data.domain ? `https://${data.domain}` : EnvVariableConfig[_env].PAGE_BASE
 
     XLog.debug('auth initial')
 
