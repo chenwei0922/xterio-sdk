@@ -84,27 +84,38 @@ export class XterioAuth {
     return XterioAuthTokensManager.idToken || ''
   }
 
-  private static async checkCode() {
+  private static getCode() {
     const _type = XterioCache.loginType
     XLog.debug('check authorize status and _type=', _type)
 
-    if (_type !== LoginType.Default && _type !== LoginType.Email) return
+    if (_type !== LoginType.Default && _type !== LoginType.Email) return ''
 
     const uri = XterioAuthInfo.config?.redirect_uri
     if (!uri || !location.href.startsWith(uri)) {
       XLog.error('not check, different redirect_uri')
-      return
+      return ''
     }
 
-    const queryParams = qs.parseUrl(location.href, { types: { code: 'string' } })
-    const code = queryParams.query?.code
+    const queryParams = qs.parseUrl(location.href)
+    let code = queryParams.query?.code
+    if (Array.isArray(code)) {
+      code = code?.[0]
+    }
     if (!code) {
-      throw new Error('no authorize')
+      XLog.error('no authorize')
+      return ''
+    } else {
+      XLog.debug('code=', code)
+      // XLog.debug('url=', location.href, queryParams.query)
+      delete queryParams.query.code
+      const _t = qs.stringify(queryParams.query)
+      const new_url = queryParams.url + (_t ? '?' + _t : '')
+      history.pushState(null, '', new_url)
     }
-    if (uri) {
-      history.pushState(null, '', uri)
-    }
-    XLog.debug('going to login ...')
+    return code
+  }
+  private static async codeLogin(code: string) {
+    XLog.debug('going to code login ...')
     const res = await XterioAuthService.login(code as string)
     if (res?.uuid) {
       XterioCache.delete(XTERIO_CONST.LOGIN_TYPE)
@@ -117,17 +128,17 @@ export class XterioAuth {
   }
 
   static async init(config: Partial<ISSoTokensParams>, env?: Env) {
+    const _env = env ?? Env.Dev
     const {
       app_id = '',
       client_id = '',
       client_secret = '',
       redirect_uri = '',
       mode = 'default',
-      logout = '1',
+      logout = _env === Env.Dev ? '0' : '1',
       logLevel = 1
     } = config
     setLogLevel(logLevel)
-    const _env = env ?? Env.Dev
     const _baseURL = EnvVariableConfig[_env].API_BASE
     const _config: ISSoTokensParams = {
       app_id,
@@ -182,10 +193,12 @@ export class XterioAuth {
     XterAuthModal.init({ apiUrl: _baseURL, env: _env })
     XLog.debug(XterAuthModal.instance)
 
-    await this.checkToken()
-    window.addEventListener('load', async (event: Event) => {
-      await this.checkCode()
-    })
+    const code = this.getCode()
+    if (code) {
+      await this.codeLogin(code)
+    } else {
+      await this.checkToken()
+    }
   }
   private static clearData() {
     XterioAuthTokensManager.removeTokens()

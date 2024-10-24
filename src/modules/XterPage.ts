@@ -1,4 +1,4 @@
-import { OpenPageMode, PageOptionParam, PageType } from 'interfaces/loginInfo'
+import { OpenPageMode, PageAlertConfig, PageOptionParam, PageType } from 'interfaces/loginInfo'
 import { XterioAuthInfo } from './XterAuthInfo'
 import { XLog } from 'utils/logger'
 import qs from 'query-string'
@@ -89,6 +89,8 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     }
   }
 
+  // tip: debug iframe, 需xterio启动地址为http://localhost:3001，且配置允许localhost:3000才行
+  // uri = uri.replace(XterioAuthInfo.pageURL, 'http://localhost:3001')
   XLog.debug('open xerio page uri:', uri)
   if (_type === OpenPageMode.iframeUri) {
     return uri
@@ -98,7 +100,8 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
     return iframe
   }
   if (_type === OpenPageMode.page) {
-    location.href = uri
+    window.open(uri, '_blank')
+    // location.href = uri
   }
   if (_type === OpenPageMode.alert) {
     alertIframeLogic(uri, alertConfig)
@@ -106,7 +109,7 @@ export const openPage = async (page: PageType, mode?: OpenPageMode, options?: Pa
   }
 }
 
-const alertIframeLogic = (uri: string, config: PageOptionParam['alertConfig']) => {
+const alertIframeLogic = (uri: string, config?: Partial<PageAlertConfig>) => {
   const { placement = 'right', style = { width: '100%', height: '100%' }, showCloseIcon = true } = config || {}
   const { iframeDiv, shadow } = getIframe(uri)
   if (showCloseIcon) {
