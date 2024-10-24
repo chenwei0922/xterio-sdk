@@ -27,7 +27,8 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile --shamefully-hoist
+        run: pnpm install
+        # run: pnpm install --no-frozen-lockfile --shamefully-hoist
       
       - name: Build Modules
         run: pnpm run build
