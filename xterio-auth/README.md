@@ -115,12 +115,21 @@ XterioAuth.getUserInfo((info) => {
 ```
 
 #### `openPage(page:PageType, mode?:OpenPageMode, options?:PageOptionParam)`
-default mode: `OpenPageMode.alert`，View the detailed configuration of [PageOptionParam](#PageOptionParam) 、[PageType](#PageType)、[OpenPageMode](#OpenPageMode)
+default mode: `OpenPageMode.alert`，View the detailed configuration of [PageOptionParam](#PageOptionParam) 、[PageType](#PageType)、[OpenPageMode](#OpenPageMode) [PageOptionParam](#`PageOptionParam`)
 
 ```ts
 //example1: page:asset, mode:alert
 XterioAuth.openPage(PageType.asset, OpenPageMode.alert, {
   active: 'ingame',
+  alertConfig: {
+    placement: 'center',
+    showCloseIcon: false,
+    style:{
+      width: '200px',
+      height: '200px',
+      marginTop: "20px"
+    }
+  }
   //...
 })
 
@@ -258,10 +267,12 @@ export interface PageOptionParam {
   hide_wallet_entrance?: BooleanOrBinary
   /** whether hide account */
   hide_account_entrance?: BooleanOrBinary
-  /** whether hide top nav menu */
+  /** whether hide menu, only h5 usage */
   hide_menu_entrance?: BooleanOrBinary
   /** whether hide logout btn */
   hide_sign_out?: BooleanOrBinary
+  /** whether hide header */
+  hide_header?: BooleanOrBinary
   /** whether hide footer */
   hide_footer?: BooleanOrBinary
   /** whether disable logo click event */

@@ -36,6 +36,12 @@
         display: flex;
         flex-direction: row;
       }
+      .items-center{
+        align-items: center;
+      }
+      .justify-center{
+        justify-content: center;
+      }
 
       input {
         cursor: pointer;
@@ -43,6 +49,14 @@
 
       .hide {
         display: none;
+      }
+      input[type="text"] {
+        padding: 10px;
+        border: 1px solid #ccc; 
+        border-radius: 5px;
+        font-size: 16px;
+        width: 200px; 
+        margin: 10px 0;
       }
     </style>
   </head>
@@ -81,11 +95,15 @@
         </div>
         <div class="hide_menu_entrance">
           <input type="checkbox" />
-          <span>隐藏顶部导航栏(仅H5生效)</span>
+          <span>隐藏菜单入口(仅H5生效)</span>
         </div>
         <div class="hide_sign_out">
           <input type="checkbox" />
           <span>隐藏登出按钮</span>
+        </div>
+        <div class="hide_header">
+          <input type="checkbox" />
+          <span>隐藏顶部导航</span>
         </div>
         <div class="hide_footer">
           <input type="checkbox" />
@@ -135,6 +153,42 @@
       </div>
       <div class="config-nft-market">tip: keyword & features 参考文档</div>
       <div class="config-nft-collection">tip: features 参考文档，collection必传</div>
+    </div>
+    <div class="card col">
+      <p>弹框样式控制:</p>
+      <div class="config-alert row">
+        <div>位置:</div>
+        <div>
+          <input type="radio" name="alert_active_place_option" value="left" />
+          <label>left</label>
+          <input type="radio" name="alert_active_place_option" value="center" />
+          <label>center</label>
+          <input type="radio" name="alert_active_place_option" value="right" />
+          <label>right</label>
+        </div>
+      </div>
+      <div class="config-alert alert_showCloseIcon">
+        <input type="checkbox" />
+        <span>是否隐藏关闭按钮</span>
+      </div>
+      <div class="config-alert row items-center alert_width">
+        <label>宽度:</label>
+        <input type="text" placeholder="200px" value="200px"/>
+      </div>
+      <div class="config-alert row items-center alert_height">
+        <label>高度:</label>
+        <input type="text" placeholder="200px" value="300px"/>
+      </div>
+      <div class="config-alert col alert_style">
+        <label>自定义样式对象(合法json字符串):</label>
+        <textarea placeholder="" rows="5">
+{
+  "marginTop": "20px",
+  "backgroundColor": "red"
+}
+        </textarea>
+      </div>
+    
     </div>
     <div class="card">
       <div id="openAsset" class="btn">打开页面(弹框)</div>

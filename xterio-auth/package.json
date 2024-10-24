@@ -46,7 +46,7 @@
   },
   "scripts": {
     "test": "jest",
-    "dev": "vite --port 3000",
+    "dev": "vite --port 3001",
     "build": "rm -rf dist/* && vite build",
     "build:umd": "rm -rf dist/* && vite build --config vite.config.umdbuild.mts",
     "dev-watch": "vite build --watch",

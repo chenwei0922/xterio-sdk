@@ -26,7 +26,7 @@ const GET_QUERY_STRING = (key: string) => {
 }
 
 const devConfig = {
-  redirect_uri: 'http://localhost:3000/',
+  redirect_uri: location.href.replace(/[?&]code=[^&]+/, ''),
   client_id: '4gsmgur6gkp8u9ps8dlco3k7eo',
   client_secret: 'ABC23',
   app_id: 'apiautotest'
@@ -35,7 +35,7 @@ const stageConfig = {
   redirect_uri: location.href.replace(/[?&]code=[^&]+/, ''),
   client_id: '3094298453404953',
   client_secret: 'mzmhYqcqDGdymblv5gb7s9OWcnYpH1ha',
-  app_id: '6c684e202700'
+  app_id: '6f5d74164311'
 }
 let _env: Env = __EXAMPLE_ENV__ || Env.Dev
 const variable = GET_QUERY_STRING('env')

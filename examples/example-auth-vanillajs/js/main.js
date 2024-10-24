@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // init auth sdk
-  const redirect_uri = 'http://localhost:3000/'
+  const redirect_uri = 'http://localhost:3001/'
   const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
   const client_secret = 'ABC23'
   const app_id = ''
-  XterioAuth.XterioAuth.init({app_id, client_id, client_secret, redirect_uri }, 'Dev') //ENV:'Dev','Staging','Production'
+  XterioAuth.XterioAuth.init({ app_id, client_id, client_secret, redirect_uri }, 'Dev') //ENV:'Dev','Staging','Production'
 
   // call useLoginModal
   const { open, logout } = XterioAuth.useXterLoginModal({

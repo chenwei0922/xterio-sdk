@@ -5,7 +5,7 @@ import App from './App.vue'
 import '@xterio-sdk/auth/style/main.css'
 import { XterioAuth, Env } from '@xterio-sdk/auth'
 
-const redirect_uri = 'http://localhost:3000/'
+const redirect_uri = location.href.replace(/[?&]code=[^&]+/, '')
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
 const app_id = 'apiautotest'

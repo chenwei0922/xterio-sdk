@@ -12,6 +12,11 @@ const getRadioValue = (name: string) => {
   const tab: HTMLInputElement | null = document.querySelector(`input[name="${name}"]:checked`)
   return tab?.value
 }
+const getInputValue = (cls: string, tag: string = 'input') => {
+  const ele = document.getElementsByClassName(cls)?.[0]
+  const input = ele.getElementsByTagName(tag)?.[0] as HTMLInputElement
+  return input?.value
+}
 
 defineProps<{ msg: string }>()
 
@@ -47,7 +52,11 @@ const logout = () => {
   XterioAuth.logout()
 }
 const openPage = async (_t: OpenPageMode) => {
-  const res = await XterioAuth.openPage(currentPage.value, _t, getPageParam())
+  let param = getPageParam()
+  if (_t === OpenPageMode.alert) {
+    param = { ...param, alertConfig: getAlertConfig() }
+  }
+  const res = await XterioAuth.openPage(currentPage.value, _t, param)
   if (_t === OpenPageMode.iframeDom) {
     console.log('dom=', res)
     alert(res)
@@ -85,6 +94,9 @@ const getPageParam = () => {
   if (isChecked('hide_sign_out')) {
     dic = { ...dic, hide_sign_out: true }
   }
+  if (isChecked('hide_header')) {
+    dic = { ...dic, hide_header: true }
+  }
   if (isChecked('hide_footer')) {
     dic = { ...dic, hide_footer: true }
   }
@@ -104,6 +116,25 @@ const getPageParam = () => {
   console.log('dic=', dic)
   return dic
 }
+const getAlertConfig = () => {
+  const placement = (getRadioValue('alert_active_place_option') || 'right') as PageAlertConfig['placement']
+  let dic: Partial<PageAlertConfig> = { placement }
+  if (isChecked('alert_showCloseIcon')) {
+    dic = { ...dic, showCloseIcon: false }
+  }
+  let _sty = { width: getInputValue('alert_width'), height: getInputValue('alert_height') }
+
+  const _customsty = getInputValue('alert_style', 'textarea') || '{}'
+  try {
+    _sty = { ..._sty, ...JSON.parse(_customsty) }
+  } catch (err: unknown) {
+    console.error('自定义样式输入不合法', _customsty, err)
+  }
+  dic.style = _sty
+
+  console.log('alertConfig=', dic)
+  return dic
+}
 const getOtac = async () => {
   const _otac = await XterioAuth.getOtac()
   console.log('_otac=', _otac)
@@ -114,6 +145,11 @@ const getIdToken = async () => {
   console.log('_idToken=', _idToken)
   alert(_idToken)
 }
+const defaultStyle = JSON.stringify({
+  marginTop: '20px',
+  backgroundColor: 'red'
+})
+
 </script>
 
 <template>
@@ -157,11 +193,15 @@ const getIdToken = async () => {
       </div>
       <div class="hide_menu_entrance">
         <input type="checkbox" />
-        <span>隐藏顶部导航栏(仅H5生效)</span>
+        <span>隐藏菜单入口(仅H5生效)</span>
       </div>
       <div class="hide_sign_out">
         <input type="checkbox" />
         <span>隐藏登出按钮</span>
+      </div>
+      <div class="hide_header">
+        <input type="checkbox" />
+        <span>隐藏顶部导航</span>
       </div>
       <div class="hide_footer">
         <input type="checkbox" />
@@ -211,6 +251,38 @@ const getIdToken = async () => {
     </div>
     <div v-if="currentPage === PageType.nft_market" class="config-nft-market">tip: keyword & features 参考文档</div>
     <div v-if="currentPage === PageType.nft_collection" class="config-nft-collection">tip: features 参考文档，collection必传(示例为写死的值)</div>
+  </div>
+  <div class="card col">
+    <p>弹框样式控制:</p>
+    <div class="config-alert row justify-center">
+      <div>位置:</div>
+      <div>
+        <input type="radio" name="alert_active_place_option" value="left" />
+        <label>left</label>
+        <input type="radio" name="alert_active_place_option" value="center" />
+        <label>center</label>
+        <input type="radio" name="alert_active_place_option" value="right" />
+        <label>right</label>
+      </div>
+    </div>
+    <div class="config-alert alert_showCloseIcon">
+      <input type="checkbox" />
+      <span>是否隐藏关闭按钮</span>
+    </div>
+    <div class="config-alert row items-center justify-center alert_width">
+      <label>宽度:</label>
+      <input type="text" placeholder="200px" value="200px" />
+    </div>
+    <div class="config-alert row items-center justify-center alert_height">
+      <label>高度:</label>
+      <input type="text" placeholder="200px" value="300px" />
+    </div>
+    <div class="config-alert col items-center justify-center alert_style">
+      <label>自定义样式对象(合法json字符串):</label>
+      <textarea style="width: 400px;" placeholder="" :rows="7">
+        {{ defaultStyle }}
+      </textarea>
+    </div>
   </div>
   <div class="card">
     <p>打开页面的方式如下：</p>

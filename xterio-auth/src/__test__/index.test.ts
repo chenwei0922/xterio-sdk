@@ -11,7 +11,7 @@ describe('xterioauth', () => {
   test('login', async () => {
     XterioAuth.init({
       client_id: '4gsmgur6gkp8u9ps8dlco3aaaa',
-      redirect_uri: 'http://localhost:3000'
+      redirect_uri: 'http://localhost:3001'
     })
     const authorizeUrl = XterioAuthInfo.authorizeUrl
     console.log('authorizeUrl=', authorizeUrl)

@@ -62,8 +62,15 @@ button:focus-visible {
   display: flex;
   flex-direction: row;
 }
+.col{
+  display: flex;
+  flex-direction: column;
+}
 .justify-center{
   justify-content: center;
+}
+.items-center{
+  align-items: center;
 }
 
 #app {

@@ -21,6 +21,6 @@ export {
   deleteFetcher,
   XterioAuthTokensManager
 }
-export type { IUserInfo, ISSoTokensParams, PageOptionParam } from './interfaces/loginInfo'
+export type { IUserInfo, ISSoTokensParams, PageOptionParam, PageAlertConfig } from './interfaces/loginInfo'
 
 import './styles/main.scss'

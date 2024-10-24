@@ -130,7 +130,11 @@ export interface PageUriMapType {
   marketplace: string
   collection: string
 }
-
+export interface PageAlertConfig {
+  placement: 'left' | 'right' | 'center'
+  style: Partial<CSSStyleDeclaration>
+  showCloseIcon?: boolean
+}
 export interface PageOptionParam {
   /** only settings page */
   tab?: 'profile' | 'account' | 'wallet' | 'security'
@@ -146,10 +150,12 @@ export interface PageOptionParam {
   hide_wallet_entrance?: BooleanOrBinary
   /** whether hide account */
   hide_account_entrance?: BooleanOrBinary
-  /** whether hide top nav menu */
+  /** whether hide menu, only h5 usage */
   hide_menu_entrance?: BooleanOrBinary
   /** whether hide logout btn */
   hide_sign_out?: BooleanOrBinary
+  /** whether hide header */
+  hide_header?: BooleanOrBinary
   /** whether hide footer */
   hide_footer?: BooleanOrBinary
   /** whether disable logo click event */
@@ -161,9 +167,5 @@ export interface PageOptionParam {
   /** whether hide game filter, only nft page */
   hide_game_filter?: BooleanOrBinary
   /** set alert configs */
-  alertConfig?: {
-    placement: 'left' | 'right' | 'center'
-    style: Partial<CSSStyleDeclaration>
-    showCloseIcon?: boolean
-  }
+  alertConfig?: Partial<PageAlertConfig>
 }
