@@ -1,4 +1,4 @@
-const redirect_uri = 'http://localhost:3000/'
+const redirect_uri = 'http://localhost:3001/'
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
 const app_id = 'apiautotest'

@@ -10,7 +10,7 @@ const updateInfo = (info) => {
 }
 
 console.log('initial')
-const redirect_uri = 'http://localhost:3000/'
+const redirect_uri = location.href.replace(/[?&]code=[^&]+/, '')
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
 const app_id = 'apiautotest'
@@ -90,7 +90,7 @@ addClick('getOtac', async () => {
 })
 
 addClick('openAsset', () => {
-  XterioAuth.openPage(currentPageName, OpenPageMode.alert, getPageParam())
+  XterioAuth.openPage(currentPageName, OpenPageMode.alert, { ...getPageParam(), alertConfig: getAlertConfig() })
 })
 addClick('openAsset-new', () => {
   XterioAuth.openPage(currentPageName, OpenPageMode.page, getPageParam())
@@ -126,6 +126,15 @@ const isChecked = (cls) => {
   const input = ele.getElementsByTagName('input')?.[0]
   return input?.checked
 }
+const getRadioValue = (name) => {
+  const tab = document.querySelector(`input[name="${name}"]:checked`)
+  return tab?.value
+}
+const getInputValue = (cls, tag = 'input') => {
+  const ele = document.getElementsByClassName(cls)?.[0]
+  const input = ele.getElementsByTagName(tag)?.[0]
+  return input?.value
+}
 const getPageParam = () => {
   let dic = {}
   if (currentPageName === PageType.asset) {
@@ -152,6 +161,9 @@ const getPageParam = () => {
   if (isChecked('hide_sign_out')) {
     dic = { ...dic, hide_sign_out: true }
   }
+  if (isChecked('hide_header')) {
+    dic = { ...dic, hide_header: true }
+  }
   if (isChecked('hide_footer')) {
     dic = { ...dic, hide_footer: true }
   }
@@ -169,5 +181,25 @@ const getPageParam = () => {
   }
 
   console.log('dic=', dic)
+  return dic
+}
+
+const getAlertConfig = () => {
+  const placement = getRadioValue('alert_active_place_option') || 'right'
+  let dic = { placement }
+  if (isChecked('alert_showCloseIcon')) {
+    dic = { ...dic, showCloseIcon: false }
+  }
+  let _sty = { width: getInputValue('alert_width'), height: getInputValue('alert_height') }
+
+  const _customsty = getInputValue('alert_style', 'textarea') || '{}'
+  try {
+    _sty = { ..._sty, ...JSON.parse(_customsty) }
+  } catch (err) {
+    console.error('自定义样式输入不合法', _customsty)
+  }
+  dic.style = _sty
+
+  console.log('alertConfig=', dic)
   return dic
 }
