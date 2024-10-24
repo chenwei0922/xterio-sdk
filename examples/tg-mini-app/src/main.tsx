@@ -7,7 +7,7 @@ import { Env, XterioAuth } from '@xterio-sdk/auth'
 
 declare global {
   interface Window {
-    Telegram?: any
+    // Telegram?: any
     spine?: any
   }
 }
