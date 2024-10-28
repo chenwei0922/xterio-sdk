@@ -42,7 +42,7 @@ const publishAuth = async () => {
   updateReleaseDoc(authVersion, pathAuth)
   await commitVersionFile('auth', authVersion)
   // await run(`bash release.sh auth ${authVersion}`, pathSh)
-  await run(`bash release_new.sh auth ${authVersion} ${lines}`, pathSh)
+  await run(`bash release_new.sh auth ${authVersion} "${lines}"`, pathSh)
 }
 
 const publishWallet = async () => {
@@ -63,10 +63,12 @@ const publishWallet = async () => {
   }
   // publish success
   updateReleaseDoc(walletVersion, pathWallet)
-  // await run(`bash release.sh wallet ${walletVersion}`, pathSh)
-  await run(`bash release_new.sh wallet ${walletVersion} ${lines}`, pathSh)
-  changeWalletPackageJson('reset')
   await commitVersionFile('wallet', walletVersion)
+  // await run(`bash release.sh wallet ${walletVersion}`, pathSh)
+  await run(`bash release_new.sh wallet ${walletVersion} "${lines}"`, pathSh)
+  //recover,复原
+  changeWalletPackageJson('reset')
+  await commitVersionFile('wallet', walletVersion, true)
 }
 
 const changeWalletPackageJson = (flag: string) => {
@@ -82,11 +84,12 @@ const changeWalletPackageJson = (flag: string) => {
   }
 }
 
-const commitVersionFile = async (_f: string, _v: string) => {
+const commitVersionFile = async (_f: string, _v: string, _reset?: boolean) => {
   const path = _f === 'auth' ? pathAuth : pathWallet
-  await run(`git push origin main`)
-  await run(`git add . && git commit -m "feat: npm pkg(${_f}) publish(${_v})"`, path)
-  await run(`git push origin main`)
+  const msg = _reset ? `feat: recover files after publish ${_f}(${_v})` : `feat: npm pkg(${_f}) publish(${_v})`
+  await run(`git push origin npm-publish`)
+  await run(`git add . && git commit -m "${msg}"`, path)
+  await run(`git push origin npm-publish`)
 }
 
 const updateReleaseDoc = async (v: string, path: string) => {

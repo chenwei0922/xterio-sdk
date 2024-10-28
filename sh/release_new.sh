@@ -4,8 +4,17 @@ set -e
 pkgName=$1
 version=$2
 # [11,22,33] => 11,22,33 => (11 22 33)
-# 将传入的逗号分隔的字符串转换为数组
-result=($(echo $3 | tr ',' ' '))
+# 将传入的逗号分隔的字符串转换为数组， tr可理解成replace，适合简单分割
+# result=($(echo $3 | tr ',' ' '))
+IFS=',' read -ra result <<< "$3"
+
+msg=""
+for item in "${result[@]}"
+do
+  msg="$msg- $item"$'\n'
+done
+# echo "msg=$msg"
+# exit
 
 data=$(<sensitive.txt)
 gh_token=$(echo "$data" | grep "^gh_token=" | cut -d'=' -f2)
@@ -25,12 +34,6 @@ elif [ $pkgName == "wallet" ]; then
   prd="xterio-wallet"
   rsync -av --exclude='node_modules' ../examples/example-wallet-react "../$prd"
 fi
-
-msg=""
-for item in "${result[@]}"
-do
-  msg="$msg- $item"$'\n'
-done
 
 cd ../
 zip -r "${prd}-${version}.zip" "$prd" -x "$prd/dist/*" "$prd/coverage/*" "$prd/node_modules/*"
@@ -56,6 +59,11 @@ gh repo set-default https://github.com/XterioTech/XterioSDK-Web
 
 # 创建一个发布
 gh release create "$VERSION" --title "$TITLE" --notes "$MESSAGE" "${prd}-${version}.zip#${prd} (zip) "
+
+# 发布特定目录到特定分支
+branch=release/$pkgName/$version
+git subtree split -P "$prd" -b "$branch"
+git push git@github.com:XterioTech/XterioSDK-Web.git "$branch"
 
 # 上传构建文件或者源代码文件
 # gh release upload $VERSION a.zip
