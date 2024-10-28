@@ -22,6 +22,8 @@ async function init() {
   if (isExecuteWallet) {
     await publishWallet()
   }
+  //合并分支
+  await run(`bash mr.sh`, pathSh)
 }
 
 const publishAuth = async () => {
