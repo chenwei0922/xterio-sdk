@@ -27,10 +27,8 @@ const Home = observer(() => {
   useEffect(() => {
     if (containerRef.current) {
       xterTopupRef.current = new XterTopup({
-        assetId: '66c849b2c0d855814f49d3c4',
-        gameId: 'apiautotest',
+        spuId: '66c849b2c0d855814f49d3c4',
         skuId: '1',
-        env: Env.Staging,
         hideHeader: true,
         hideFooter: true,
         showModal: true,
@@ -53,7 +51,9 @@ const Home = observer(() => {
 
   const handleOpenPay = (method: XterTopupMethod) => {
     if (containerRef.current && xterTopupRef.current) {
-      xterTopupRef.current.openPay(containerRef.current, method)
+      xterTopupRef.current.openPay(containerRef.current, method).catch((err) => {
+        console.log('打开支付弹窗失败：', err)
+      })
     }
   }
 

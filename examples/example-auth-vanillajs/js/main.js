@@ -63,10 +63,8 @@ document.addEventListener('DOMContentLoaded', function () {
   /** Xterio Topup iframe **/
 
   const xterTopup = new XterioAuth.XterTopup({
-    assetId: '66c849b2c0d855814f49d3c4',
-    gameId: 'apiautotest',
+    spuId: '66c849b2c0d855814f49d3c4',
     skuId: '1',
-    env: 'Staging',
     hideHeader: true,
     hideFooter: true,
     showModal: true,
