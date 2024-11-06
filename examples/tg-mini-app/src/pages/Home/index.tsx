@@ -29,8 +29,10 @@ const Home = observer(() => {
       xterTopupRef.current = new XterTopup({
         spuId: '66c849b2c0d855814f49d3c4',
         skuId: '1',
-        hideHeader: true,
-        hideFooter: true,
+        xterViewCustomOptions: {
+          hide_header: true,
+          hide_footer: true
+        },
         showModal: true,
         width: 400,
         height: 700,
