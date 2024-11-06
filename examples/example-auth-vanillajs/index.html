@@ -20,8 +20,13 @@
         <p>Email: <span id="userEmail"></span></p>
         <button id="logoutButton">Logout</button>
       </section>
+      <section class="topup" style="display: flex; gap: 1rem; margin-top: 16px">
+        <button id="openTopup">Open Topup</button>
+        <button id="openFiatTopup">Open Fiat Topup</button>
+        <div id="topup-container"></div>
+      </section>
     </main>
-    <script src="./lib/xterio-auth/xterio-auth-sdk.js"></script>
+    <script src="./lib/xterio-auth/index.min.js"></script>
     <script src="/js/main.js"></script>
   </body>
 </html>

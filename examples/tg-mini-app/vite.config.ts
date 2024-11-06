@@ -5,7 +5,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { createHtmlPlugin } from 'vite-plugin-html'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+// import basicSsl from '@vitejs/plugin-basic-ssl'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -26,7 +26,7 @@ export default defineConfig(({ command, mode }) => {
     },
     plugins: [
       react(),
-      basicSsl(),
+      // basicSsl(),
       createHtmlPlugin({
         // minify: true,
         inject: {

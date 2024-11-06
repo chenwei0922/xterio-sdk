@@ -14,11 +14,10 @@
     "dist"
   ],
   "scripts": {
-    "dev": "unbuild --stub",
+    "dev": "tsx src/index.ts",
     "build": "unbuild",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build",
-    "debug": "tsx src/index.ts"
+    "prepublishOnly": "npm run build"
   },
   "engines": {
     "node": ">=16.19.1"

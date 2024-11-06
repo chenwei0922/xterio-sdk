@@ -18,10 +18,11 @@ header {
 }
 
 main {
-  flex: 1;
+  /* flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column; */
   padding: 2rem;
 }
 
@@ -47,4 +48,9 @@ button {
 button:hover {
   background-color: xdarkblue;
   color: #ebb9e7;
+}
+
+#topup-container {
+  width: 400px;
+  height: 800px;
 }

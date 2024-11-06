@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const userInfoSection = document.querySelector('section.login-info')
   const userName = document.getElementById('userName')
   const userEmail = document.getElementById('userEmail')
+  const openTopup = document.getElementById('openTopup')
+  const openFiatTopup = document.getElementById('openFiatTopup')
 
   let loginState = { isLogin: false, userInfo: null }
 
@@ -56,5 +58,36 @@ document.addEventListener('DOMContentLoaded', function () {
     } else {
       console.error('XterSDK not found or logout method not available')
     }
+  })
+
+  /** Xterio Topup iframe **/
+
+  const xterTopup = new XterioAuth.XterTopup({
+    spuId: '66c849b2c0d855814f49d3c4',
+    skuId: '1',
+    hideHeader: true,
+    hideFooter: true,
+    showModal: true,
+    width: 400,
+    height: 670,
+    onLoad: () => {
+      console.log('iframe 加载完成')
+    },
+    onClose: (data) => {
+      console.log('支付窗口已关闭', data)
+    },
+    onSuccess: (data) => {
+      console.log('支付成功', data)
+    }
+  })
+
+  openTopup.addEventListener('click', function () {
+    // 打开支付页面
+    xterTopup.openPay('#topup-container', 'default')
+  })
+
+  openFiatTopup.addEventListener('click', function () {
+    // 打开支付页面
+    xterTopup.openPay('#topup-container', 'fiat')
   })
 })
