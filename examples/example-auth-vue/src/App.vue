@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
-import { IUserInfo, LoginType, OpenPageMode, PageOptionParam, PageType, XterEventEmiter, XTERIO_EVENTS, XterioAuth } from '@xterio-sdk/auth'
+import { IUserInfo, LoginType, OpenPageMode, PageOptionParam, PagePopupConfig, PageType, XterEventEmiter, XTERIO_EVENTS, XterioAuth, XterViewCustomizeOptions } from '@xterio-sdk/auth'
 
 const isChecked = (cls: string) => {
   const ele = document.getElementsByClassName(cls)?.[0]
@@ -53,8 +53,8 @@ const logout = () => {
 }
 const openPage = async (_t: OpenPageMode) => {
   let param = getPageParam()
-  if (_t === OpenPageMode.alert) {
-    param = { ...param, alertConfig: getAlertConfig() }
+  if (_t === OpenPageMode.popup) {
+    param = { ...param, popupConfig: getAlertConfig() }
   }
   const res = await XterioAuth.openPage(currentPage.value, _t, param)
   if (_t === OpenPageMode.iframeDom) {
@@ -82,43 +82,49 @@ const getPageParam = () => {
   }
   // debugger
 
-  if (isChecked('hide_wallet_entrance')) {
-    dic = { ...dic, hide_wallet_entrance: true }
-  }
-  if (isChecked('hide_account_entrance')) {
-    dic = { ...dic, hide_account_entrance: true }
-  }
-  if (isChecked('hide_menu_entrance')) {
-    dic = { ...dic, hide_menu_entrance: true }
-  }
-  if (isChecked('hide_sign_out')) {
-    dic = { ...dic, hide_sign_out: true }
-  }
-  if (isChecked('hide_header')) {
-    dic = { ...dic, hide_header: true }
-  }
-  if (isChecked('hide_footer')) {
-    dic = { ...dic, hide_footer: true }
-  }
-  if (isChecked('disable_logo_click')) {
-    dic = { ...dic, disable_logo_click: true }
-  }
-  if (isChecked('hide_game_select') && curPage === PageType.asset) {
-    dic = { ...dic, hide_game_select: true }
-  }
-  if (isChecked('hide_game_tokens') && curPage === PageType.asset) {
-    dic = { ...dic, hide_game_tokens: true }
-  }
-  if (isChecked('hide_game_filter') && curPage === PageType.nft_market) {
-    dic = { ...dic, hide_game_filter: true }
+  {
+    let options: XterViewCustomizeOptions = {}
+    if (isChecked('hide_wallet_entrance')) {
+      options = { ...options, hide_wallet_entrance: true }
+    }
+    if (isChecked('hide_account_entrance')) {
+      options = { ...options, hide_account_entrance: true }
+    }
+    if (isChecked('hide_menu_entrance')) {
+      options = { ...options, hide_menu_entrance: true }
+    }
+    if (isChecked('hide_sign_out')) {
+      options = { ...options, hide_sign_out: true }
+    }
+    if (isChecked('hide_header')) {
+      options = { ...options, hide_header: true }
+    }
+    if (isChecked('hide_footer')) {
+      options = { ...options, hide_footer: true }
+    }
+    if (isChecked('disable_logo_click')) {
+      options = { ...options, disable_logo_click: true }
+    }
+    if (isChecked('hide_game_select') && curPage === PageType.asset) {
+      options = { ...options, hide_game_select: true }
+    }
+    if (isChecked('hide_game_tokens') && curPage === PageType.asset) {
+      options = { ...options, hide_game_tokens: true }
+    }
+    if (isChecked('hide_game_filter') && curPage === PageType.nft_market) {
+      options = { ...options, hide_game_filter: true }
+    }
+    if (Object.keys(options).length) {
+      dic['XterViewCustomOptions'] = options
+    }
   }
 
   console.log('dic=', dic)
   return dic
 }
 const getAlertConfig = () => {
-  const placement = (getRadioValue('alert_active_place_option') || 'right') as PageAlertConfig['placement']
-  let dic: Partial<PageAlertConfig> = { placement }
+  const placement = (getRadioValue('alert_active_place_option') || 'right') as PagePopupConfig['placement']
+  let dic: Partial<PagePopupConfig> = { placement }
   if (isChecked('alert_showCloseIcon')) {
     dic = { ...dic, showCloseIcon: false }
   }
@@ -286,7 +292,7 @@ const defaultStyle = JSON.stringify({
   </div>
   <div class="card">
     <p>打开页面的方式如下：</p>
-    <button @click="openPage(OpenPageMode.alert)">弹框形式(iframe)</button>
+    <button @click="openPage(OpenPageMode.popup)">弹框形式(iframe)</button>
     <button @click="openPage(OpenPageMode.page)">新页面形式</button>
     <button @click="openPage(OpenPageMode.iframeDom)">
       dom形式
