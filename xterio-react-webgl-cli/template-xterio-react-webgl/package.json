@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@xterio-sdk/auth": "^0.0.8",
-    "@xterio-sdk/wallet": "^0.0.8-patch",
+    "@xterio-sdk/auth": "^0.0.14",
+    "@xterio-sdk/wallet": "^0.0.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-unity-webgl": "^9.5.2"

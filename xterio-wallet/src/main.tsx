@@ -7,7 +7,10 @@ import './common/styles/main.css'
 import { IXterioWalletContextProps, SendTransactionMode, XterioWalletProvider } from './index.ts'
 import { Env } from '@xterio-sdk/auth'
 
-const redirect_uri = location.href.replace(/[?&]code=[^&]+/, '')
+const redirect_uri = location.href
+  .replace(/[?&]code=[^&]+/, '')
+  .replace(/[?&]sso_login_method=[^&]+/, '')
+  .replace(/[?&]sso_login_wallet=[^&]+/, '')
 const client_id = '4gsmgur6gkp8u9ps8dlco3k7eo'
 const client_secret = 'ABC23'
 const app_id = 'apiautotest'
