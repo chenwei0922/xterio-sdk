@@ -193,6 +193,8 @@ function App() {
         <button onClick={logout}>退出登录</button>
         <button onClick={getIdToken}>IdToken</button>
         <button onClick={getOtac}>OTAC</button>
+        <button onClick={() => alert(XterioAuth.loginMethod)}>登录方式</button>
+        <button onClick={() => alert(XterioAuth.loginWalletAddress)}>登录钱包地址</button>
       </div>
       <div className="card">
         <p>当前要打开的页面: {currentPage}</p>

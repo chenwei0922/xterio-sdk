@@ -151,6 +151,12 @@ const getIdToken = async () => {
   console.log('_idToken=', _idToken)
   alert(_idToken)
 }
+const getLoginMethod = () => {
+  alert(XterioAuth.loginMethod)
+}
+const getLoginWalletAddress = () => {
+  alert(XterioAuth.loginWalletAddress)
+}
 const defaultStyle = JSON.stringify({
   marginTop: '20px',
   backgroundColor: 'red'
@@ -178,6 +184,8 @@ const defaultStyle = JSON.stringify({
     <button @click="logout()">退出登录</button>
     <button @click="getIdToken">IdToken</button>
     <button @click="getOtac">OTAC</button>
+    <button @click="getLoginMethod">登录方式</button>
+    <button @click="getLoginWalletAddress">登录钱包地址</button>
   </div>
   <div class="card">
     <p>当前要打开的页面: {{ currentPage }}</p>
