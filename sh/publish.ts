@@ -22,8 +22,6 @@ async function init() {
   if (isExecuteWallet) {
     await publishWallet()
   }
-  //合并分支
-  await run(`bash mr.sh`, pathSh)
 }
 
 const publishAuth = async () => {
@@ -43,8 +41,10 @@ const publishAuth = async () => {
   // publish success
   updateReleaseDoc(authVersion, pathAuth)
   await commitVersionFile('auth', authVersion)
-  // await run(`bash release.sh auth ${authVersion}`, pathSh)
+  // 发release
   await run(`bash release_new.sh auth ${authVersion} "${lines}"`, pathSh)
+  //合分支
+  await run(`bash mr.sh`, pathSh)
 }
 
 const publishWallet = async () => {
@@ -66,11 +66,13 @@ const publishWallet = async () => {
   // publish success
   updateReleaseDoc(walletVersion, pathWallet)
   await commitVersionFile('wallet', walletVersion)
-  // await run(`bash release.sh wallet ${walletVersion}`, pathSh)
+  // 发release
   await run(`bash release_new.sh wallet ${walletVersion} "${lines}"`, pathSh)
   //recover,复原
   changeWalletPackageJson('reset')
   await commitVersionFile('wallet', walletVersion, true)
+  //合分支
+  await run(`bash mr.sh`, pathSh)
 }
 
 const changeWalletPackageJson = (flag: string) => {
@@ -92,6 +94,8 @@ const commitVersionFile = async (_f: string, _v: string, _reset?: boolean) => {
   await run(`git push origin npm-publish`)
   await run(`git add . && git commit -m "${msg}"`, path)
   await run(`git push origin npm-publish`)
+  await run(`git tag ${_v}-${_f}`)
+  await run(`git push origin --tags`)
 }
 
 const updateReleaseDoc = async (v: string, path: string) => {
