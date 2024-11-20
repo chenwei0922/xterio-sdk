@@ -58,7 +58,7 @@ MESSAGE=$msg
 gh repo set-default https://github.com/XterioTech/XterioSDK-Web
 
 # 创建一个发布
-gh release create "$VERSION" --title "$TITLE" --notes "$MESSAGE" "${prd}-${version}.zip#${prd} (zip) "
+gh release create "$VERSION" --title "$TITLE" --notes "$MESSAGE" "${prd}-${version}.zip#${prd} (zip) " --target main
 
 # 发布特定目录到特定分支
 branch=release/$pkgName/$version
