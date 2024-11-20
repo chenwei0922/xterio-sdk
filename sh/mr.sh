@@ -30,14 +30,68 @@ title="merge request after publish"
 sourceBranch="npm-publish"
 targetBranch="main"
 
-response=$(curl -X POST -H "PRIVATE-TOKEN: $accessToken" -d "source_branch=$sourceBranch" -d "target_branch=$targetBranch" -d "title=$title" "$gitlabUrl/projects/70/merge_requests")
-url=$(python3 -c "import json,sys;obj=json.loads(sys.argv[1]);print(obj['web_url'])" "$response")
-# {"web_url":"https://gitlab.itlibecc.com/changying/platform/xteriosdk-web/-/merge_requests/7", ...}
+checkBranchDiff() {
+  diffResponse=$(curl -s -H "PRIVATE-TOKEN: $accessToken" "$gitlabUrl/projects/$projectID/repository/compare?from=$sourceBranch&to=$targetBranch")
+  diffFiles=$(echo "$diffResponse" | jq '.diffs | length')
+  if [ "$diffFiles" -eq 0 ]; then
+    return 1
+  else
+    return 0
+  fi
+}
 
-if [ -n "$url" ] ; then
-  echo "[mr] Pull request created success.✅"
-  echo "[mr] The detail is: $url"
+iid=''
+createMergeRequest() {
+  checkBranchDiff "$sourceBranch" "$targetBranch"
+  # ne不等，eq等
+  if [ $? -ne 0 ]; then
+    echo "[mr] The files have no change, cannot create mr.❌"
+    exit
+  fi
+  response=$(curl -X POST -H "PRIVATE-TOKEN: $accessToken" -d "source_branch=$sourceBranch" -d "target_branch=$targetBranch" -d "title=$title" "$gitlabUrl/projects/$projectID/merge_requests")
+  # url=$(python3 -c "import json,sys;obj=json.loads(sys.argv[1]);print(obj['web_url'])" "$response")
+  url=$(echo $response | jq -r '.web_url // ""')
+  iid=$(echo $response | jq -r '.iid // ""')
+  # {iid:"7", "web_url":"https://gitlab.itlibecc.com/changying/platform/xteriosdk-web/-/merge_requests/7", ...}
+
+  if [ -n "$url" ] ; then
+    echo "[mr] Merge Request Created Success.✅"
+    echo "[mr] The detail is: $url"
+  else
+    echo "[mr] Merge Request Created failure.❌"
+    echo "$response"
+    # {"message":["Another open merge request already exists for this source branch: !17"]}
+    result=$(echo $response | jq -r '.message[0]' | grep -o '![0-9]\+')
+    iid=${result:1}
+  fi
+}
+createMergeRequest
+
+sleep 3
+# 自动 merge
+maxRetriesCount=3
+index=1
+executeMergeRequest(){
+  if [ $index -gt $maxRetriesCount ]; then
+    echo "[mr] The maximum retry exceeded the limit.❌"
+    return
+  fi
+  ((index++))
+  mergeRequestIID="$1"
+  mergeResponse=$(curl -X PUT -H "PRIVATE-TOKEN: $accessToken" "$gitlabUrl/projects/$projectID/merge_requests/$mergeRequestIID/merge")
+  mergeStatus=$(echo $mergeResponse | jq -r '.state')
+  if [ "$mergeStatus" == "merged" ]; then
+    echo "[mr] Merge Request Merged Success.✅"
+    return 0
+  else
+    echo "[mr] Merge Request Merged Failure.❌"
+    echo "$mergeResponse"
+    executeMergeRequest "$mergeRequestIID"
+  fi
+}
+if [ -n "$iid" ] ; then
+  executeMergeRequest "$iid"
 else
-  echo "[mr] Pull request created failure.❌"
-  echo "$response"
+  echo "[mr] mrId invalid.❌"
+  exit
 fi
