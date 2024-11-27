@@ -43,6 +43,7 @@ const publishAuth = async () => {
   await commitVersionFile('auth', authVersion)
   // 发release
   await run(`bash release_new.sh auth ${authVersion} "${lines}"`, pathSh)
+  await sleep(5000)
   //合分支
   await run(`bash mr.sh`, pathSh)
 }
@@ -71,6 +72,7 @@ const publishWallet = async () => {
   //recover,复原
   changeWalletPackageJson('reset')
   await commitVersionFile('wallet', walletVersion, true)
+  await sleep(5000)
   //合分支
   await run(`bash mr.sh`, pathSh)
 }
@@ -106,6 +108,11 @@ const updateReleaseDoc = async (v: string, path: string) => {
     appendFileSync(docPath, `\n# ${v}\n`)
     appendFileSync(docPath, lines.map((i) => `- ${i} \n`).join(''))
   }
+}
+const sleep = (time: number) => {
+  return new Promise((res) => {
+    setTimeout(res, time)
+  })
 }
 
 const rl = readline.createInterface({
