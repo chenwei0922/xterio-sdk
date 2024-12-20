@@ -19,15 +19,15 @@ const config: IXterioWalletContextProps = {
   /**
    * 申请平台账号接入时平台分配的app_id
    */
-  app_id: '55f9d090bdb6', // demo app_id:55f9d090bdb6
+  app_id: 'bff5dbf8fe27', // demo app_id:bff5dbf8fe27
   /**
    * 申请平台账号接入时平台分配的client_id
    */
-  client_id: '1833749239520857', // demo client_id:1833749239520857
+  client_id: '3715717224014682', // demo client_id:1833749239520857
   /**
    * 申请平台账号接入时平台分配的client_secret
    */
-  client_secret: 'ZGh5Nf4JcWp6jg3qMruYE9ye8xkFHtn2', // demo client_secret: ZGh5Nf4JcWp6jg3qMruYE9ye8xkFHtn2
+  client_secret: 'mzmhYqcqDGdymblv5gb7s9OWcnYpH1ha', // demo client_secret: ZGh5Nf4JcWp6jg3qMruYE9ye8xkFHtn2
   /**
    * 申请 particle newtork 钱包分配的 app id
    */
@@ -35,11 +35,11 @@ const config: IXterioWalletContextProps = {
   /**
    * 申请平台账号接入时提交的redirect_uri,用于 sso 登录后跳转的地址，如果不是sso 登录可以忽略改参数
    */
-  redirect_uri: '/',
+  redirect_uri: 'http://localhost:5173/',
   /**
    * 对接平台的环境类型： Dev | Staging | Production
    */
-  env: XterioAuth.Env.Production,
+  env: XterioAuth.Env.Staging,
   /**
    * 是否显示打开钱包弹窗悬浮按钮，默认为false
    */
