@@ -42,7 +42,7 @@ export const XterConfig: EnvConfig = {
   /**
    * 对接平台的环境类型： Dev | Staging | Production
    */
-  env: import.meta.env.VITE_ENV as Env,
+  env: import.meta.env.VITE_XSDK_ENV as Env,
   /**
    * 平台链的名称
    */
