@@ -202,6 +202,7 @@ function App() {
         <button onClick={() => setCurrentPage(PageType.setting)}>账户钱包管理页</button>
         <button onClick={() => setCurrentPage(PageType.nft_market)}>nft市场页</button>
         <button onClick={() => setCurrentPage(PageType.nft_collection)}>nft落地页</button>
+        <button onClick={() => setCurrentPage(PageType.get_xter)}>get-xter页</button>
       </div>
       <div className="card">
         <p>全局控制参数：</p>
@@ -308,11 +309,11 @@ function App() {
         </div>
         <div className="config-alert row items-center justify-center alert_width">
           <label>宽度:</label>
-          <input type="text" placeholder="200px" defaultValue="200px" />
+          <input type="text" placeholder="400px" defaultValue="400px" />
         </div>
         <div className="config-alert row items-center justify-center alert_height">
           <label>高度:</label>
-          <input type="text" placeholder="200px" defaultValue="300px" />
+          <input type="text" placeholder="600px" defaultValue="600px" />
         </div>
         <div className="config-alert col items-center justify-center alert_style">
           <label>自定义样式对象(合法json字符串):</label>

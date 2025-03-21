@@ -193,6 +193,7 @@ const defaultStyle = JSON.stringify({
     <button @click="currentPage = PageType.setting">账户钱包管理页</button>
     <button @click="currentPage = PageType.nft_market">nft市场页</button>
     <button @click="currentPage = PageType.nft_collection">nft落地页</button>
+    <button @click="currentPage = PageType.get_xter">get-xter页</button>
   </div>
   <div class="card">
     <p>全局控制参数：</p>
@@ -285,11 +286,11 @@ const defaultStyle = JSON.stringify({
     </div>
     <div class="config-alert row items-center justify-center alert_width">
       <label>宽度:</label>
-      <input type="text" placeholder="200px" value="200px" />
+      <input type="text" placeholder="400px" value="400px" />
     </div>
     <div class="config-alert row items-center justify-center alert_height">
       <label>高度:</label>
-      <input type="text" placeholder="200px" value="300px" />
+      <input type="text" placeholder="600px" value="600px" />
     </div>
     <div class="config-alert col items-center justify-center alert_style">
       <label>自定义样式对象(合法json字符串):</label>
